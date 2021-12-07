@@ -1,5 +1,7 @@
+import Login from './views/login.js'
+
 const routes = {
-	'#/': login,
+	'#/': Login,
 	'#/signup': signup,
 	'#/dashboard': dashboard,
 	'#/board': board
@@ -11,8 +13,8 @@ function onRouteChanged() {
 	if (!(app instanceof HTMLElement)) {
 		throw new ReferenceError('No router view element available for rendering')
 	}
-
-	app.innerHTML = routes[hash]
+  const view = new routes['#/']()
+	app.innerHTML = view
 
 	appMenu.titleSpan.innerText = hash.replace('#', '').replace('/', '') || 'Login'
 	appMenu.updateActiveLink(hash)

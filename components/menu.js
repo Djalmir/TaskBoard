@@ -246,4 +246,4 @@ class Menu extends HTMLElement {
 	}
 }
 
-customElements.define('app-menu', Menu)
+customElements.define('c-menu', Menu)
