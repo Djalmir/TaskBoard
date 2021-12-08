@@ -136,7 +136,7 @@ template.innerHTML = /*html*/`
 
 	<header id='header'>
 		<div id='menuBtContainer'>
-			<button id='menuBt' onclick='showMenu'>
+			<button id='menuBt' @click='showMenu'>
 				<svg id = "menuSVG" viewBox = "0 0 32 32" >
 					<g style="stroke-width:6; stroke-linecap:round; stroke=red;">
 						<line x1="3" y1="3" x2="29" y2="3">
@@ -166,7 +166,7 @@ template.innerHTML = /*html*/`
 		<a href='#/board'>Board</a>
 	</nav>
 
-	<div id='shadow' onclick='showMenu'></div>
+	<div id='shadow' z-on:click='showMenu'></div>
 `
 
 class Menu extends HTMLElement {
