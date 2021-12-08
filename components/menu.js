@@ -1,10 +1,6 @@
-class Menu extends HTMLElement {
-	constructor() {
-		super()
-		const shadow = this.attachShadow({mode: 'open'})
-
-		const style = shadow.appendChild(document.createElement('style'))
-		style.textContent = `
+const template = document.createElement('template')
+template.innerHTML = /*html*/`
+	<style>
 		#header {
 			position: fixed;
 			top: 0;
@@ -52,6 +48,8 @@ class Menu extends HTMLElement {
 		}
 
 		#titleSpan {
+			margin: 0 10px;
+			font-weight:bold;
 			text-transform: capitalize;
 		}
 
@@ -125,125 +123,114 @@ class Menu extends HTMLElement {
 			transition: opacity .2s;
 			display: block;
 		}
-		`
+	</style>
 
-		const header = shadow.appendChild(document.createElement('header'))
-		header.id = 'header'
+	<header id='header'>
+		<div id='menuBtContainer'>
+			<button id='menuBt' onclick='showMenu'>
+				<svg id = "menuSVG" viewBox = "0 0 32 32" >
+					<g style="stroke-width:6; stroke-linecap:round; stroke=red;">
+						<line x1="3" y1="3" x2="29" y2="3">
+							<animate class="showAnimation" attributeType="XML" attributeName="x1" begin="indefinite" from="3" to="18" dur=".4s" fill="freeze" />
+							<animate class="showAnimation" attributeType="XML" attributeName="y2" begin="indefinite" from="3" to="13" dur=".4s" fill="freeze" />
+							<animate class="hideAnimation" attributeType="XML" attributeName="x1" begin="indefinite" from="10" to="3" dur=".4s" fill="freeze" />
+							<animate class="hideAnimation" attributeType="XML" attributeName="y2" begin="indefinite" from="13" to="3" dur=".4s" fill="freeze" />
+						</line>
+						<line x1="3" y1="13" x2="29" y2="13" />
+						<line x1="3" y1="23" x2="29" y2="23">
+							<animate class="showAnimation" attributeType="XML" attributeName="x1" begin="indefinite" from="3" to="18" dur=".4s" fill="freeze" />
+							<animate class="showAnimation" attributeType="XML" attributeName="y2" begin="indefinite" from="23" to="13" dur=".4s" fill="freeze" />
+							<animate class="hideAnimation" attributeType="XML" attributeName="x1" begin="indefinite" from="10" to="3" dur=".4s" fill="freeze" />
+							<animate class="hideAnimation" attributeType="XML" attributeName="y2" begin="indefinite" from="13" to="23" dur=".4s" fill="freeze" />
+						</line>
+					</g>
+				</svg >
+			</button>
+		</div>
+		<span id='titleSpan'></span>
+	</header>
 
-		const menuBtContainer = header.appendChild(document.createElement('div'))
-		menuBtContainer.id = 'menuBtContainer'
+	<nav id='menu'>
+		<a href='#/' class='active'>Login</a>
+		<a href='#/signup'>Cadastro</a>
+		<a href='#/dashboard'>Dashboard</a>
+		<a href='#/board'>Board</a>
+	</nav>
 
-		const menuBt = menuBtContainer.appendChild(document.createElement('button'))
-		menuBt.id = 'menuBt'
-		menuBt.onclick = () => this.showMenu()
-		menuBt.innerHTML = `
-			<svg id="menuSVG" viewBox="0 0 32 32">
-				<g style="stroke-width:6; stroke-linecap:round; stroke=red;">
-					<line x1="3" y1="3" x2="29" y2="3">
-						<animate class="showAnimation" attributeType="XML" attributeName="x1" begin="indefinite" from="3" to="18" dur=".4s" fill="freeze" />
-						<animate class="showAnimation" attributeType="XML" attributeName="y2" begin="indefinite" from="3" to="13" dur=".4s" fill="freeze" />
-						<animate class="hideAnimation" attributeType="XML" attributeName="x1" begin="indefinite" from="10" to="3" dur=".4s" fill="freeze" />
-						<animate class="hideAnimation" attributeType="XML" attributeName="y2" begin="indefinite" from="13" to="3" dur=".4s" fill="freeze" />
-					</line>
-					<line x1="3" y1="13" x2="29" y2="13" />
-					<line x1="3" y1="23" x2="29" y2="23">
-						<animate class="showAnimation" attributeType="XML" attributeName="x1" begin="indefinite" from="3" to="18" dur=".4s" fill="freeze" />
-						<animate class="showAnimation" attributeType="XML" attributeName="y2" begin="indefinite" from="23" to="13" dur=".4s" fill="freeze" />
-						<animate class="hideAnimation" attributeType="XML" attributeName="x1" begin="indefinite" from="10" to="3" dur=".4s" fill="freeze" />
-						<animate class="hideAnimation" attributeType="XML" attributeName="y2" begin="indefinite" from="13" to="23" dur=".4s" fill="freeze" />
-					</line>
-				</g>
-			</svg>
-		`
+	<div id='shadow' onclick='showMenu'></div>
+`
 
-		const titleSpan = header.appendChild(document.createElement('span'))
-		titleSpan.id = 'titleSpan'
-
-		const menu = shadow.appendChild(document.createElement('nav'))
-		menu.id = 'menu'
-
-		//BOTÕES
-		const loginLink = menu.appendChild(document.createElement('a'))
-		loginLink.href = '#/'
-		loginLink.innerText = 'Login'
-		// loginLink.path = '/'
-		// loginLink.onclick = () => onNavigate(loginLink.path)
-		loginLink.classList.add('active')
-
-		const signupLink = menu.appendChild(document.createElement('a'))
-		signupLink.href = '#/signup'
-		signupLink.innerText = 'Cadastro'
-		// signupLink.path = '/signup'
-		// signupLink.onclick = () => onNavigate(signupLink.path)
-
-		const dashboardLink = menu.appendChild(document.createElement('a'))
-		dashboardLink.href = '#/dashboard'
-		dashboardLink.innerText = 'Dashboard'
-		// dashboardLink.path = '/dashboard'
-		// dashboardLink.onclick = () => onNavigate(dashboardLink.path)
-
-		const boardLink = menu.appendChild(document.createElement('a'))
-		boardLink.href = '#/board'
-		boardLink.innerText = 'Board'
-		// boardLink.path = '/board'
-		// boardLink.onclick = () => onNavigate(boardLink.path)
-
-		//SOMBRA
-		const shadowDiv = shadow.appendChild(document.createElement('div'))
-		shadowDiv.id = 'shadow'
-		shadowDiv.onclick = () => this.showMenu()
+class Menu extends HTMLElement {
+	constructor() {
+		super()
+		this.attachShadow({mode: 'open'})
+		this.shadowRoot.appendChild(template.content.cloneNode(true))
 
 		//DATA
-		this.titleSpan = titleSpan
+		this.titleSpan = this.shadowRoot.querySelector('#titleSpan')
 		this.showingMenu = false
 
-		//MÉTODOS
+		//METODOS
 		this.showMenu = () => {
 			this.showingMenu = !this.showingMenu
+			let shadowDiv = this.shadowRoot.querySelector('#shadow')
+			let menuBtContainer = this.shadowRoot.querySelector('#menuBtContainer')
+			let menuSVG = this.shadowRoot.querySelector('#menuSVG')
+			let menu = this.shadowRoot.querySelector('#menu')
 			if (this.showingMenu) {
 				shadowDiv.style.transform = 'scale(1)'
 				shadowDiv.style.opacity = '1'
 				menuBtContainer.style.width = '300px'
-				shadow.querySelector('#menuSVG').style.stroke = '#7d7d7d'
+				menuSVG.style.stroke = '#7d7d7d'
 				menu.style.left = '0'
 
 				// shadow.addEventListener('transitionend', btToArrow)
 				setTimeout(() => {
-					let animationElements = Array.from(shadow.querySelectorAll('.showAnimation'))
+					let animationElements = Array.from(this.shadowRoot.querySelectorAll('.showAnimation'))
 					animationElements.map((element) => {
 						element.beginElement()
 					})
-					shadow.getElementById('menuSVG').style.transform = "rotateZ(180deg)"
+					menuSVG.style.transform = "rotateZ(180deg)"
 				}, 125)
 			}
 			else {
 				shadowDiv.style.opacity = '0'
 				shadowDiv.addEventListener('transitionend', this.removeShadow)
 				menuBtContainer.style.width = '40px'
-				shadow.querySelector('#menuSVG').style.stroke = '#bdbdbd'
+				menuSVG.style.stroke = '#bdbdbd'
 				menu.style.left = '-310px'
 
 				// shadow.addEventListener('transitionend', arrowToBt)
-				let animationElements = Array.from(shadow.querySelectorAll('.hideAnimation'))
+				let animationElements = Array.from(this.shadowRoot.querySelectorAll('.hideAnimation'))
 				animationElements.map((element) => {
 					element.beginElement()
 				})
-				shadow.getElementById('menuSVG').style.transform = "rotateZ(0deg)"
+				menuSVG.style.transform = "rotateZ(0deg)"
 			}
 		}
 
 		this.removeShadow = () => {
+			let shadowDiv = this.shadowRoot.querySelector('#shadow')
 			shadowDiv.removeEventListener('transitionend', this.removeShadow)
 			shadowDiv.style.transform = 'scale(0)'
 		}
 
 		this.updateActiveLink = (hash) => {
+			let menu = this.shadowRoot.querySelector('#menu')
 			menu.querySelector('.active').classList.remove('active')
 			let as = Array.from(menu.querySelectorAll('a'))
 			let activeLink = as.find(a => a.hash == hash)
 			activeLink.classList.add('active')
 		}
+
 	}
+
+	connectedCallback() {
+		this.shadowRoot.querySelector('#titleSpan').innerText = this.getAttribute('titleSpan')
+		setOnClicks(this)
+	}
+
+
 }
 
 customElements.define('c-menu', Menu)
