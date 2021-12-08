@@ -1,14 +1,34 @@
 const template = document.createElement('template')
 template.innerHTML = /*html*/`
 <style>
-	#span{
-		
+	#span{		
+		position: relative;
+	}
+
+	#label {
+		position: absolute;
+		top: 1px;
+		left: 8px;
+		color: #ddd;
+	}
+
+	#input {
+		background: #404040;
+		border: none;
+		outline: none;
+		padding: 4px 8px;
+		color: #ddd;
+	}
+
+	#input:focus~#label {
+		top: -18px;
+		left: 1px;
 	}
 </style>
 
 <span id='span'>
-	<label for='input' id='label'></label>
 	<input type='text' id='input' />
+	<label for='input' id='label'></label>
 </span>
 `
 
@@ -20,7 +40,7 @@ export default class TextInput extends HTMLElement {
 	}
 
 	connectedCallback() {
-		this.shadowRoot.querySelector('#label').innerText = this.getAttribute('text')		
+		this.shadowRoot.querySelector('#label').innerText = this.getAttribute('text')
 	}
 
 }

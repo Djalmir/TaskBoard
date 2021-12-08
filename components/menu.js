@@ -38,6 +38,15 @@ template.innerHTML = /*html*/`
 			padding: 6px;
 			background: transparent;
 			cursor: pointer;
+			transition: .1s;
+		}
+
+		#menuBt:hover {
+			transform: scale(1.1);
+		}
+
+		#menuBt:active {
+			transform: scale(.9);
 		}
 		
 		#menuSVG {
