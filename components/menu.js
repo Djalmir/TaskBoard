@@ -5,12 +5,11 @@ template.innerHTML = /*html*/`
 			position: fixed;
 			top: 0;
 			left: 0;
-			background: #161616;
+			background: var(--darkgray2);
 			height: 40px;
 			width: 100%;
 			display: flex;
 			align-items: center;
-			/* box-shadow: 0 1px 10px #0000004d; */
 			z-index: 5;
 		}
 		
@@ -18,14 +17,13 @@ template.innerHTML = /*html*/`
 			width: 40px;
 			max-width: 300px;
 			height: 100%;
-			background: #101010;
+			background: var(--darkgray1);
 			display: flex;
 			align-items: center;
 			justify-content: flex-end;
 			padding: 0 4px;
 			box-sizing: border-box;
 			transition: .4s;
-			/* box-shadow: 0 0 5px #0000004d; */
 		}
 		
 		#menuBt {
@@ -45,7 +43,7 @@ template.innerHTML = /*html*/`
 			width: 100%;
 			transform-origin: center;
 			transition: 0.8s;
-			stroke: #bdbdbd;
+			stroke: var(--gray3);
 		}
 
 		#titleSpan {
@@ -55,7 +53,7 @@ template.innerHTML = /*html*/`
 		}
 
 		#menu {
-			background: linear-gradient(315deg, #202020, #101010);
+			background: linear-gradient(315deg, var(--darkgray3), var(--darkgray1));
 			position: fixed;
 			top: 0;
 			left: -310px;
@@ -67,7 +65,7 @@ template.innerHTML = /*html*/`
 			z-index: 4;
 			transition: .2s;
 			user-select: none;
-			border-right: 1px solid #101010 !important;
+			border-right: 1px solid var(--darkgray1) !important;
 			display: flex;
 			flex-direction: column;
 		}
@@ -76,7 +74,7 @@ template.innerHTML = /*html*/`
 			position: relative;
 			padding: 8px;
 			box-sizing: border-box;
-			background: linear-gradient(to top, #252525, #202020);
+			background: linear-gradient(to top, #252525, var(--darkgray3));
 			border: none;
 			margin: 0 0 2px;
 			cursor: pointer;
@@ -108,7 +106,7 @@ template.innerHTML = /*html*/`
 			width: 2px;
 			height: 16px;
 			border-radius: 0 50% 50% 0;
-			background: #0099ff;
+			background: var(--blue);
 		}
 
 		#shadow {
