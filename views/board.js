@@ -10,6 +10,8 @@ export default class Board extends HTMLElement {
     
     const h1 = shadow.appendChild(document.createElement('h1'))
     h1.innerText = 'Quadro'
+
+		runZion(this)
   }
 }
 

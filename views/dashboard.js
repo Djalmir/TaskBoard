@@ -10,6 +10,8 @@ export default class Dashboard extends HTMLElement {
     
     const h1 = shadow.appendChild(document.createElement('h1'))
     h1.innerText = 'Dashboard'
+
+		runZion(this)
   }
 }
 

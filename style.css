@@ -2,20 +2,62 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400&display=swap');
 
 :root {
-	--appBackground: linear-gradient(45deg, #101010, #202020);
+	--darkgray1: #101010;
+	--darkgray2: #161616;
+	--darkgray3: #202020;
+	--darkgray4: #303030;
+	--gray1: #404040;
+	--gray2: #505050;
+	--gray3: #bdbdbd;
+	--gray4:#ccc;
+	--white: #FFFFF1;
+	--blue: #0099FF;
+	--darkblue: #003366;
+	--green: #C2FF7C;
+	--yellow: #F5FF67;
+	--orange: #FF954E;
+	--red: #FF5555;
 }
 
 html, body {
-	color: #ddd;
+	color: var(--gray4);
 	margin: 0;
 	padding: 0;
 	-webkit-tap-highlight-color: transparent;
 	font-family: 'Roboto', sans-serif;
-	background: #101010;
+	background: var(--darkgray1);
 }
 
 #app {
 	position: absolute;
 	inset: 40px 0 0;
-	background: var(--appBackground);
+	background: var(--darkgray3);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-size: 16px;
+}
+
+button{
+	font-weight: bold;
+	transition: .1s;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	opacity: .8;
+	transform-origin: center;
+	border-radius: .2rem;
+	padding: 8px;
+}
+
+button:hover{
+	opacity: 1;
+}
+
+button:active{
+	opacity: .6;
+	transform: scale(.98);
+}
+
+.blueBt {
+	background: var(--blue);
 }

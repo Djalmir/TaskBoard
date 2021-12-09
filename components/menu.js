@@ -40,14 +40,6 @@ template.innerHTML = /*html*/`
 			cursor: pointer;
 			transition: .1s;
 		}
-
-		#menuBt:hover {
-			transform: scale(1.1);
-		}
-
-		#menuBt:active {
-			transform: scale(.9);
-		}
 		
 		#menuSVG {
 			width: 100%;
@@ -133,10 +125,11 @@ template.innerHTML = /*html*/`
 			display: block;
 		}
 	</style>
+	<link rel="stylesheet" href="style.css">
 
 	<header id='header'>
 		<div id='menuBtContainer'>
-			<button id='menuBt' @click='showMenu'>
+			<button id='menuBt' z-on:click='showMenu'>
 				<svg id = "menuSVG" viewBox = "0 0 32 32" >
 					<g style="stroke-width:6; stroke-linecap:round; stroke=red;">
 						<line x1="3" y1="3" x2="29" y2="3">
@@ -166,10 +159,10 @@ template.innerHTML = /*html*/`
 		<a href='#/board'>Board</a>
 	</nav>
 
-	<div id='shadow' z-on:click='showMenu'></div>
+	<div id='shadow' @click='showMenu'></div>
 `
 
-class Menu extends HTMLElement {
+export default class Menu extends HTMLElement {
 	constructor() {
 		super()
 		this.attachShadow({mode: 'open'})
@@ -232,11 +225,11 @@ class Menu extends HTMLElement {
 			activeLink.classList.add('active')
 		}
 
+		runZion(this)
 	}
 
 	connectedCallback() {
 		this.shadowRoot.querySelector('#titleSpan').innerText = this.getAttribute('titleSpan')
-		setOnClicks(this)
 	}
 
 

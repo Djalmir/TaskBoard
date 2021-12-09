@@ -10,6 +10,8 @@ export default class Signup extends HTMLElement {
     
     const h1 = shadow.appendChild(document.createElement('h1'))
     h1.innerText = 'Tela de Cadastro'
+
+		runZion(this)
   }
 }
 

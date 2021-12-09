@@ -3,6 +3,7 @@ import Signup from './views/signup.js'
 import Dashboard from './views/dashboard.js'
 import Board from './views/board.js'
 
+import Menu from './components/menu.js'
 import TextInput from './components/textInput.js'
 
 const routes = {
@@ -18,7 +19,7 @@ function onRouteChanged() {
 	if (!(app instanceof HTMLElement)) {
 		throw new ReferenceError('No router view element available for rendering')
 	}
-  const view = new routes[hash]()
+	const view = new routes[hash]()
 	app.innerHTML = ''
 	app.appendChild(view)
 
@@ -33,5 +34,4 @@ if (!window.location.hash)
 	window.location.hash = '#/'
 
 onRouteChanged()
-
 window.addEventListener('hashchange', onRouteChanged)
