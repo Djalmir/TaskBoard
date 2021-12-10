@@ -42,10 +42,15 @@ template.innerHTML = /*html*/`
 		#menuSVG {
 			width: 100%;
 			transform-origin: center;
-			transition: 0.8s;
+			transition: transform 0.8s, stroke .2s;
 			stroke: var(--gray3);
 		}
 
+		#menuBt:hover #menuSVG,
+		#menuBt:focus #menuSVG{
+			stroke: var(--gray4);
+		}
+				
 		#titleSpan {
 			margin: 0 10px;
 			font-weight:bold;
@@ -83,7 +88,8 @@ template.innerHTML = /*html*/`
 			color: #ddd;
 		}
 		
-		#menu a:hover {
+		#menu a:hover,
+		#menu a:focus {
 			opacity: 1;
 		}
 		
@@ -129,7 +135,7 @@ template.innerHTML = /*html*/`
 		<div id='menuBtContainer'>
 			<button id='menuBt' z-on:click='showMenu'>
 				<svg id = "menuSVG" viewBox = "0 0 32 32" >
-					<g style="stroke-width:6; stroke-linecap:round; stroke=red;">
+					<g style="stroke-width:6; stroke-linecap:round;">
 						<line x1="3" y1="3" x2="29" y2="3">
 							<animate class="showAnimation" attributeType="XML" attributeName="x1" begin="indefinite" from="3" to="18" dur=".4s" fill="freeze" />
 							<animate class="showAnimation" attributeType="XML" attributeName="y2" begin="indefinite" from="3" to="13" dur=".4s" fill="freeze" />
@@ -181,7 +187,7 @@ export default class Menu extends HTMLElement {
 				shadowDiv.style.transform = 'scale(1)'
 				shadowDiv.style.opacity = '1'
 				menuBtContainer.style.width = '300px'
-				menuSVG.style.stroke = '#7d7d7d'
+				// menuSVG.style.stroke = '#7d7d7d'
 				menu.style.left = '0'
 
 				// shadow.addEventListener('transitionend', btToArrow)
@@ -197,7 +203,7 @@ export default class Menu extends HTMLElement {
 				shadowDiv.style.opacity = '0'
 				shadowDiv.addEventListener('transitionend', this.removeShadow)
 				menuBtContainer.style.width = '40px'
-				menuSVG.style.stroke = '#bdbdbd'
+				// menuSVG.style.stroke = '#bdbdbd'
 				menu.style.left = '-310px'
 
 				// shadow.addEventListener('transitionend', arrowToBt)

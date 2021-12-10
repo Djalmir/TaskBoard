@@ -37,14 +37,14 @@ template.innerHTML = /*html*/`
 		}
 	</style>
 
-	<section>
-		<form action='#' @submit='submit' autocomplete='off'>
-			<c-input type='email' placeholder='E-mail' z-model='email'></c-input>
-			<c-input type='password' placeholder='Senha' z-model='password'></c-input>
+	<section>			<!--javascript:void(0) faz com que o form não tenha nenhuma action-->
+		<form action='javascript:void(0)' @submit='submit' autocomplete='off'>
+			<c-input type='email' placeholder='E-mail' z-model='email' @keydown='keydown'></c-input>
+			<c-input type='text' placeholder='Senha' z-model='password'></c-input>
 			<button type='submit' class='blueBt'>Entrar</button>
 		</form>
-		<button @click='get'>Ver Valores</button>
-		<button @click='set'>Setar email</button>
+		<!-- <button @click='setEmail'>setar email</button>
+		<button @click='setPassword'>setar senha</button> -->
 	</section>
 `
 
@@ -54,22 +54,37 @@ export default class Login extends HTMLElement {
 		this.attachShadow({mode: 'open'})
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 
-		this.data = {
-			email: '',
-			password: ''
-		}
+		//DATA
+		this.email = ''
+		this.password = ''
 
 		this.submit = () => {
-			console.log('lol')
+			if (this.email.trim() == ''){
+				console.log('lol')
+				errorMsg.show('Informe seu email')
+			}
+			else if (this.password.trim() == ''){
+				console.log('oto lol')
+				errorMsg.show('Digite sua senha')
+			}
+			else {
+				console.log('lolzera')
+				errorMsg.show('Show só chamar a api')
+			}
 			return false
 		}
 
-		this.get = () => {
-			console.log('data: ',this.data)
+		this.setEmail = () => {
+			this.email = 'email_de_teste@hotmail.com'
 		}
 
-		this.set = () => {
-			this.data.email = 'djalmir_miodutzki@hotmail.com'
+		this.setPassword = () =>{
+			this.password = '123456'
+		}
+
+		this.keydown = (e) => {
+			if(e.key=='Enter')
+				this.submit()
 		}
 
 		runZion(this)

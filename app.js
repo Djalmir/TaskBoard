@@ -4,6 +4,7 @@ import Dashboard from './views/dashboard.js'
 import Board from './views/board.js'
 
 import Menu from './components/menu.js'
+import ErrorMsgs from './components/errorMsgs.js'
 import TextInput from './components/textInput.js'
 
 const routes = {
