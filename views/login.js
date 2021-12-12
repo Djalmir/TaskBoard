@@ -41,6 +41,10 @@ template.innerHTML = /*html*/`
 			<c-input type='password' placeholder='Senha' z-model='password'></c-input>
 			<button type='submit' class='blueBt'>Entrar</button>
 		</form>
+
+		<button @click='setEmail'>setar email</button>
+		<button @click='setPassword'>setar senha</button>
+
 		<p z-for='text in texts' style='color:red'>
 			Opa esse é o {{text.msg}}.<br>
 			Ele foi escrito em {{text.date}}
@@ -68,10 +72,7 @@ template.innerHTML = /*html*/`
 			{{text.msg}}
 		</p>
 
-		
-		
-		<button @click='setEmail'>setar email</button>
-		<button @click='setPassword'>setar senha</button>
+		<c-input z-for="text in texts" type="text" placeholder="teste" style="margin-bottom:10px;"></c-input>
 
 	</section>
 `

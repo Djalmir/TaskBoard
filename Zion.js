@@ -137,18 +137,23 @@ const runZion = (el) => {
 								el[attrs[1]].map((nick, index) => {
 									//SETAR OS ATRIBUTOS DA CHILD NA TAG
 									let tag = child.parentElement.insertBefore(document.createElement(child.tagName), child)
+									Array.from(child.attributes).map((attr) => {
+										if (attr.nodeName != 'z-for')
+											tag.setAttribute(attr.nodeName, attr.nodeValue)
+									})
 									tag.innerHTML = child.innerHTML
 
-									matches.map((match, i) => {
-										let clearMatch = match.replace(/[{}]/g, '')
-										if (clearMatch.includes('.')) {
-											clearMatch = clearMatch.split('.')
-											if (clearMatch[0] == attrs[0])
-												clearMatch = clearMatch[1]
-										}
-										if (nick[clearMatch])
-											tag.innerHTML = tag.innerHTML.replace(match, nick[clearMatch])
-									})
+									if (matches)
+										matches.map((match, i) => {
+											let clearMatch = match.replace(/[{}]/g, '')
+											if (clearMatch.includes('.')) {
+												clearMatch = clearMatch.split('.')
+												if (clearMatch[0] == attrs[0])
+													clearMatch = clearMatch[1]
+											}
+											if (nick[clearMatch])
+												tag.innerHTML = tag.innerHTML.replace(match, nick[clearMatch])
+										})
 
 									//NÃO ESTÁ FUNCIONANDO MAIS DE UM ANINHAMENTO.
 									//TAMBÉM NÃO ESTÁ FUNCIONANDO DOIS IRMÃOS Z-FOR FILHOR DE OUTRO Z-FOR
