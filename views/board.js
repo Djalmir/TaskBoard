@@ -1,18 +1,21 @@
+const template = document.createElement('template')
+template.innerHTML = /*html*/`
+<style>
+
+</style>
+<link rel="stylesheet" href="style.css">
+
+<h1>Quadro</h1>
+`
+
 export default class Board extends HTMLElement {
   constructor(){
     super()
-    const shadow = this.attachShadow({mode:'open'})
-    
-    const style = shadow.appendChild(document.createElement('style'))
-    style.textContent = `
-    
-    `
-    
-    const h1 = shadow.appendChild(document.createElement('h1'))
-    h1.innerText = 'Quadro'
+    this.attachShadow({mode:'open'})
+		this.shadowRoot.appendChild(template.content.cloneNode(true))
 
 		runZion(this)
   }
 }
 
-customElements.define('v-board', Board)
+customElements.define('view-board', Board)

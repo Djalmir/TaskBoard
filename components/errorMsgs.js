@@ -5,7 +5,7 @@ export default class ErrorMsgs extends HTMLElement {
 		const shadow = this.attachShadow({mode: 'open'})
 
 		const style = shadow.appendChild(document.createElement('style'))
-		style.textContent = `
+		style.textContent = /*css*/`
 			#errorMsgsContainer {
 				position: fixed;
 				top: 0;
@@ -20,7 +20,7 @@ export default class ErrorMsgs extends HTMLElement {
 
 			.errorMsg {
 				box-sizing: border-box;
-				background: #dd1212;
+				background: var(--darkgray3);
 				display: flex;
 				align-items: center;
 				gap: 15px;
@@ -28,31 +28,30 @@ export default class ErrorMsgs extends HTMLElement {
 				box-sizing: border-box;
 				transition: .2s;
 				border-radius: .2rem;
-				border-left: 1px solid #bdbdbd;
-				border-top: 1px solid #bdbdbd;
-				border-right: 1px solid #404040;
-				border-bottom: 1px solid #404040;
+				border-left: 1px solid var(--gray1);
+				border-top: 1px solid var(--gray1);
+				border-right: 1px solid var(--darkgray2);
+				border-bottom: 1px solid var(--darkgray2);
 			}
 			
 			.errorMsgText {
 				flex: 1;
 				font-weight: bolder;
-				color: #ddd;
+				color: var(--red);
 			}
 			
 			.closeErrorBtn {
 				width: 32px;
 				height: 32px;
-				border-radius: 50%;
-				background: radial-gradient(#0000008d, transparent 60%);
-				color: #bdbdbd;
+				border-radius: 30%;
+				background: transparent;
 				cursor: pointer;
 				display: flex;
 				align-items: center;
-				border-left: 1px solid #bdbdbd;
-				border-top: 1px solid #bdbdbd;
-				border-right: 1px solid #404040;
-				border-bottom: 1px solid #404040;
+				border-left: 1px solid var(--gray1);
+				border-top: 1px solid var(--gray1);
+				border-right: 1px solid var(--darkgray2);
+				border-bottom: 1px solid var(--darkgray2);
 				transition: .2s;
 			}
 
@@ -63,10 +62,16 @@ export default class ErrorMsgs extends HTMLElement {
 
 			.closeErrorBtn:active {
 				transform scale(.98);
-				border-left: 1px solid #404040;
-				border-top: 1px solid #404040;
-				border-right: 1px solid #bdbdbd;
-				border-bottom: 1px solid #bdbdbd;
+				border-left: 1px solid var(--darkgray2);
+				border-top: 1px solid var(--darkgray2);
+				border-right: 1px solid var(--gray1);
+				border-bottom: 1px solid var(--gray1);
+			}
+
+			.closeErrorBtn svg {
+				stroke: var(--red);
+				stroke-width: 3;
+				stroke-linecap: round;
 			}
 
 			@keyframes show {
@@ -111,8 +116,8 @@ export default class ErrorMsgs extends HTMLElement {
 			closeErrorBtn.onclick = () => {errorMsg.closeMsg()}
 			closeErrorBtn.innerHTML = `
 				<svg viewBox="0 0 20 20">
-					<line x1="5" y1="5" x2="15" y2="15" stroke="white" stroke-width="4" stroke-linecap="round" />
-					<line x1="5" y1="15" x2="15" y2="5" stroke="white" stroke-width="4" stroke-linecap="round" />
+					<line x1="5" y1="5" x2="15" y2="15" />
+					<line x1="5" y1="15" x2="15" y2="5" />
 				</svg>
 			`
 

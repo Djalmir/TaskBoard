@@ -239,4 +239,4 @@ export default class Menu extends HTMLElement {
 
 }
 
-customElements.define('c-menu', Menu)
+customElements.define('z-menu', Menu)

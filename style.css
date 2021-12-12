@@ -9,14 +9,43 @@
 	--gray1: #404040;
 	--gray2: #505050;
 	--gray3: #bdbdbd;
-	--gray4:#ccc;
+	--gray4: #ccc;
 	--white: #FFFFF1;
 	--blue: #0099FF;
-	--darkblue: #003366;
+	--darkblue1: #003366;
+	--darkblue2: #006699;
 	--green: #C2FF7C;
 	--yellow: #F5FF67;
 	--orange: #FF954E;
 	--red: #FF5555;
+}
+
+::-webkit-scrollbar {
+	background: transparent;
+	width: 5px;
+	height: 5px;
+}
+
+::-webkit-scrollbar-track {
+	background: var(--darkgray1);
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--gray1);
+	box-shadow: inset 0px 0px 5px #00000080;
+}
+
+::-webkit-scrollbar-thumb:hover{
+	background: var(--darkblue2);
+}
+
+::-webkit-scrollbar-thumb:active{
+	background: var(--darkblue1)
+}
+
+::selection {
+	background: var(--orange);
+	color: var(--darkgray2);
 }
 
 html, body {
@@ -25,19 +54,18 @@ html, body {
 	padding: 0;
 	-webkit-tap-highlight-color: transparent;
 	font-family: 'Roboto', sans-serif;
-	background: var(--darkgray1);
+	background: var(--darkgray3);
 }
 
 #app {
 	position: absolute;
 	inset: 40px 0 0;
-	background: var(--darkgray3);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	font-size: 16px;
 }
 
-button{
+button {
 	font-weight: bold;
 	transition: .1s;
 	border: none;
@@ -54,7 +82,7 @@ button:focus {
 	opacity: 1;
 }
 
-button:active{
+button:active {
 	opacity: .6;
 	transform: scale(.98);
 }
@@ -62,3 +90,4 @@ button:active{
 .blueBt {
 	background: var(--blue);
 }
+

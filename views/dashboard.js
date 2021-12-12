@@ -1,18 +1,23 @@
+const template = document.createElement('template')
+template.innerHTML = /*html*/`
+<style>
+	h1{
+		border-bottom: 2px dashed var(--gray3)
+	}
+</style>
+<link rel="stylesheet" href="style.css">
+
+<h1>Dashboard</h1>
+`
+
 export default class Dashboard extends HTMLElement {
   constructor(){
     super()
-    const shadow = this.attachShadow({mode:'open'})
-    
-    const style = shadow.appendChild(document.createElement('style'))
-    style.textContent = `
-    
-    `
-    
-    const h1 = shadow.appendChild(document.createElement('h1'))
-    h1.innerText = 'Dashboard'
+    this.attachShadow({mode:'open'})
+    this.shadowRoot.appendChild(template.content.cloneNode(true))
 
 		runZion(this)
   }
 }
 
-customElements.define('v-dashboard', Dashboard)
+customElements.define('view-dashboard', Dashboard)

@@ -55,6 +55,7 @@ template.innerHTML = /*html*/`
 		box-shadow: inset 0 0 5px #0000004d;
 	}
 </style>
+<link rel="stylesheet" href="style.css">
 
 <span id='span'>
 	<input type='text' id='input' @focus='setActiveClass' @blur='removeActiveClass'/>

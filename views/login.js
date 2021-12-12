@@ -3,12 +3,10 @@ template.innerHTML = /*html*/`
 	<link rel="stylesheet" href="style.css">
 	<style>
 		section{
-			position: absolute;
-			inset: 0;
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-			padding-top: 40px;
+			padding: 40px 0;
 		}
 
 		form {
@@ -40,11 +38,41 @@ template.innerHTML = /*html*/`
 	<section>			<!--javascript:void(0) faz com que o form não tenha nenhuma action-->
 		<form action='javascript:void(0)' @submit='submit' autocomplete='off'>
 			<c-input type='email' placeholder='E-mail' z-model='email' @keydown='keydown'></c-input>
-			<c-input type='text' placeholder='Senha' z-model='password'></c-input>
+			<c-input type='password' placeholder='Senha' z-model='password'></c-input>
 			<button type='submit' class='blueBt'>Entrar</button>
 		</form>
-		<!-- <button @click='setEmail'>setar email</button>
-		<button @click='setPassword'>setar senha</button> -->
+		<p z-for='text in texts' style='color:red'>
+			Opa esse é o {{text.msg}}.<br>
+			Ele foi escrito em {{text.date}}
+		</p>
+		
+		<hr style='width:100%; opacity:.1; margin-top: 50px;'/>
+		
+		<ul z-for='box in boxes'>
+			<b>{{box.name}}</b>
+			<li z-for='fruit in box.fruits'>{{fruit}}</li>
+		</ul>
+		
+		<p z-for='text in texts'>
+			{{text.msg}}
+		</p>
+
+		<ul z-for='box in boxes'>
+			<b>{{box.name}}</b>
+			<li z-for='fruit in box.fruits'>
+				{{fruit}}
+			</li>
+		</ul>
+		<p z-for='text in texts'>
+			Olha só o testezinho do piá!<br/>
+			{{text.msg}}
+		</p>
+
+		
+		
+		<button @click='setEmail'>setar email</button>
+		<button @click='setPassword'>setar senha</button>
+
 	</section>
 `
 
@@ -57,13 +85,45 @@ export default class Login extends HTMLElement {
 		//DATA
 		this.email = ''
 		this.password = ''
+		this.texts = [
+			{
+				msg: 'texto 1',
+				date: '10/12/2021'
+			},
+			{
+				msg: 'texto 2',
+				date: '11/12/2021'
+			},
+			{
+				msg: 'texto 3',
+				date: '12/12/2021'
+			}
+		]
+		this.boxes = [
+			{
+				name: 'Frutas Grandes',
+				fruits: [
+					'Melancia',
+					'Melão',
+					'Jaca'
+				]
+			},
+			{
+				name: 'Frutas Pequenas',
+				fruits: [
+					'Uva',
+					'Morango',
+					'Banana'
+				]
+			}
+		]
 
 		this.submit = () => {
-			if (this.email.trim() == ''){
+			if (this.email.trim() == '') {
 				console.log('lol')
 				errorMsg.show('Informe seu email')
 			}
-			else if (this.password.trim() == ''){
+			else if (this.password.trim() == '') {
 				console.log('oto lol')
 				errorMsg.show('Digite sua senha')
 			}
@@ -78,12 +138,12 @@ export default class Login extends HTMLElement {
 			this.email = 'email_de_teste@hotmail.com'
 		}
 
-		this.setPassword = () =>{
+		this.setPassword = () => {
 			this.password = '123456'
 		}
 
 		this.keydown = (e) => {
-			if(e.key=='Enter')
+			if (e.key == 'Enter')
 				this.submit()
 		}
 
@@ -91,4 +151,4 @@ export default class Login extends HTMLElement {
 	}
 }
 
-customElements.define('v-login', Login)
+customElements.define('view-login', Login)
