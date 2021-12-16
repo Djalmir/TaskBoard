@@ -14,11 +14,31 @@ const zionAttributes = [
 	'z-model', 'z-for'
 ]
 
-const runZion = (el) => {
+const runZion = async (el) => {
 	let inShadow = false
 	let zForHistory = []
 	let child = Array.from(el.shadowRoot.children)[0]
+
 	const nextChild = async () => {
+
+		let matches = child.innerHTML.match(/{{.+?}}/g)
+		if (matches) {
+			// console.log(matches)
+			matches.forEach((match) => {
+				let clearMatch = match.replace(/[{}]/g, '')
+				let elArr = Array.from(el.shadowRoot.children)
+				let lastChildChildren = elArr[elArr.length - 1].children
+				if (el[clearMatch])
+					child.innerHTML = child.innerHTML.replace(match, el[clearMatch])
+				else {
+					try {
+						child.innerHTML = child.innerHTML.replace(match, eval(clearMatch))
+					}
+					catch {}
+				}
+			})
+		}
+
 		zionAttributes.map(async (attr) => {
 			let funcName = child.getAttribute(attr)
 			if (funcName) {
@@ -133,9 +153,21 @@ const runZion = (el) => {
 							let attrs = child.getAttribute('z-for').split(' in ')
 							let matches = child.innerHTML.match(/{{.+?}}/g)
 
+							if (Number(attrs[1])) {
+								el['temp'] = Array.from({length: Number(attrs[1])}, (v, i) => i)
+								attrs[1] = 'temp'
+							}
+
 							if (el[attrs[1]]) {
 								el[attrs[1]].map((nick, index) => {
-									//SETAR OS ATRIBUTOS DA CHILD NA TAG
+
+									if (!zForHistory.find(z => z.comp == nick)) {
+										zForHistory.push({
+											label: attrs[0],
+											comp: nick
+										})
+									}
+
 									let tag = child.parentElement.insertBefore(document.createElement(child.tagName), child)
 									Array.from(child.attributes).map((attr) => {
 										if (attr.nodeName != 'z-for')
@@ -155,42 +187,57 @@ const runZion = (el) => {
 												tag.innerHTML = tag.innerHTML.replace(match, nick[clearMatch])
 										})
 
-									//NÃO ESTÁ FUNCIONANDO MAIS DE UM ANINHAMENTO.
-									//TAMBÉM NÃO ESTÁ FUNCIONANDO DOIS IRMÃOS Z-FOR FILHOR DE OUTRO Z-FOR
-									while (tag.innerHTML.includes(`z-for`)) {
-										let newChild = Array.from(tag.children).find(c => c.getAttribute('z-for'))
-										let newAttrs = newChild.getAttribute('z-for').split(' in ')
-										let newMatches = newChild.innerHTML.match(/{{.+?}}/g)
-										let aux = newAttrs[1].split('.')
+									if (tag.innerHTML.includes(`z-for`)) {
+										let tagsArr = Array.from(tag.children).filter(t => t.getAttribute('z-for'))
+										tagsArr.forEach((newChild) => {
+											let newAttrs = newChild.getAttribute('z-for').split(' in ')
+											let newMatches = newChild.innerHTML.match(/{{.+?}}/g)
+											let aux = newAttrs[1].split('.')
 
-										if (aux.length > 1)
-											newAttrs[1] = nick[aux[1]]
-										else
-											newAttrs[1] = el[aux]
+											if (aux.length > 1)
+												newAttrs[1] = nick[aux[1]]
+											else
+												newAttrs[1] = el[aux]
 
-										newAttrs[1].map((newNick, i) => {
-											tag = newChild.parentElement.insertBefore(document.createElement(newChild.tagName), newChild)
-											tag.innerHTML = newChild.innerHTML
-											if (newMatches)
-												newMatches.map((match, o) => {
-													let newClearMatch = match.replace(/[{}]/g, '')
-													if (newClearMatch.includes('.')) {
-														newClearMatch = newClearMatch.split('.')
-														if (newClearMatch[0] == newAttrs[0])
-															newClearMatch = newClearMatch[1]
-													}
-													if (newNick[newClearMatch])
-														tag.innerHTML = tag.innerHTML.replace(match, newNick[newClearMatch])
-													else {
-														tag.innerHTML = tag.innerHTML.replace(match, newNick)
-													}
-												})
+											newAttrs[1].map((newNick, i) => {
+												tag = newChild.parentElement.insertBefore(document.createElement(newChild.tagName), newChild)
+												tag.innerHTML = newChild.innerHTML
+												if (newMatches) {
+													newMatches.map((match, o) => {
+														let newClearMatch = match.replace(/[{}]/g, '')
+														if (newClearMatch.includes('.')) {
+															newClearMatch = newClearMatch.split('.')
+															if (newClearMatch[0] == newAttrs[0])
+																newClearMatch = newClearMatch[1]
+														}
+														if (newNick[newClearMatch]) {
+															tag.innerHTML = tag.innerHTML.replace(match, newNick[newClearMatch])
+														}
+														else {
+															if (Array.isArray(newClearMatch)) {
+																let z = Array.from(tag.children).find(c => c.getAttribute('z-for'))
+																if (z) {
+																	setZfor(z)
+																}
+															}
+															else
+																tag.innerHTML = tag.innerHTML.replace(match, newNick)
+
+														}
+													})
+												}
+											})
+											// newChild.style.display = 'none'
+											if (child.getAttribute('z-for'))
+												child.parentElement.removeChild(child)
 										})
-										newChild.style.display = 'none'
 									}
 								})
 							}
-							child.style.display = 'none'
+
+							// child.style.display = 'none'
+							if (child.getAttribute('z-for'))
+								child.parentElement.removeChild(child)
 						}
 						setZfor(child)
 						break
@@ -228,5 +275,5 @@ const runZion = (el) => {
 		if (child)
 			nextChild()
 	}
-	nextChild()
+	await nextChild()
 }

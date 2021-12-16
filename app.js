@@ -1,3 +1,4 @@
+import Home from './views/home.js'
 import Login from './views/login.js'
 import Signup from './views/signup.js'
 import Dashboard from './views/dashboard.js'
@@ -8,7 +9,8 @@ import ErrorMsgs from './components/errorMsgs.js'
 import TextInput from './components/textInput.js'
 
 const routes = {
-	'#/': Login,
+	'#/': Home,
+	'#/login': Login,
 	'#/signup': Signup,
 	'#/dashboard': Dashboard,
 	'#/board': Board
@@ -24,7 +26,7 @@ function onRouteChanged() {
 	app.innerHTML = ''
 	app.appendChild(view)
 
-	appMenu.titleSpan.innerText = hash.replace('#', '').replace('/', '') || 'Login'
+	appMenu.titleSpan.innerText = hash.replace('#', '').replace('/', '') || 'Home'
 	appMenu.updateActiveLink(hash)
 
 	if (appMenu.showingMenu)
