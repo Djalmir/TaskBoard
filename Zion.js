@@ -26,11 +26,14 @@ const runZion = async (el) => {
 			// console.log(matches)
 			matches.forEach((match) => {
 				let clearMatch = match.replace(/[{}]/g, '')
-				let elArr = Array.from(el.shadowRoot.children)
-				let lastChildChildren = elArr[elArr.length - 1].children
-				if (el[clearMatch])
+				// let elArr = Array.from(el.shadowRoot.children)
+				// console.log(elArr)
+				// let lastChildChildren = elArr[elArr.length - 1].children
+				// console.log(lastChildChildren)
+				if (el[clearMatch]){
 					child.innerHTML = child.innerHTML.replace(match, el[clearMatch])
-				else {
+				}
+				else {					
 					try {
 						child.innerHTML = child.innerHTML.replace(match, eval(clearMatch))
 					}
