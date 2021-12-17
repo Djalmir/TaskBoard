@@ -95,13 +95,25 @@ export default class ErrorMsgs extends HTMLElement {
 			}
 		`
 
+		this.errors = []
+		this.foundError = null
 		const wrapper = shadow.appendChild(document.createElement('div'))
 		wrapper.id = 'errorMsgsContainer'
 
+		this.getMessages = () => {
+			if (wrapper.children) {
+				return Array.from(wrapper.children)
+			}
+			return false
+		}
+
 		this.show = (error) => {
-			const existingMsg = Array.from(wrapper.children).find(msg => msg.firstChild.textContent == error)
-			if (existingMsg)
+
+			const existingMsg = Array.from(wrapper.children).find(msg => msg.firstChild.textContent == error.message)
+			if (existingMsg) {
+				this.foundError = existingMsg
 				existingMsg.closeMsg()
+			}
 
 
 			const errorMsg = wrapper.insertBefore(document.createElement('div'), wrapper.children[0])
@@ -109,7 +121,7 @@ export default class ErrorMsgs extends HTMLElement {
 
 			const errorMsgText = errorMsg.appendChild(document.createElement('span'))
 			errorMsgText.classList.add('errorMsgText')
-			errorMsgText.textContent = error
+			errorMsgText.textContent = error.message
 
 			const closeErrorBtn = errorMsg.appendChild(document.createElement('button'))
 			closeErrorBtn.classList.add('closeErrorBtn')
@@ -131,6 +143,12 @@ export default class ErrorMsgs extends HTMLElement {
 			const removeMsg = () => {
 				wrapper.removeEventListener('animationend', removeMsg)
 				wrapper.removeChild(errorMsg)
+			}
+
+			if (this.foundError) {
+				//trocar o erro existente igual ao novo, pelo novo... Ou seja, atualizar o vetor de erros
+				//depois quero poder remover o erro ao clicar no campo. Já estou passando o field na home.js
+				console.log('foundError: ', this.foundError)
 			}
 		}
 

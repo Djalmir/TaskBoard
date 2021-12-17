@@ -10,14 +10,36 @@ template.innerHTML = /*html*/`
 	}
 
 	#formsWrapper {
+		margin: 0;
+		padding: 0;
 		width: 100%;
-		overflow: auto;
+		overflow: hidden;
 	}
 
 	#formsContainer {
+		padding: 0;
+		margin: 0;
 		display: flex;
+		align-items: flex-start;
 		justify-content: space-evenly;
 		width: 200%;
+	}
+
+	#formsContainer div {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.changeViewP {
+		text-align: center;
+	}
+
+	#formsContainer div u {
+		font-weight: bold;
+		cursor: pointer;
 	}
 
 	form {
@@ -46,23 +68,36 @@ template.innerHTML = /*html*/`
 	}
 </style>
 
-<section>	
-	<div id="formsWrapper">
-		<div id="formsContainer">
+<section>
+	<div id='formsWrapper'>
+		<div id='formsContainer'>
+			<div id='loginDiv'>
+				<h2>Login</h2>
+				<form id='loginForm' action='javascript:void(0)' @submit='login' autocomplete='off' @keydown='loginKeydown'>
+					<c-input type='email' placeholder='E-mail' z-model='loginEmail'></c-input>
+					<c-input type='password' placeholder='Senha' z-model='loginPassword'></c-input>
+					<button type='submit' class='blueBt'>Entrar</button>
+				</form>
+				<p class="changeViewP">
+					Ainda não tem uma conta?<br>
+					<u @click="changeView">Clique aqui</u> e cadastre-se gratuitamente!
+				</p>
+			</div>
 
-			<form id='loginForm' action='javascript:void(0)' @submit='login' autocomplete='off' @keydown='loginKeydown'>
-				<c-input type='email' placeholder='E-mail' z-model='loginEmail'></c-input>
-				<c-input type='password' placeholder='Senha' z-model='loginPassword'></c-input>
-				<button type='submit' class='blueBt'>Entrar</button>
-			</form>
-
-			<form id='signupForm' action='javascript:void(0)' @submit='signup' autocomplete='off' @keydown='signupKeydown'>
-				<c-input type='text' placeholder='Nome' z-model='signupName'></c-input>
-				<c-input type='email' placeholder='E-mail' z-model='signupEmail'></c-input>
-				<c-input type='password' placeholder='Senha' z-model='signupPassword'></c-input>
-				<c-input type='password' placeholder='Confirme sua Senha' z-model='signupConfirmPassword'></c-input>
-				<button type='submit' class='blueBt'>Cadastrar</button>
-			</form>
+			<div id='signupDiv'>
+			<h2>Cadastro</h2>
+				<form id='signupForm' action='javascript:void(0)' @submit='signup' autocomplete='off' @keydown='signupKeydown'>
+					<c-input type='text' placeholder='Nome' z-model='signupName'></c-input>
+					<c-input type='email' placeholder='E-mail' z-model='signupEmail'></c-input>
+					<c-input type='password' placeholder='Senha' z-model='signupPassword'></c-input>
+					<c-input type='password' placeholder='Confirme sua Senha' z-model='signupConfirmPassword'></c-input>
+					<button type='submit' class='blueBt'>Cadastrar</button>
+				</form>
+				<p class="changeViewP">
+					Já tem uma conta?<br>
+					<u @click="changeView">Clique aqui</u> para entrar!
+				</p>
+			</div>
 
 		</div>
 	</div>
@@ -83,6 +118,40 @@ export default class Home extends HTMLElement {
 		this.signupConfirmPassword = ''
 
 
+		this.currentView = 'loginDiv'
+		this.changeView = () => {
+			let wrapper = this.shadowRoot.querySelector('#formsWrapper')
+			window.scrollTo({top: wrapper.offsetTop, behavior: 'smooth'})
+			wrapper.style.scrollBehavior = 'smooth'
+			let loginDiv = this.shadowRoot.querySelector('#loginDiv')
+			let signupDiv = this.shadowRoot.querySelector('#signupDiv')
+			switch (this.currentView) {
+				case ('loginDiv'):
+					this.currentView = 'signupDiv'
+					wrapper.scrollLeft = signupDiv.offsetLeft
+					break
+				case ('signupDiv'):
+					this.currentView = 'loginDiv'
+					wrapper.scrollLeft = loginDiv.offsetLeft
+					break
+			}
+		}
+
+		this.keepOnView = () => {
+			let wrapper = this.shadowRoot.querySelector('#formsWrapper')
+			wrapper.style.scrollBehavior = 'auto'
+			let loginDiv = this.shadowRoot.querySelector('#loginDiv')
+			let signupDiv = this.shadowRoot.querySelector('#signupDiv')
+			switch (this.currentView) {
+				case ('loginDiv'):
+					wrapper.scrollLeft = loginDiv.offsetLeft
+					break
+				case ('signupDiv'):
+					wrapper.scrollLeft = signupDiv.offsetLeft
+					break
+			}
+		}
+
 		this.loginKeydown = (e) => {
 			if (e.key == 'Enter')
 				this.login()
@@ -90,12 +159,13 @@ export default class Home extends HTMLElement {
 
 		this.login = () => {
 			if (this.loginEmail.trim() == '') {
-				errorMsg.show('Informe seu email')
+				errorMsg.show({field: 'email', message: 'Informe seu email'})
 			}
-			else if (this.loginPassword.trim() == '') {
-				errorMsg.show('Digite sua senha')
+			if (this.loginPassword.trim() == '') {
+				errorMsg.show({field: 'password', message: 'Digite sua senha'})
 			}
-			else {
+			
+			if (!errorMsg.getMessages()) {
 				errorMsg.show('CHAMAR A API')
 			}
 		}
@@ -104,12 +174,11 @@ export default class Home extends HTMLElement {
 	}
 
 	connectedCallback() {
-		console.log('load')
-		let formsWrapper = this.shadowRoot.querySelector('#formsWrapper')
-		let loginForm = this.shadowRoot.querySelector('#loginForm')
-		console.log(loginForm.offsetLeft)
-		formsWrapper.scrollLeft = loginForm.offsetLeft
+		window.onresize = () => {
+			this.keepOnView()
+		}
 	}
+
 }
 
 customElements.define('view-home', Home)
