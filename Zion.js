@@ -14,6 +14,8 @@ const zionAttributes = [
 	'z-model', 'z-for'
 ]
 
+let childInShadow = false
+
 const runZion = async (el) => {
 	let inShadow = false
 	let zForHistory = []
@@ -30,10 +32,10 @@ const runZion = async (el) => {
 				// console.log(elArr)
 				// let lastChildChildren = elArr[elArr.length - 1].children
 				// console.log(lastChildChildren)
-				if (el[clearMatch]){
+				if (el[clearMatch]) {
 					child.innerHTML = child.innerHTML.replace(match, el[clearMatch])
 				}
-				else {					
+				else {
 					try {
 						child.innerHTML = child.innerHTML.replace(match, eval(clearMatch))
 					}
@@ -135,20 +137,23 @@ const runZion = async (el) => {
 							}
 						})
 
+
 						if (!this[funcName]) {
 							this[funcName] = el[funcName]
 							await updateChild(el[funcName])
 						}
 
-						Object.defineProperty(el, funcName, {
-							get: () => {
-								return this[funcName]
-							},
-							set: (value) => {
-								this[funcName] = value
-								updateChild(value)
-							}
-						})
+						if (this[funcName]) {
+							Object.defineProperty(el, funcName, {
+								get: () => {
+									return this[funcName]
+								},
+								set: (value) => {
+									this[funcName] = value
+									updateChild(value)
+								}
+							})
+						}
 						break
 
 					case ('z-for'):
@@ -246,11 +251,29 @@ const runZion = async (el) => {
 						break
 
 					default:
-						funcName = funcName.replace(/[()]/g, '')
-						let func = eval(el[funcName])
+
+						let params = funcName.match(/\(.+?\)/g)
+						if (params) {
+							params = params[0].replace(/[()]/g, '').split(',').map((i) => {return eval(i.trim())})
+						}
+						funcName = funcName.replace(/\(.+?\)/g, '')
+						let func
+						if (params) {
+							func = () => eval(el[funcName](...params))
+						}
+						else {
+							if (el[funcName])
+								func = eval(el[funcName])
+							else if (child[funcName])
+								func = eval(child[funcName])
+
+						}
 						let htmlAttr = 'on' + attr.split(/[:@]/g)[1]
-						child[htmlAttr] = (e) => {
-							func(e)
+
+						if (func) {
+							child[htmlAttr] = (e) => {
+								func(e)
+							}
 						}
 						break
 				}
@@ -259,8 +282,18 @@ const runZion = async (el) => {
 
 		if (child.children.length > 0)
 			child = child.children[0]
-		else if (child.shadowRoot)
+		else if (child.shadowRoot) {
+			if (child.nextElementSibling)
+				childInShadow = child.nextElementSibling
+			else if (child.parentElement != el.shadowRoot) {
+				while ((child.parentElement) && (!child == el.shadowRoot || !child.nextElementSibling))
+					childInShadow = child.parentElement
+
+				if (childInShadow.nextElementSibling)
+					childInShadow = childInShadow.nextElementSibling
+			}
 			child = Array.from(child.shadowRoot.children)[0]
+		}
 		else if (child.nextElementSibling)
 			child = child.nextElementSibling
 		else if (child.parentElement != el.shadowRoot) {
@@ -269,6 +302,10 @@ const runZion = async (el) => {
 
 			if (child.nextElementSibling)
 				child = child.nextElementSibling
+			else if (childInShadow) {
+				child = childInShadow
+				childInShadow = null
+			}
 			else
 				child = false
 		}
@@ -279,4 +316,129 @@ const runZion = async (el) => {
 			nextChild()
 	}
 	await nextChild()
+}
+
+
+const zGet = async (url, body, headers) => {
+	if (setLoading)
+		setLoading(true)
+	return new Promise((result, rej) => {
+		fetch(url, {
+			method: 'get',
+			headers: headers ? {
+				...headers,
+				'Content-Type': 'application/json'
+			} : {
+				'Content-Type': 'application/json'
+			},
+			body: body ? JSON.stringify(body) : null
+		})
+			.then(res => {
+				return (res.json())
+			})
+			.then(res => {
+				if (res.error) {
+					rej(res)
+				}
+				else {
+					result(res)
+				}
+				
+				if (setLoading)
+					setLoading(false)
+			})
+	})
+}
+
+const zPost = async (url, body, headers) => {
+	if (setLoading)
+		setLoading(true)
+	return new Promise((result, rej) => {
+		fetch(url, {
+			method: 'post',
+			headers: headers ? {
+				...headers,
+				'Content-Type': 'application/json'
+			} : {
+				'Content-Type': 'application/json'
+			},
+			body: body ? JSON.stringify(body) : null
+		})
+			.then(res => {
+				return (res.json())
+			})
+			.then(res => {
+				if (res.error) {
+					rej(res)
+				}
+				else {
+					result(res)
+				}
+
+				if (setLoading)
+					setLoading(false)
+			})
+	})
+}
+
+const zPut = async (url, body, headers) => {
+	if (setLoading)
+		setLoading(true)
+	return new Promise((result, rej) => {
+		fetch(url, {
+			method: 'put',
+			headers: headers ? {
+				...headers,
+				'Content-Type': 'application/json'
+			} : {
+				'Content-Type': 'application/json'
+			},
+			body: body ? JSON.stringify(body) : null
+		})
+			.then(res => {
+				return (res.json())
+			})
+			.then(res => {
+				if (res.error) {
+					rej(res)
+				}
+				else {
+					result(res)
+				}
+
+				if (setLoading)
+					setLoading(false)
+			})
+	})
+}
+
+const zDelete = async (url, body, headers) => {
+	if (setLoading)
+		setLoading(true)
+	return new Promise((result, rej) => {
+		fetch(url, {
+			method: 'delete',
+			headers: headers ? {
+				...headers,
+				'Content-Type': 'application/json'
+			} : {
+				'Content-Type': 'application/json'
+			},
+			body: body ? JSON.stringify(body) : null
+		})
+			.then(res => {
+				return (res.json())
+			})
+			.then(res => {
+				if (res.error) {
+					rej(res)
+				}
+				else {
+					result(res)
+				}
+
+				if (setLoading)
+					setLoading(false)
+			})
+	})
 }

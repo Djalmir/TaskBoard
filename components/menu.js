@@ -158,8 +158,8 @@ template.innerHTML = /*html*/`
 
 	<nav id='menu'>
 		<a href='#/' class='active'>Home</a>
-		<a href='#/login'>Login</a>
-		<a href='#/signup'>Cadastro</a>
+		<!-- <a href='#/login'>Login</a>
+		<a href='#/signup'>Cadastro</a> -->
 		<a href='#/dashboard'>Dashboard</a>
 		<a href='#/board'>Board</a>
 	</nav>

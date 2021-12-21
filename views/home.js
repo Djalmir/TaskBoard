@@ -4,102 +4,140 @@ template.innerHTML = /*html*/`
 <style>
 
 	section {
+		/*background: linear-gradient(to bottom, var(--darkgray1),var(--darkgray3));*/
 		padding: 40px 0;
-		width: 100%;
-		overflow-x: hidden;
-	}
-
-	#formsWrapper {
-		margin: 0;
-		padding: 0;
-		width: 100%;
-		overflow: hidden;
-	}
-
-	#formsContainer {
-		padding: 0;
-		margin: 0;
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-evenly;
-		width: 200%;
-	}
-
-	#formsContainer div {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.changeViewP {
 		text-align: center;
 	}
 
-	#formsContainer div u {
-		font-weight: bold;
-		cursor: pointer;
-	}
-
-	form {
-		height: fit-content;
-		width: 90%;
-		max-width: 400px;
-		padding: 30px 20px 20px;
-		box-sizing: border-box;
-		border-radius: .3rem;
-		box-shadow: 0 0 5px var(--darkgray2);
+	#viewsWrapper {
+		margin: 0;
+		padding: 0 20px;
 		display: flex;
-		gap: 22px;
-		flex-direction: column;
-		align-items: center;
 		justify-content: center;
-		background: var(--darkgray4);
+		align-items: center;
+		overflow: hidden;
 	}
 
-	c-input {
-		width: 100%;
+	.formWrapper {
+		text-align: center;
+		flex: 1;
+		margin: 40px 0;
+	}
+	
+	.formWrapper a{
+		color: var(--blue);
+	}
+	
+	.formWrapper a:active{
+		color: var(--darkblue2);
+	}
+	
+	#signupWrapper {
+		display: none;
+	}
+	
+	.container {
+		display: flex;
+		gap: 40px;
+		padding: 40px;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: center;
 	}
 
-	.blueBt {
-		width: 100%;
-		padding: 8px;
+	.container div {
+		flex: 1;
+		min-width: 300px;
+		max-width: 460px;
+	}
+
+	@media (min-width: 760px) {
+		.welcomeDiv {
+			text-align: right;
+		}
+	}
+
+	@keyframes leaveLeft {
+		from {
+			opacity: 1;
+		}
+		to{
+			opacity: 0;
+			transform: translateX(-400px);
+		}
+	}
+
+	@keyframes enterLeft {
+		from {
+			opacity: 0;
+			transform: translateX(400px);
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes leaveRight {
+		from {
+			opacity: 1;
+		}
+		to {
+			opacity: 0;
+			transform: translateX(400px)
+		}
+	}
+
+	@keyframes enterRight {
+		from {
+			opacity: 0;
+			transform: translateX(-400px);
+		}
+		to{
+			opacity: 1;
+		}
 	}
 </style>
 
 <section>
-	<div id='formsWrapper'>
-		<div id='formsContainer'>
-			<div id='loginDiv'>
-				<h2>Login</h2>
-				<form id='loginForm' action='javascript:void(0)' @submit='login' autocomplete='off' @keydown='loginKeydown'>
-					<c-input type='email' placeholder='E-mail' z-model='loginEmail'></c-input>
-					<c-input type='password' placeholder='Senha' z-model='loginPassword'></c-input>
-					<button type='submit' class='blueBt'>Entrar</button>
-				</form>
-				<p class="changeViewP">
-					Ainda não tem uma conta?<br>
-					<u @click="changeView">Clique aqui</u> e cadastre-se gratuitamente!
-				</p>
+	
+	<div id="viewsWrapper">
+		
+		<div class="formWrapper" id="loginWrapper">
+			<div class="container">
+				<div class="welcomeDiv">
+					<h1>Boas vindas!</h1>
+					<p>
+						Faça login em sua conta <b>Razion</b><br/> e organize suas tarefas <i>like a boss</i> com o <b>Razion TaskBoard</b>!
+					</p>
+				</div>
+				<div class="formDiv">
+					<view-login id="loginForm"></view-login>
+					<p>
+						Ainda não tem um cadastro?<br/>
+						<a href="javascript:void(0)" z-on:click="goTo('signup')" >clique aqui</a> e cadastre-se gratuitamente!
+					</p>
+				</div>
 			</div>
-
-			<div id='signupDiv'>
-			<h2>Cadastro</h2>
-				<form id='signupForm' action='javascript:void(0)' @submit='signup' autocomplete='off' @keydown='signupKeydown'>
-					<c-input type='text' placeholder='Nome' z-model='signupName'></c-input>
-					<c-input type='email' placeholder='E-mail' z-model='signupEmail'></c-input>
-					<c-input type='password' placeholder='Senha' z-model='signupPassword'></c-input>
-					<c-input type='password' placeholder='Confirme sua Senha' z-model='signupConfirmPassword'></c-input>
-					<button type='submit' class='blueBt'>Cadastrar</button>
-				</form>
-				<p class="changeViewP">
-					Já tem uma conta?<br>
-					<u @click="changeView">Clique aqui</u> para entrar!
-				</p>
-			</div>
-
 		</div>
+
+		<div class="formWrapper" id="signupWrapper">
+			<div class="container">
+				<div class="welcomeDiv">
+					<h1>Uma conta. Todas as vantagens!</h1>
+					<p>
+						Com uma única conta você tem acesso gratuito a todos os<br/> produtos oferecidos pela <b>Razion</b>!
+					</p>
+				</div>
+				<div class="formDiv">
+					<view-signup id="signupForm"></view-signup>
+					<p>
+						Já tem um cadastro?<br/>
+						<a href="javascript:void(0)" z-on:click="goTo('login')" >clique aqui</a> para entrar!
+					</p>
+				</div>
+			</div>
+		</div>
+
 	</div>
 </section>
 `
@@ -110,63 +148,32 @@ export default class Home extends HTMLElement {
 		this.attachShadow({mode: 'open'})
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 
-		this.loginEmail = ''
-		this.loginPassword = ''
-		this.signupName = ''
-		this.signupEmail = ''
-		this.signupPassword = ''
-		this.signupConfirmPassword = ''
+		this.goTo = (view) => {
+			errorMsg.closeAll()
 
-
-		this.currentView = 'loginDiv'
-		this.changeView = () => {
-			let wrapper = this.shadowRoot.querySelector('#formsWrapper')
-			window.scrollTo({top: wrapper.offsetTop, behavior: 'smooth'})
-			wrapper.style.scrollBehavior = 'smooth'
-			let loginDiv = this.shadowRoot.querySelector('#loginDiv')
-			let signupDiv = this.shadowRoot.querySelector('#signupDiv')
-			switch (this.currentView) {
-				case ('loginDiv'):
-					this.currentView = 'signupDiv'
-					wrapper.scrollLeft = signupDiv.offsetLeft
+			let login = this.shadowRoot.querySelector('#loginWrapper')
+			let signup = this.shadowRoot.querySelector('#signupWrapper')
+			switch (view) {
+				case 'signup':
+					login.style.animation = 'leaveLeft .2s ease-in 1 forwards'
+					const showSignup = () => {
+						this.shadowRoot.removeEventListener('animationend', showSignup)
+						login.style.display = 'none'
+						signup.style.display = 'block'
+						signup.style.animation = 'enterLeft .2s ease-out 1 forwards'
+					}
+					this.shadowRoot.addEventListener('animationend', showSignup)
 					break
-				case ('signupDiv'):
-					this.currentView = 'loginDiv'
-					wrapper.scrollLeft = loginDiv.offsetLeft
+				case 'login':
+					signup.style.animation = 'leaveRight .2s ease-in 1 forwards'
+					const showLogin = () => {
+						this.shadowRoot.removeEventListener('animationend', showLogin)
+						signup.style.display = 'none'
+						login.style.display = 'block'
+						login.style.animation = 'enterRight .2s ease-out 1 forwards'
+					}
+					this.shadowRoot.addEventListener('animationend', showLogin)
 					break
-			}
-		}
-
-		this.keepOnView = () => {
-			let wrapper = this.shadowRoot.querySelector('#formsWrapper')
-			wrapper.style.scrollBehavior = 'auto'
-			let loginDiv = this.shadowRoot.querySelector('#loginDiv')
-			let signupDiv = this.shadowRoot.querySelector('#signupDiv')
-			switch (this.currentView) {
-				case ('loginDiv'):
-					wrapper.scrollLeft = loginDiv.offsetLeft
-					break
-				case ('signupDiv'):
-					wrapper.scrollLeft = signupDiv.offsetLeft
-					break
-			}
-		}
-
-		this.loginKeydown = (e) => {
-			if (e.key == 'Enter')
-				this.login()
-		}
-
-		this.login = () => {
-			if (this.loginEmail.trim() == '') {
-				errorMsg.show({field: 'email', message: 'Informe seu email'})
-			}
-			if (this.loginPassword.trim() == '') {
-				errorMsg.show({field: 'password', message: 'Digite sua senha'})
-			}
-			
-			if (!errorMsg.getMessages()) {
-				errorMsg.show('CHAMAR A API')
 			}
 		}
 
@@ -174,9 +181,7 @@ export default class Home extends HTMLElement {
 	}
 
 	connectedCallback() {
-		window.onresize = () => {
-			this.keepOnView()
-		}
+
 	}
 
 }

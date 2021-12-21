@@ -90,6 +90,10 @@ export default class TextInput extends HTMLElement {
 			}
 		}
 
+		this.checkValidity = () => {
+			return this.shadowRoot.querySelector('#input').checkValidity()
+		}
+
 		runZion(this)
 	}
 

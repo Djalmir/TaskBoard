@@ -35,11 +35,11 @@
 	box-shadow: inset 0px 0px 5px #00000080;
 }
 
-::-webkit-scrollbar-thumb:hover{
+::-webkit-scrollbar-thumb:hover {
 	background: var(--darkblue2);
 }
 
-::-webkit-scrollbar-thumb:active{
+::-webkit-scrollbar-thumb:active {
 	background: var(--darkblue1)
 }
 
@@ -59,7 +59,7 @@ html, body {
 
 #app {
 	position: absolute;
-	inset: 40px 0 0;
+	inset: 0;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	font-size: 16px;
@@ -91,3 +91,20 @@ button:active {
 	background: var(--blue);
 }
 
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}

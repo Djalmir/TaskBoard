@@ -6,13 +6,14 @@ template.innerHTML = /*html*/`
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-			padding: 40px 0;
+			margin: 0;
+			padding: 0;
 		}
 
 		form {
 			height: fit-content;
-			width: 90%;
-			max-width: 400px;
+			width: 100%;
+			/*max-width: 400px;*/
 			padding: 30px 20px 20px;
 			box-sizing: border-box;
 			border-radius: .3rem;
@@ -37,13 +38,16 @@ template.innerHTML = /*html*/`
 
 	<section>			<!--javascript:void(0) faz com que o form não tenha nenhuma action-->
 		<form action='javascript:void(0)' @submit='submit' autocomplete='off'>
-			<c-input type='email' placeholder='E-mail' z-model='email' @keydown='keydown'></c-input>
-			<c-input type='password' placeholder='Senha' z-model='password'></c-input>
+			<c-input id='emailInput' type='email' placeholder='E-mail' z-model='email' @keydown='keydown'></c-input>
+			<c-input type='password' placeholder='Senha' z-model='password' @keydown='keydown'></c-input>
 			<button type='submit' class='blueBt'>Entrar</button>
 		</form>
+
+		<!-- <button @click="showAlert('Hello beautiful World!', true)" style="margin-top:50px;">Clique aqui!</button> -->
 	</section>
 `
 
+import Visitor from '../services/Visitor.js'
 export default class Login extends HTMLElement {
 	constructor() {
 		super()
@@ -54,15 +58,29 @@ export default class Login extends HTMLElement {
 		this.email = ''
 		this.password = ''
 
+
 		this.submit = () => {
 			if (this.email.trim() == '') {
-				errorMsg.show('Informe seu email')
+				errorMsg.show({message: 'Informe seu email'})
+			}
+			else if (!this.shadowRoot.querySelector('#emailInput').checkValidity()) {
+				errorMsg.show({message: 'Email inválido'})
 			}
 			else if (this.password.trim() == '') {
-				errorMsg.show('Digite sua senha')
+				errorMsg.show({message: 'Digite sua senha'})
 			}
 			else {
-				errorMsg.show('Show só chamar a api')
+				Visitor.login({
+					email: this.email,
+					password: this.password
+				})
+					.then((res) => {
+						app.user = res.user
+						window.location.hash = '#/dashboard'
+					})
+					.catch((err) => {
+						errorMsg.show({message: err.error})
+					})
 			}
 			return false
 		}
@@ -73,6 +91,10 @@ export default class Login extends HTMLElement {
 		}
 
 		runZion(this)
+	}
+
+	connectedCallback() {
+
 	}
 }
 

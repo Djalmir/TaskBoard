@@ -1,12 +1,14 @@
+import Menu from './components/menu.js'
+import ErrorMsgs from './components/errorMsgs.js'
+import TextInput from './components/textInput.js'
+
+
 import Home from './views/home.js'
 import Login from './views/login.js'
 import Signup from './views/signup.js'
 import Dashboard from './views/dashboard.js'
 import Board from './views/board.js'
 
-import Menu from './components/menu.js'
-import ErrorMsgs from './components/errorMsgs.js'
-import TextInput from './components/textInput.js'
 
 const routes = {
 	'#/': Home,
@@ -22,15 +24,22 @@ function onRouteChanged() {
 	if (!(app instanceof HTMLElement)) {
 		throw new ReferenceError('No router view element available for rendering')
 	}
+
+	errorMsg.closeAll()
 	const view = new routes[hash]()
 	app.innerHTML = ''
 	app.appendChild(view)
 
-	appMenu.titleSpan.innerText = hash.replace('#', '').replace('/', '') || 'Home'
-	appMenu.updateActiveLink(hash)
+	if (hash !== '#/') {
+		appMenu.style.display = 'block'
+		appMenu.titleSpan.innerText = hash.replace(/[#/]/g, '')
+		appMenu.updateActiveLink(hash)
 
-	if (appMenu.showingMenu)
-		appMenu.showMenu()
+		if (appMenu.showingMenu)
+			appMenu.showMenu()
+	}
+	else
+		appMenu.style.display = 'none'
 }
 
 if (!window.location.hash)

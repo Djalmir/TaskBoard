@@ -1,13 +1,19 @@
 const template = document.createElement('template')
 template.innerHTML = /*html*/`
 <style>
+	section {
+		padding: 40px 0 0;
+	}
+
 	h1{
 		border-bottom: 2px dashed var(--gray3)
 	}
 </style>
 <link rel="stylesheet" href="style.css">
 
-<h1>Dashboard</h1>
+<section>
+	<h1>Dashboard</h1>
+</section>
 `
 
 export default class Dashboard extends HTMLElement {
