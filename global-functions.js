@@ -3,7 +3,7 @@ function setLoading(loading) {
 		let wrapper = document.body.appendChild(document.createElement('div'))
 		wrapper.id = 'loading'
 		wrapper.style = `
-			position: absolute;
+			position: fixed;
 			inset: 0;
 			background: #0000008d;
 			display: flex;
