@@ -186,6 +186,7 @@ export default class Board extends HTMLElement {
 		this.currentMousePos = null
 		this.draggingComponent = null
 		this.draggingShadow = null
+    this.autoScroll = 0
 		this.isTouchScreen = window.matchMedia('(hover: none)').matches
 
 		let event = new CustomEvent('editingListUpdated')
@@ -295,7 +296,6 @@ export default class Board extends HTMLElement {
 					this.currentMousePos = this.mouseDownPos
 					this.mouseDownTimer = setTimeout(() => {
 						clearTimeout(this.mouseDownTimer)
-						console.log(this.mouseMoved())
 						if (!this.mouseMoved()) {
 							navigator.vibrate(['250'])
 							this.draggingComponent = target
@@ -395,19 +395,13 @@ export default class Board extends HTMLElement {
 					this.draggingShadow.style.position = 'absolute'
 					this.shadowRoot.querySelector('#container').appendChild(this.draggingShadow)
 					this.draggingComponent.style.opacity = '.1'
+					this.setDraggingShadowPos()
 				}
 				else if (this.draggingShadow) {
-
-					let difX = this.mouseDownPos.x - this.draggingComponent.offsetLeft
-					let difY = this.mouseDownPos.y - this.draggingComponent.offsetTop
-
-					this.draggingShadow.style.top = `${ this.currentMousePos.y - difY + window.scrollY }px`
-					let x = this.currentMousePos.x - difX
-					if (x < window.scrollX)
-						x = window.scrollX
-					else if (x + this.draggingShadow.offsetWidth > window.innerWidth + window.scrollX)
-						x = window.innerWidth - this.draggingShadow.innerWidth
-					this.draggingShadow.style.left = `${ x }px`
+				  console.log('setando autoScroll',this.currentMousePos.x,'_',window.innerWidth)
+				  this.autoScroll = this.currentMousePos.x - window.innerWidth / 2
+				  this.runAutoScroll()
+          this.setDraggingShadowPos()
 				}
 				e.preventDefault()
 			}
@@ -415,6 +409,7 @@ export default class Board extends HTMLElement {
 		this.ontouchmove = this.onmousemove
 
 		this.onmouseup = () => {
+		  this.autoScroll = 0
 			this.mouseDownPos = null
 			clearTimeout(this.mouseDownTimer)
 			if (this.draggingComponent) {
@@ -429,7 +424,6 @@ export default class Board extends HTMLElement {
 		this.ontouchend = this.onmouseup
 
 		this.mouseMoved = () => {
-			console.log(this.mouseDownPos, this.currentMousePos)
 			let difX = this.mouseDownPos.x - this.currentMousePos.x
 			if (difX < 0)
 				difX = difX * -1
@@ -458,6 +452,20 @@ export default class Board extends HTMLElement {
 					])
 					break
 			}
+		}
+		
+		this.setDraggingShadowPos = () => {
+		  let difX = this.mouseDownPos.x - this.draggingComponent.offsetLeft
+      let difY = this.mouseDownPos.y - this.draggingComponent.offsetTop
+			this.draggingShadow.style.top = `${ this.currentMousePos.y - difY + window.scrollY }px`
+			this.draggingShadow.style.left = `${this.currentMousePos.x - difX}px`
+		}
+		
+		this.runAutoScroll = () => {
+		  console.log(window.scrollX,this.autoScroll)
+		  window.scrollTo(window.scrollX + this.autoScroll, 0)
+		  if(this.autoScroll)
+		    this.runAutoScroll()
 		}
 
 		runZion(this)
