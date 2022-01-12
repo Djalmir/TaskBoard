@@ -1,3 +1,9 @@
+let user = JSON.parse(localStorage.getItem('Razion.user'))
+if (user) {
+	app.user = user
+	window.location.hash = localStorage.getItem('RazionTaskboard.lastHash') || '#/dashboard'
+}
+
 function setLoading(loading) {
 	if (loading) {
 		let wrapper = document.body.appendChild(document.createElement('div'))
@@ -5,7 +11,7 @@ function setLoading(loading) {
 		wrapper.style = `
 			position: fixed;
 			inset: 0;
-			background: #0000008d;
+			background: var(--transparentBg);
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -21,9 +27,23 @@ function setLoading(loading) {
 		let child = document.body.querySelector('#loading')
 		child.style.animation = 'fadeOut .2s linear 1'
 		window.addEventListener('animationend', removeLoading)
-		function removeLoading(){
+		function removeLoading() {
 			window.removeEventListener('animationend', removeLoading)
 			document.body.removeChild(child)
 		}
 	}
+}
+
+function removeErrMsg(field) {
+	let msgs = errorMsg.getMessages()
+	msgs = msgs.filter(msg => msg.field == field)
+	msgs.map((msg) => {
+		errorMsg.closeMsg(msg)
+	})
+}
+
+function logout() {
+	app.user = null
+	localStorage.removeItem('Razion.user')
+	window.location.hash = '#/'
 }

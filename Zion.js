@@ -19,27 +19,132 @@ let childInShadow = false
 const runZion = async (el) => {
 	let inShadow = false
 	let zForHistory = []
+	let zionComps = []
 	let child = Array.from(el.shadowRoot.children)[0]
 
 	const nextChild = async () => {
 
 		let matches = child.innerHTML.match(/{{.+?}}/g)
 		if (matches) {
-			// console.log(matches)
 			matches.forEach((match) => {
 				let clearMatch = match.replace(/[{}]/g, '')
-				// let elArr = Array.from(el.shadowRoot.children)
-				// console.log(elArr)
-				// let lastChildChildren = elArr[elArr.length - 1].children
-				// console.log(lastChildChildren)
-				if (el[clearMatch]) {
-					child.innerHTML = child.innerHTML.replace(match, el[clearMatch])
-				}
-				else {
-					try {
-						child.innerHTML = child.innerHTML.replace(match, eval(clearMatch))
+				let keys = Array.from(Object.keys(el)).filter(key => key == clearMatch)
+				if (keys.length > 0 && !Array.from(child.children).find(c => c.innerHTML.includes(match))) {
+
+					let comp = document.createElement('zion-tag')
+					zionComps.push(comp)
+					comp.id = 'zionComp' + zionComps.length
+					comp.innerHTML = el[clearMatch]
+					child.innerHTML = child.innerHTML.replace(match, comp.outerHTML)
+
+					let theChild = child
+					const updateComp = (value) => {
+						theChild.querySelector('#' + comp.id).innerHTML = value
 					}
-					catch {}
+
+					if (!this[clearMatch]) {
+						this[clearMatch] = el[clearMatch]
+						updateComp(el[clearMatch])
+					}
+
+					Object.defineProperty(el, clearMatch, {
+						get: () => {
+							return this[clearMatch]
+						},
+						set: (value) => {
+							this[clearMatch] = value
+							updateComp(value)
+							let event = new CustomEvent(`${ clearMatch }Updated`)
+							document.dispatchEvent(event)
+						}
+					})
+
+					let keys = Array.from(Object.keys(el))
+					let keyFound = false
+
+					keys.map(key => {
+						if (clearMatch.includes(key)) {
+							keyFound = key
+						}
+					})
+					if (keyFound)
+						document.addEventListener(`${ keyFound }Updated`, () => updateComp(el[keyFound]))
+				}
+				else if (!Array.from(child.children).find(c => c.innerHTML.includes(match))) {
+					try {
+						clearMatch = clearMatch
+							.replace('&gt;', '>')
+							.replace('&lt;', '<')
+
+						let keys = Array.from(Object.keys(el))
+						let keyFound = false
+
+						keys.map(key => {
+							if (clearMatch.includes(key)) {
+								keyFound = key
+								clearMatch = clearMatch.replace(key, `el['${ key }']`)
+							}
+						})
+
+						if (!keyFound) {
+							child.innerHTML = child.innerHTML.replace(match, eval(clearMatch))
+						}
+						else {
+							let comp = document.createElement('zion-tag')
+							zionComps.push(comp)
+							comp.id = 'zionComp' + zionComps.length
+							comp.innerHTML = eval(clearMatch)
+							child.innerHTML = child.innerHTML.replace(match, comp.outerHTML)
+
+							let theChild = child
+							const updateComp = (value) => {
+								theChild.querySelector('#' + comp.id).innerHTML = value
+							}
+
+							document.addEventListener(`${ keyFound }Updated`, () => {
+								updateComp(eval(clearMatch))
+							})
+						}
+					}
+					catch (err) {
+						let error = err.toString()
+
+						if (error.includes('is not defined')) {
+							let prop = error.split(' ')[1]
+							if (el[prop]) {
+								clearMatch = clearMatch
+									.replace(prop, el[prop])
+									.replace('&lt;', '<')
+									.replace('&gt;', '>')
+
+								let comp = document.createElement('zion-tag')
+								zionComps.push(comp)
+								comp.id = 'zionComp' + zionComps.length
+								comp.innerHTML = eval(clearMatch)
+								child.innerHTML = child.innerHTML.replace(match, comp.outerHTML)
+
+								let theChild = child
+								const updateComp = (value) => {
+									theChild.querySelector('#' + comp.id).innerHTML = eval(clearMatch)
+								}
+
+								if (!this[prop]) {
+									this[prop] = el[prop]
+									updateComp()
+								}
+
+								Object.defineProperty(el, prop, {
+									get: () => {
+										return this[prop]
+									},
+									set: (value) => {
+										this[prop] = value
+										updateComp(value)
+									}
+								})
+							}
+						}
+					}
 				}
 			})
 		}
@@ -137,13 +242,7 @@ const runZion = async (el) => {
 							}
 						})
 
-
-						if (!this[funcName]) {
-							this[funcName] = el[funcName]
-							await updateChild(el[funcName])
-						}
-
-						if (this[funcName]) {
+						const setGetAndSet = () => {
 							Object.defineProperty(el, funcName, {
 								get: () => {
 									return this[funcName]
@@ -153,6 +252,15 @@ const runZion = async (el) => {
 									updateChild(value)
 								}
 							})
+						}
+
+						if (this[funcName]) {
+							setGetAndSet()
+						}
+						else {
+							this[funcName] = el[funcName]
+							await updateChild(el[funcName])
+							setGetAndSet()
 						}
 						break
 
@@ -182,6 +290,26 @@ const runZion = async (el) => {
 											tag.setAttribute(attr.nodeName, attr.nodeValue)
 									})
 									tag.innerHTML = child.innerHTML
+
+
+									//verifica se tem atributos que contenham alguma variável declarada no z-for
+									//e atualiza de acordo
+									let tagAttributes = Array.from(tag.attributes)
+									tagAttributes.map((attr) => {
+										let attrMatches = attr.nodeValue.match(/{{.+?}}/g)
+										if (attrMatches) {
+											attrMatches.map((match) => {
+												let attrClearMatch = match.replace(/[{}]/g, '').split('.')
+												attrClearMatch.map((acm) => {
+													let found = zForHistory.filter(hist => hist.label == acm)
+													if (found.length > 0) {
+														tag.setAttribute(attr.nodeName, attr.nodeValue.replace(match, found[found.length - 1].comp[attrClearMatch[1]]))
+													}
+												})
+
+											})
+										}
+									})
 
 									if (matches)
 										matches.map((match, i) => {
@@ -235,7 +363,7 @@ const runZion = async (el) => {
 													})
 												}
 											})
-											// newChild.style.display = 'none'
+
 											if (child.getAttribute('z-for'))
 												child.parentElement.removeChild(child)
 										})
@@ -243,7 +371,6 @@ const runZion = async (el) => {
 								})
 							}
 
-							// child.style.display = 'none'
 							if (child.getAttribute('z-for'))
 								child.parentElement.removeChild(child)
 						}
@@ -259,14 +386,21 @@ const runZion = async (el) => {
 						funcName = funcName.replace(/\(.+?\)/g, '')
 						let func
 						if (params) {
-							func = () => eval(el[funcName](...params))
+							if (el[funcName])
+								func = () => eval(el[funcName](...params))
+							else if (child[funcName])
+								func = () => eval(child[funcName](...params))
+							else if (this[funcName]) {
+								func = () => eval(this[funcName](...params))
+							}
 						}
 						else {
 							if (el[funcName])
 								func = eval(el[funcName])
 							else if (child[funcName])
 								func = eval(child[funcName])
-
+							else if (this[funcName])
+								func = eval(this[funcName])
 						}
 						let htmlAttr = 'on' + attr.split(/[:@]/g)[1]
 
@@ -319,7 +453,7 @@ const runZion = async (el) => {
 }
 
 
-const zGet = async (url, body, headers) => {
+const zGet = async (url, headers) => {
 	if (setLoading)
 		setLoading(true)
 	return new Promise((result, rej) => {
@@ -330,8 +464,7 @@ const zGet = async (url, body, headers) => {
 				'Content-Type': 'application/json'
 			} : {
 				'Content-Type': 'application/json'
-			},
-			body: body ? JSON.stringify(body) : null
+			}
 		})
 			.then(res => {
 				return (res.json())
@@ -343,7 +476,7 @@ const zGet = async (url, body, headers) => {
 				else {
 					result(res)
 				}
-				
+
 				if (setLoading)
 					setLoading(false)
 			})
@@ -412,7 +545,7 @@ const zPut = async (url, body, headers) => {
 	})
 }
 
-const zDelete = async (url, body, headers) => {
+const zDelete = async (url, headers) => {
 	if (setLoading)
 		setLoading(true)
 	return new Promise((result, rej) => {
@@ -423,8 +556,7 @@ const zDelete = async (url, body, headers) => {
 				'Content-Type': 'application/json'
 			} : {
 				'Content-Type': 'application/json'
-			},
-			body: body ? JSON.stringify(body) : null
+			}
 		})
 			.then(res => {
 				return (res.json())

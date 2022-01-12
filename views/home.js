@@ -51,6 +51,58 @@ template.innerHTML = /*html*/`
 		max-width: 460px;
 	}
 
+	#successMsgContainer{
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: none;
+		justify-content: center;
+		align-items: center;
+	}
+
+	#shadow {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100vh;
+		background: var(--transparentBg);
+		z-index: 1;
+	}
+
+	#successMsg {
+		z-index: 2;
+		margin: 20px;
+		background: var(--darkgray4);
+		border-radius: .5rem;
+	}
+
+	#successMsg header {
+		background: var(--darkgray4);
+		padding: 12px 0 0;
+		border-radius: .2rem .2rem 0 0;
+		font-weight: bolder;
+	}
+
+	#successMsg section {
+		background: var(--darkgray3);
+		box-shadow: inset 0 0 5px var(--transparentBg);
+		margin: 12px 8px;
+		border-radius: .2rem;
+	}
+
+	#successMsg section p {
+		margin: 0 8px;
+	}
+
+	#successMsg footer {
+		background: var(--darkgray4);
+		padding: 0 0 12px;
+		border-radius: 0 0 .2rem .2rem;
+	}
+
 	@media (min-width: 760px) {
 		.welcomeDiv {
 			text-align: right;
@@ -139,14 +191,33 @@ template.innerHTML = /*html*/`
 		</div>
 
 	</div>
+
+	<div id="successMsgContainer">
+		<div id="shadow"></div>
+		<div id="successMsg">
+			<header>Boas Vindas!</header>
+			<section>
+				<p>
+					Seu cadastro foi efetuado com sucesso!<br/>
+					Efetuaremos seu primeiro login automaticamente em {{counter}} segundo{{counter > 1 ? 's' : ''}}.
+				</p>
+			</section>
+			<footer>
+				<button class="greenBt" id="autoLoginBt">Fazer login agora</button>
+			</footer>
+		</div>
+	</div>
 </section>
 `
 
+import Visitor from '../services/Visitor.js'
 export default class Home extends HTMLElement {
 	constructor() {
 		super()
 		this.attachShadow({mode: 'open'})
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
+
+		this.counter = 5
 
 		this.goTo = (view) => {
 			errorMsg.closeAll()
@@ -177,13 +248,40 @@ export default class Home extends HTMLElement {
 			}
 		}
 
+		this.autoLogin = (res) => {
+			Visitor.login({
+				email: res.email,
+				password: res.pw
+			})
+				.then((res) => {
+					app.user = res.user
+					localStorage.setItem('Razion.user', JSON.stringify(app.user))
+					window.location.hash = '#/dashboard'
+				})
+				.catch((err) => {
+					errorMsg.show({message: err.error})
+				})
+		}
+
+		document.addEventListener('successSignup', (e) => {
+			let res = e.detail.res
+			let successMsgContainer = this.shadowRoot.querySelector('#successMsgContainer')
+			successMsgContainer.style.display = 'flex'
+			successMsgContainer.style.animation = '.2s linear fadeIn 1'
+			this.shadowRoot.querySelector('#autoLoginBt').onclick = () => {
+				clearInterval(timer)
+				this.autoLogin(res)
+			}
+			let timer = setInterval(() => {
+				if (--this.counter < 1) {
+					clearInterval(timer)
+					this.autoLogin(res)
+				}
+			}, 1000)
+		})
+
 		runZion(this)
 	}
-
-	connectedCallback() {
-
-	}
-
 }
 
 customElements.define('view-home', Home)

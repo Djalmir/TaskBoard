@@ -25,7 +25,7 @@ template.innerHTML = /*html*/`
 		background: var(--darkgray4);
 	}
 
-	c-input {
+	z-input {
 		width: 100%;
 	}
 
@@ -38,10 +38,10 @@ template.innerHTML = /*html*/`
 
 <section>
 	<form id='signupForm' action='javascript:void(0)' @submit='submit' autocomplete='off' @keydown='keydown'>
-		<c-input type='text' placeholder='Nome' z-model='name'></c-input>
-		<c-input id='emailInput' type='email' placeholder='E-mail' z-model='email'></c-input>
-		<c-input type='password' placeholder='Senha' z-model='password'></c-input>
-		<c-input type='password' placeholder='Confirme sua Senha' z-model='confirmPassword'></c-input>
+		<z-input type='text' placeholder='Nome' z-model='name' @focus="removeErrMsg('name')"></z-input>
+		<z-input id='emailInput' type='email' placeholder='E-mail' z-model='email' @focus="removeErrMsg('email')"></z-input>
+		<z-input type='password' placeholder='Senha' z-model='password' @focus="removeErrMsg('password')"></z-input>
+		<z-input type='password' placeholder='Confirme sua Senha' z-model='confirmPassword' @focus="removeErrMsg('confirmPassword')"></z-input>
 		<button type='submit' class='blueBt'>Cadastrar</button>
 	</form>
 </section>
@@ -60,39 +60,56 @@ export default class Signup extends HTMLElement {
 		this.confirmPassword = ''
 
 		this.submit = () => {
-			if (this.name.trim() == '') {
-				errorMsg.show({message: 'Informe seu nome'})
-			}
-			else if (this.email.trim() == '') {
-				errorMsg.show({message: 'Informe seu email'})
-			}
-			else if (!this.shadowRoot.querySelector('#emailInput').checkValidity()) {
-				errorMsg.show({message: 'Email inválido'})
-			}
-			else if (this.password.trim() == '') {
-				errorMsg.show({message: 'Digite sua senha'})
-			}
-			else if (this.confirmPassword.trim() == '') {
-				errorMsg.show({message: 'Confirme a senha'})
-			}
-			else if (this.password != this.confirmPassword) {
-				errorMsg.show({message: 'As senhas não coincidem'})
-			}
-			else {
-				Visitor.signup({
-					name: this.name,
-					email: this.email,
-					password: this.password
-				})
-					.then((res) => {
-						console.log(res)
+			if(errorMsg.getMessages().length)
+				errorMsg.callAtention()
+			else{
+				if (this.password != this.confirmPassword) {
+					errorMsg.show({field: 'confirmPassword', message: 'As senhas não coincidem'})
+				}
+				if (this.confirmPassword.trim() == '') {
+					errorMsg.show({field: 'confirmPassword', message: 'Confirme a senha'})
+				}
+				if (this.password.trim() == '') {
+					errorMsg.show({field: 'password', message: 'Digite sua senha'})
+				}
+				if (!this.shadowRoot.querySelector('#emailInput').checkValidity()) {
+					errorMsg.show({field: 'email', message: 'Email inválido'})
+				}
+				if (this.email.trim() == '') {
+					errorMsg.show({field: 'email', message: 'Informe seu email'})
+				}
+				if (this.name.trim() == '') {
+					errorMsg.show({field: 'name', message: 'Informe seu nome'})
+				}
+				if (!errorMsg.getMessages().length) {
+					Visitor.signup({
+						name: this.name,
+						email: this.email,
+						password: this.password
 					})
-					.catch((err) => {
-						errorMsg.show({message: err.error})
-					})
+						.then((res) => {
+							res.pw = this.password
+							let event = new CustomEvent('successSignup', {
+								detail: {
+									res: res,
+								}
+							})
+							document.dispatchEvent(event)
+						})
+						.catch((err) => {
+							errorMsg.show({field: err.field, message: err.error})
+						})
+				}
 			}
 			return false
 		}
+
+		// let event = new CustomEvent('successSignup', {
+		// 	detail: {
+		// 		res: 'teste'
+		// 	}
+		// })
+		// document.dispatchEvent(event)
 
 		this.keydown = (e) => {
 			if (e.key == 'Enter')

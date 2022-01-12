@@ -1,4 +1,5 @@
-const baseUrl = 'https://razion-apis.herokuapp.com/'
+// const baseUrl = 'https://razion-apis.herokuapp.com/'
+const baseUrl = 'http://192.168.100.100:3333/'
 
 const Visitor = {
 

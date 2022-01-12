@@ -4,6 +4,10 @@ export default class ErrorMsgs extends HTMLElement {
 
 		const shadow = this.attachShadow({mode: 'open'})
 
+		const link = shadow.appendChild(document.createElement('link'))
+		link.rel = 'stylesheet'
+		link.href = 'style.css'
+
 		const style = shadow.appendChild(document.createElement('style'))
 		style.textContent = /*css*/`
 			#errorMsgsContainer {
@@ -95,8 +99,6 @@ export default class ErrorMsgs extends HTMLElement {
 			}
 		`
 
-		this.errors = []
-		this.foundError = null
 		const wrapper = shadow.appendChild(document.createElement('div'))
 		wrapper.id = 'errorMsgsContainer'
 
@@ -108,16 +110,19 @@ export default class ErrorMsgs extends HTMLElement {
 		}
 
 		this.show = (error) => {
+			let existingMsg
+			if (error.field)
+				existingMsg = Array.from(wrapper.children).find(msg => msg.field == error.field)
+			else
+				existingMsg = Array.from(wrapper.children).find(msg => msg.firstChild.textContent == error.message)
 
-			const existingMsg = Array.from(wrapper.children).find(msg => msg.firstChild.textContent == error.message)
 			if (existingMsg) {
-				this.foundError = existingMsg
 				existingMsg.closeMsg()
 			}
 
-
 			const errorMsg = wrapper.insertBefore(document.createElement('div'), wrapper.children[0])
 			errorMsg.classList.add('errorMsg')
+			errorMsg.field = error.field
 
 			const errorMsgText = errorMsg.appendChild(document.createElement('span'))
 			errorMsgText.classList.add('errorMsgText')
@@ -144,17 +149,32 @@ export default class ErrorMsgs extends HTMLElement {
 				wrapper.removeEventListener('animationend', removeMsg)
 				wrapper.removeChild(errorMsg)
 			}
+		}
 
-			if (this.foundError) {
-				//trocar o erro existente igual ao novo, pelo novo... Ou seja, atualizar o vetor de erros
-				//depois quero poder remover o erro ao clicar no campo. Já estou passando o field na home.js
-				console.log('foundError: ', this.foundError)
+		this.closeMsg = (child) => {
+			const removeMsg = () => {
+				wrapper.removeEventListener('animationend', removeMsg)
+				wrapper.removeChild(child)
 			}
+			child.style.animation = 'hide .2s ease-in 1 forwards'
+			wrapper.addEventListener('animationend', removeMsg)
 		}
 
 		this.closeAll = () => {
 			Array.from(wrapper.children).map((errorMsg) => {
 				errorMsg.closeMsg()
+			})
+		}
+
+		this.callAtention = () => {
+			navigator.vibrate(['100', '50', '200'])
+			Array.from(wrapper.children).map((errorMsg) => {
+				const removeAnimation = () => {
+					errorMsg.style.animation = ''
+					errorMsg.removeEventListener('animationend', removeAnimation)
+				}
+				errorMsg.style.animation = 'atention .2s linear 2'
+				errorMsg.addEventListener('animationend', removeAnimation)
 			})
 		}
 	}

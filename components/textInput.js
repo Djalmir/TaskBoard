@@ -69,6 +69,10 @@ export default class TextInput extends HTMLElement {
 		this.attachShadow({mode: 'open'})
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 
+		this.focus = () => {
+			this.shadowRoot.querySelector('#input').focus()
+		}
+
 		this.setActiveClass = () => {
 			let label = this.shadowRoot.querySelector('#label')
 			if (label.classList.length > 0) {
@@ -100,8 +104,11 @@ export default class TextInput extends HTMLElement {
 	connectedCallback() {
 		this.shadowRoot.querySelector('#label').innerText = this.getAttribute('placeholder')
 		this.shadowRoot.querySelector('#input').type = this.getAttribute('type')
+		if (Array.from(this.attributes).find(attr => attr.nodeName == 'z-autofocus')) {
+			this.focus()
+		}
 	}
 
 }
 
-customElements.define('c-input', TextInput)
+customElements.define('z-input', TextInput)

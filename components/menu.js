@@ -122,7 +122,7 @@ template.innerHTML = /*html*/`
 			left: 0;
 			width: 100%;
 			height: 100vh;
-			background: #0000008d;
+			background: var(--transparentBg);
 			z-index: 3;
 			opacity: 0;
 			transition: opacity .2s;
@@ -162,6 +162,7 @@ template.innerHTML = /*html*/`
 		<a href='#/signup'>Cadastro</a> -->
 		<a href='#/dashboard'>Dashboard</a>
 		<a href='#/board'>Board</a>
+		<a href="#/" @click="logout">Sair</a>
 	</nav>
 
 	<div id='shadow' @click='showMenu'></div>
@@ -226,7 +227,7 @@ export default class Menu extends HTMLElement {
 			let menu = this.shadowRoot.querySelector('#menu')
 			menu.querySelector('.active').classList.remove('active')
 			let as = Array.from(menu.querySelectorAll('a'))
-			let activeLink = as.find(a => a.hash == hash)
+			let activeLink = as.find(a => a.hash == hash.split('?')[0])
 			activeLink.classList.add('active')
 		}
 

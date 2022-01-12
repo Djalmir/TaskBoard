@@ -26,7 +26,7 @@ template.innerHTML = /*html*/`
 			background: var(--darkgray4);
 		}
 
-		c-input {
+		z-input {
 			width: 100%;
 		}
 
@@ -38,12 +38,10 @@ template.innerHTML = /*html*/`
 
 	<section>			<!--javascript:void(0) faz com que o form não tenha nenhuma action-->
 		<form action='javascript:void(0)' @submit='submit' autocomplete='off'>
-			<c-input id='emailInput' type='email' placeholder='E-mail' z-model='email' @keydown='keydown'></c-input>
-			<c-input type='password' placeholder='Senha' z-model='password' @keydown='keydown'></c-input>
+			<z-input id='emailInput' type='email' placeholder='E-mail' z-model='email' @keydown='keydown' @focus="removeErrMsg('email')" z-autofocus></z-input>
+			<z-input type='password' placeholder='Senha' z-model='password' @keydown='keydown' @focus="removeErrMsg('password')"></z-input>
 			<button type='submit' class='blueBt'>Entrar</button>
 		</form>
-
-		<!-- <button @click="showAlert('Hello beautiful World!', true)" style="margin-top:50px;">Clique aqui!</button> -->
 	</section>
 `
 
@@ -58,29 +56,34 @@ export default class Login extends HTMLElement {
 		this.email = ''
 		this.password = ''
 
-
 		this.submit = () => {
-			if (this.email.trim() == '') {
-				errorMsg.show({message: 'Informe seu email'})
+			if(errorMsg.getMessages().length){
+				errorMsg.callAtention()
 			}
-			else if (!this.shadowRoot.querySelector('#emailInput').checkValidity()) {
-				errorMsg.show({message: 'Email inválido'})
-			}
-			else if (this.password.trim() == '') {
-				errorMsg.show({message: 'Digite sua senha'})
-			}
-			else {
-				Visitor.login({
-					email: this.email,
-					password: this.password
-				})
-					.then((res) => {
-						app.user = res.user
-						window.location.hash = '#/dashboard'
+			else{
+				if (this.password.trim() == '') {
+					errorMsg.show({field: 'password', message: 'Digite sua senha'})
+				}
+				if (this.email.trim() == '') {
+					errorMsg.show({field: 'email', message: 'Informe seu email'})
+				}
+				if (!this.shadowRoot.querySelector('#emailInput').checkValidity()) {
+					errorMsg.show({field: 'email', message: 'Email inválido'})
+				}
+				if (!errorMsg.getMessages().length) {
+					Visitor.login({
+						email: this.email,
+						password: this.password
 					})
-					.catch((err) => {
-						errorMsg.show({message: err.error})
-					})
+						.then((res) => {
+							app.user = res.user
+							localStorage.setItem('Razion.user', JSON.stringify(app.user))
+							window.location.hash = '#/dashboard'
+						})
+						.catch((err) => {
+							errorMsg.show({message: err.error})
+						})
+				}
 			}
 			return false
 		}
