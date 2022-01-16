@@ -12,11 +12,11 @@ export default class Confirm extends HTMLElement {
 		style.textContent = /*css*/`
 			#wrapper {
 				position: fixed;
-				inset: 0;
+				inset: 73px 0 0;
 				z-index: 8;
 				display: none;
 				justify-content: center;
-				align-items: center;
+				align-items: flex-start;
 			}
 
 			#shadow {
@@ -95,9 +95,10 @@ export default class Confirm extends HTMLElement {
 		this.confirm = async (title, msg) => {
 			wrapper.style.display = 'flex'
 			shadow.style.animation = 'fadeIn .2s linear'
-			confirm.style.animation = 'rollIn .4s ease-in-out'
+			confirm.style.animation = 'rollIn .2s ease-in-out'
 			header.innerText = title || 'Confirme'
 			section.innerText = msg || 'Deseja mesmo fazer isso?'
+			yBt.focus()
 			return new Promise((res) => {
 				yBt.onclick = () => {
 					this.hide()
@@ -124,6 +125,13 @@ export default class Confirm extends HTMLElement {
 			}
 			shadow.style.animation = 'fadeOut .2s linear forwards'
 			this.shadowRoot.addEventListener('animationend', removeConfirm)
+		}
+
+		this.onkeydown = (e) => {
+			if(e.key == 'Enter')
+				yBt.click()
+			else if(e.key == 'Escape')
+				nBt.click()
 		}
 	}
 }

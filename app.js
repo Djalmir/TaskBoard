@@ -10,6 +10,8 @@ import Signup from './views/signup.js'
 import Dashboard from './views/dashboard.js'
 import Board from './views/board.js'
 
+import User from './services/User.js'
+
 const routes = {
 	'#/': Home,
 	'#/login': Login,
@@ -34,7 +36,24 @@ function onRouteChanged() {
 
 	if (hash !== '#/') {
 		appMenu.style.display = 'block'
-		appMenu.titleSpan.innerText = hash.replace(/[#/]/g, '').split('?')[0]
+
+		appMenu.titleSpan.innerText = ''
+		let img = appMenu.titleSpan.appendChild(document.createElement('img'))
+		img.src = './assets/loading.svg'
+		img.style.width = '24px';
+
+		let hashName = hash.replace(/[#/]/g, '').split('?')[0]
+		if (hashName.toLowerCase() == 'board') {
+			loadingLock = true
+			User.getBoardName(hash.replace(/[#/]/g, '').split('=')[1])
+				.then((res) => {
+					appMenu.titleSpan.innerText = res.name
+					loadingLock = false
+				})
+		}
+		else
+			appMenu.titleSpan.innerText = hashName
+
 		appMenu.updateActiveLink(hash)
 
 		if (appMenu.showingMenu)

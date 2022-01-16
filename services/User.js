@@ -17,11 +17,19 @@ const User = {
 	getBoards: () => {
 		return zGet(`${ baseUrl }taskBoard/board/listAll`, headers())
 	},
+	getBoardName: (id) => {
+		return zGet(`${baseUrl}taskBoard/board/get/${id}`, headers())
+	},
 	editBoard: (infos) => {
 		return zPut(`${ baseUrl }taskBoard/board/update/${ infos.board_id }`, infos, headers())
 	},
 	deleteBoard: (board_id) => {
 		return zDelete(`${ baseUrl }taskBoard/board/delete/${ board_id }`, headers())
+	},
+	getLists: (h) => {
+		let head = headers()
+		head = {...head, ...h}
+		return zGet(`${ baseUrl }taskboard/board/getLists/${ head.board_id }`, head)
 	},
 
 	//Listas
@@ -30,21 +38,37 @@ const User = {
 		head = {...head, ...h}
 		return zPost(`${ baseUrl }taskBoard/list/create`, body, head)
 	},
-	getLists: (h) => {
-		let head = headers()
-		head = {...head, ...h}
-		return zGet(`${ baseUrl }taskboard/list/listAll`, head)
-	},
 	editList: (infos, h) => {
 		let head = headers()
 		head = {...head, ...h}
-		console.log('head: ',head)
-		return zPut(`${ baseUrl }taskboard/list/update/${ infos.list_id }`, infos, head)
+		return zPut(`${ baseUrl }taskboard/list/update/${ head.list_id }`, infos, head)
 	},
 	deleteList: (list_id, h) => {
 		let head = headers()
 		head = {...head, ...h}
 		return zDelete(`${ baseUrl }taskboard/list/delete/${ list_id }`, head)
+	},
+	getCards: (list_id, h) => {
+		let head = headers()
+		head = {...head, ...h}
+		return zGet(`${ baseUrl }taskboard/list/getCards/${ list_id }`, head)
+	},
+
+	//Cartões
+	createCard: (body, h) => {
+		let head = headers()
+		head = {...head, ...h}
+		return zPost(`${ baseUrl }taskBoard/card/create`, body, head)
+	},
+	editCard: (infos, h) => {
+		let head = headers()
+		head = {...head, ...h}
+		return zPut(`${ baseUrl }taskboard/card/update/${ head.card_id }`, infos, head)
+	},
+	deleteCard: (card_id, h) => {
+		let head = headers()
+		head = {...head, ...h}
+		return zDelete(`${ baseUrl }taskboard/card/delete/${ card_id }`, head)
 	}
 
 }

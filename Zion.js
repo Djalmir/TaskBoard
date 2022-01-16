@@ -1,8 +1,8 @@
 const zionAttributes = [
-	'@blur', 'z-on:blur',
+	'@blur', 'z-on:blur', 'zion_blur',
 	'@change', 'z-on:change',
 	'@click', 'z-on:click',
-	'@focus', 'z-on:focus',
+	'@focus', 'z-on:focus', 'zion_focus',
 	'@keydown', 'z-on:keydown',
 	'@keypress', 'z-on:keypress',
 	'@keyup', 'z-on:keyup',
@@ -194,7 +194,7 @@ const runZion = async (el) => {
 							const getInput = async () => {
 								if (comp.getAttribute('z-model') == funcName) {
 									const getCompInput = async () => {
-										if (comp.id != 'input') {
+										if (comp.id != 'input' && !comp.id.includes('ZionInput')) {
 											comp = await getNextComp(comp)
 										}
 										else {
@@ -220,10 +220,10 @@ const runZion = async (el) => {
 
 						child.addEventListener('keyup', function (e) {
 							let target = e.target
-							if (target.id !== 'input') {
+							if (target.id !== 'input' || target.id.includes('ZionInput')) {
 								let comp = Array.from(target.shadowRoot.children)[0]
 								const getInput = async () => {
-									if (comp.id == 'input') {
+									if (comp.id == 'input' || comp.id.includes('ZionInput')) {
 										target = comp
 										el[funcName] = target.value
 										comp = false
@@ -250,6 +250,8 @@ const runZion = async (el) => {
 								set: (value) => {
 									this[funcName] = value
 									updateChild(value)
+									let event = new CustomEvent(`${ funcName }Updated`)
+									document.dispatchEvent(event)
 								}
 							})
 						}
@@ -262,6 +264,8 @@ const runZion = async (el) => {
 							await updateChild(el[funcName])
 							setGetAndSet()
 						}
+
+						document.addEventListener(`${ funcName }Updated`, () => updateChild(el[funcName]))
 						break
 
 					case ('z-for'):
@@ -402,7 +406,7 @@ const runZion = async (el) => {
 							else if (this[funcName])
 								func = eval(this[funcName])
 						}
-						let htmlAttr = 'on' + attr.split(/[:@]/g)[1]
+						let htmlAttr = 'on' + attr.split(/[:@_]/g)[1]
 
 						if (func) {
 							child[htmlAttr] = (e) => {
@@ -452,10 +456,28 @@ const runZion = async (el) => {
 	await nextChild()
 }
 
+let timer
+const removeLoading = () => {
+	clearTimeout(timer)
+	if (!loadingLock) {
+		if (useMiniLoading)
+			setMiniLoading(false)
+		if (setLoading)
+			setLoading(false)
+	}
+	else
+		timer = setTimeout(() => {
+			removeLoading()
+		}, 100)
+}
 
 const zGet = async (url, headers) => {
-	if (setLoading)
-		setLoading(true)
+	if (!loadingLock) {
+		if (useMiniLoading)
+			setMiniLoading(true)
+		else if (setLoading)
+			setLoading(true)
+	}
 	return new Promise((result, rej) => {
 		fetch(url, {
 			method: 'get',
@@ -470,22 +492,24 @@ const zGet = async (url, headers) => {
 				return (res.json())
 			})
 			.then(res => {
+				removeLoading()
 				if (res.error) {
 					rej(res)
 				}
 				else {
 					result(res)
 				}
-
-				if (setLoading)
-					setLoading(false)
 			})
 	})
 }
 
 const zPost = async (url, body, headers) => {
-	if (setLoading)
-		setLoading(true)
+	if (!loadingLock) {
+		if (useMiniLoading)
+			setMiniLoading(true)
+		else if (setLoading)
+			setLoading(true)
+	}
 	return new Promise((result, rej) => {
 		fetch(url, {
 			method: 'post',
@@ -501,22 +525,24 @@ const zPost = async (url, body, headers) => {
 				return (res.json())
 			})
 			.then(res => {
+				removeLoading()
 				if (res.error) {
 					rej(res)
 				}
 				else {
 					result(res)
 				}
-
-				if (setLoading)
-					setLoading(false)
 			})
 	})
 }
 
 const zPut = async (url, body, headers) => {
-	if (setLoading)
-		setLoading(true)
+	if (!loadingLock) {
+		if (useMiniLoading)
+			setMiniLoading(true)
+		else if (setLoading)
+			setLoading(true)
+	}
 	return new Promise((result, rej) => {
 		fetch(url, {
 			method: 'put',
@@ -532,22 +558,24 @@ const zPut = async (url, body, headers) => {
 				return (res.json())
 			})
 			.then(res => {
+				removeLoading()
 				if (res.error) {
 					rej(res)
 				}
 				else {
 					result(res)
 				}
-
-				if (setLoading)
-					setLoading(false)
 			})
 	})
 }
 
 const zDelete = async (url, headers) => {
-	if (setLoading)
-		setLoading(true)
+	if (!loadingLock) {
+		if (useMiniLoading)
+			setMiniLoading(true)
+		else if (setLoading)
+			setLoading(true)
+	}
 	return new Promise((result, rej) => {
 		fetch(url, {
 			method: 'delete',
@@ -562,15 +590,13 @@ const zDelete = async (url, headers) => {
 				return (res.json())
 			})
 			.then(res => {
+				removeLoading()
 				if (res.error) {
 					rej(res)
 				}
 				else {
 					result(res)
 				}
-
-				if (setLoading)
-					setLoading(false)
 			})
 	})
 }

@@ -1,0 +1,51 @@
+{
+	"name": "Razion TaskBoard",
+	"short_name": "TaskBoard",
+	"theme_color": "#0099ff",
+	"background_color": "#101010",
+	"display": "fullscreen",
+	"start_url": "/",
+	"icons":[
+			{
+					"src": "assets/logo-72.png",
+					"sizes": "72x72",
+					"type": "image/png"
+			},
+			{
+					"src": "assets/logo-96.png",
+					"sizes": "96x96",
+					"type": "image/png"
+			},
+			{
+					"src": "assets/logo-128.png",
+					"sizes": "128x128",
+					"type": "image/png"
+			},
+			{
+					"src": "assets/logo-144.png",
+					"sizes": "144x144",
+					"type": "image/png"
+			},
+			{
+					"src": "assets/logo-152.png",
+					"sizes": "152x152",
+					"type": "image/png"
+			},
+			{
+					"src": "assets/logo-192.png",
+					"sizes": "192x192",
+					"type": "image/png"
+			},
+			{
+					"src": "assets/logo-384.png",
+					"sizes": "384x384",
+					"type": "image/png"
+			},
+			{
+					"src": "assets/logo-512.png",
+					"sizes": "512x512",
+					"type": "image/png"
+			}
+	],
+	"splash_pages": null
+}

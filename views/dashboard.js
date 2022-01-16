@@ -67,10 +67,10 @@ template.innerHTML = /*html*/`
 
 	#formContainer {
 		position: fixed;
-		inset: 0;
+		inset: 73px 0 0;
 		display: none;
 		justify-content: center;
-		align-items: center;
+		align-items: flex-start;
 	}
 
 	#shadow {
@@ -151,6 +151,8 @@ export default class Dashboard extends HTMLElement {
 					this.boards.map((board) => {
 						this.addBoardToList(board)
 					})
+					localStorage.setItem('RazionTaskboard.boards', JSON.stringify(this.boards))
+					appMenu.updateBoards(this.boards)
 				})
 				.catch((err) => {
 					errorMsg.show({message: err.error})
@@ -165,7 +167,7 @@ export default class Dashboard extends HTMLElement {
 			let input = container.querySelector('#zInput')
 			input.focus()
 			shadow.style.animation = 'fadeIn .2s linear'
-			form.style.animation = 'rollIn .5s ease-out'
+			form.style.animation = 'rollIn .2s ease-out'
 		}
 
 		this.hideForm = () => {
@@ -251,7 +253,11 @@ export default class Dashboard extends HTMLElement {
 			this.editingBoard = board
 			let event = new CustomEvent('editingBoardUpdated')
 			document.dispatchEvent(event)
-			this.boardName = board.name
+
+			this.boardName = this.editingBoard.name
+			event = new CustomEvent('boardNameUpdated')
+			document.dispatchEvent(event)
+
 			this.showForm()
 		}
 

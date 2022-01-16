@@ -36,6 +36,10 @@
 	box-shadow: inset 0px 0px 5px #00000080;
 }
 
+::-webkit-scrollbar-corner {
+	background-color: var(--darkgray1);
+}
+
 ::-webkit-scrollbar-thumb:hover {
 	background: var(--darkblue2);
 }
@@ -61,6 +65,7 @@ html, body {
 #app {
 	position: absolute;
 	inset: 0;
+	height: 100vh;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	font-size: 16px;
@@ -119,7 +124,7 @@ button:active {
 
 @keyframes rollIn {
 	from {
-		transform: translateY(-1080px);
+		transform: translateY(-500px);
 	}
 
 	to {
@@ -133,7 +138,7 @@ button:active {
 	}
 
 	to {
-		transform: translateY(-1080px);
+		transform: translateY(-500px);
 	}
 }
 
@@ -160,13 +165,13 @@ button:active {
 		transform: rotateZ(0);
 	}
 	25% {
-		transform: rotateZ(2deg);
+		transform: rotateZ(1.2deg);
 	}
 	50%{
-		transform: rotateZ(-2deg);
+		transform: rotateZ(-1.2deg);
 	}
 	75% {
-		transform: rotateZ(2deg);
+		transform: rotateZ(1.2deg);
 	}
 	100% {
 		transform: rotateZ(0);

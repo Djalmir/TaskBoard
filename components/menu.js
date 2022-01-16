@@ -55,6 +55,7 @@ template.innerHTML = /*html*/`
 			margin: 0 10px;
 			font-weight:bold;
 			text-transform: capitalize;
+			white-space: nowrap;
 		}
 
 		#menu {
@@ -65,7 +66,7 @@ template.innerHTML = /*html*/`
 			width: 100%;
 			max-width: 300px;
 			height: 100%;
-			padding: 60px 0 0;
+			padding: 40px 0 20px;
 			box-sizing: border-box;
 			z-index: 4;
 			transition: .2s;
@@ -74,7 +75,16 @@ template.innerHTML = /*html*/`
 			display: flex;
 			flex-direction: column;
 		}
+
+		#menuContainer {
+			padding: 20px 0;
+			box-sizing:border-box;
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+		}
 		
+		#menuContainer a,
 		#menu a {
 			position: relative;
 			padding: 8px;
@@ -89,22 +99,27 @@ template.innerHTML = /*html*/`
 		}
 		
 		#menu a:hover,
-		#menu a:focus {
+		#menu a:focus,
+		#menuContainer a:hover,
+		#menuContainer a:focus  {
 			opacity: 1;
 		}
 		
-		#menu a:active {
+		#menu a:active,
+		#menuContainer a:active {
 			background: linear-gradient(to top, #151515, #232323)!important;
 			transform: scale(.98)
 		}
 		
-		#menu a.active {
+		#menu a.active,
+		#menuContainer a.active {
 			background: linear-gradient(to bottom, #181818, #222222);
 			font-weight: bold;
 			opacity: 1;
 		}
 		
-		#menu a.active::before {
+		#menu a.active::before,
+		#menuContainer a.active::before {
 			content: '';
 			position: absolute;
 			top: calc(50% - 8px);
@@ -157,11 +172,9 @@ template.innerHTML = /*html*/`
 	</header>
 
 	<nav id='menu'>
-		<a href='#/' class='active'>Home</a>
-		<!-- <a href='#/login'>Login</a>
-		<a href='#/signup'>Cadastro</a> -->
 		<a href='#/dashboard'>Dashboard</a>
-		<a href='#/board'>Board</a>
+		<div id="menuContainer">
+		</div>
 		<a href="#/" @click="logout">Sair</a>
 	</nav>
 
@@ -177,6 +190,7 @@ export default class Menu extends HTMLElement {
 		//DATA
 		this.titleSpan = this.shadowRoot.querySelector('#titleSpan')
 		this.showingMenu = false
+		this.boards = []
 
 		//METODOS
 		this.showMenu = () => {
@@ -186,6 +200,7 @@ export default class Menu extends HTMLElement {
 			let menuSVG = this.shadowRoot.querySelector('#menuSVG')
 			let menu = this.shadowRoot.querySelector('#menu')
 			if (this.showingMenu) {
+				this.updateBoards(this.boards)
 				shadowDiv.style.transform = 'scale(1)'
 				shadowDiv.style.opacity = '1'
 				menuBtContainer.style.width = '300px'
@@ -225,10 +240,28 @@ export default class Menu extends HTMLElement {
 
 		this.updateActiveLink = (hash) => {
 			let menu = this.shadowRoot.querySelector('#menu')
-			menu.querySelector('.active').classList.remove('active')
-			let as = Array.from(menu.querySelectorAll('a'))
-			let activeLink = as.find(a => a.hash == hash.split('?')[0])
-			activeLink.classList.add('active')
+			let menuContainer = this.shadowRoot.querySelector('#menuContainer')
+			if (menu.querySelector('.active'))
+				menu.querySelector('.active').classList.remove('active')
+			else if (menuContainer.querySelector('.active'))
+				menuContainer.querySelector('.active').classList.remove('active')
+			let as = [...Array.from(menu.querySelectorAll('a')), ...Array.from(menuContainer.querySelectorAll('a'))]
+			let activeLink = as.find(a => a.hash == hash)
+			if (activeLink)
+				activeLink.classList.add('active')
+		}
+
+		this.updateBoards = (boards) => {
+			let container = this.shadowRoot.querySelector('#menuContainer')
+			this.boards = boards
+			container.innerHTML = ''
+			boards.map((board) => {
+				let a = container.appendChild(document.createElement('a'))
+				a.href = `#/board?id=${ board._id }`
+				a.innerText = board.name
+				if (a.hash == window.location.hash)
+					this.updateActiveLink(a.hash)
+			})
 		}
 
 		runZion(this)
