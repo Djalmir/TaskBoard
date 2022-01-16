@@ -1,5 +1,5 @@
 if ('serviceWorker' in navigator) {
-	navigator.serviceWorker.register('/TaskBoard/sw.js')
+	navigator.serviceWorker.register('./TaskBoard/sw.js')
 }
 
 let user = JSON.parse(localStorage.getItem('Razion.user'))
