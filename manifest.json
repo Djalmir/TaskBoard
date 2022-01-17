@@ -1,8 +1,8 @@
 {
 	"name": "Razion TaskBoard",
 	"short_name": "TaskBoard",
-	"theme_color": "#0099ff",
-	"background_color": "#0099ff",
+	"theme_color": "#101010",
+	"background_color": "#161616",
 	"display": "standalone",
 	"start_url": "/TaskBoard/",
 	"icons":[
