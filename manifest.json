@@ -3,7 +3,7 @@
 	"short_name": "TaskBoard",
 	"theme_color": "#0099ff",
 	"background_color": "#101010",
-	"display": "fullscreen",
+	"display": "minimal-ui",
 	"start_url": "/TaskBoard/",
 	"icons":[
 			{
