@@ -59,7 +59,7 @@ template.innerHTML = /*html*/`
 		}
 
 		#menu {
-			background: linear-gradient(315deg, var(--darkgray3), var(--darkgray1));
+			background: var(--darkgray3);
 			position: fixed;
 			top: 0;
 			left: -310px;
@@ -77,7 +77,14 @@ template.innerHTML = /*html*/`
 		}
 
 		#menuContainer {
-			padding: 20px 0;
+			padding: 4px;
+			margin: 4px;
+			border-radius: .3rem;
+			border-left: 1px solid var(--darkgray1);
+			border-top: 1px solid var(--darkgray1);
+			border-right: 1px solid var(--darkgray4);
+			border-bottom: 1px solid var(--darkgray4);
+			background: var(--darkgray2);
 			box-sizing:border-box;
 			flex: 1;
 			display: flex;
@@ -88,14 +95,26 @@ template.innerHTML = /*html*/`
 		#menu a {
 			position: relative;
 			padding: 8px;
+			margin: 2px 4px;
 			box-sizing: border-box;
 			background: linear-gradient(to top, #252525, var(--darkgray3));
-			border: none;
-			margin: 0 0 2px;
+			border-top: 1px solid var(--darkgray4);
+			border-left: 1px solid var(--darkgray4);
+			border-bottom: 1px solid var(--darkgray2);
+			border-right: 1px solid var(--darkgray2);
+			border-radius: .3rem;
 			cursor: pointer;
 			opacity: .8;
 			text-decoration: none;
 			color: #ddd;
+		}
+
+		#menuContainer a {
+			margin: 0 2px 2px;
+			border-top: 1px solid var(--darkgray4);
+			border-left: 1px solid var(--darkgray4);
+			border-bottom: 1px solid var(--darkgray1);
+			border-right: 1px solid var(--darkgray1);
 		}
 		
 		#menu a:hover,
@@ -107,15 +126,21 @@ template.innerHTML = /*html*/`
 		
 		#menu a:active,
 		#menuContainer a:active {
-			background: linear-gradient(to top, #151515, #232323)!important;
-			transform: scale(.98)
+			border-top: 1px solid var(--darkgray1);
+			border-left: 1px solid var(--darkgray1);
+			border-bottom: 1px solid var(--darkgray4);
+			border-right: 1px solid var(--darkgray4);
 		}
 		
 		#menu a.active,
 		#menuContainer a.active {
-			background: linear-gradient(to bottom, #181818, #222222);
+			border-top: 1px solid var(--darkgray1);
+			border-left: 1px solid var(--darkgray1);
+			border-bottom: 1px solid var(--darkgray4);
+			border-right: 1px solid var(--darkgray4);
 			font-weight: bold;
 			opacity: 1;
+			filter: brightness(.8);
 		}
 		
 		#menu a.active::before,
@@ -173,8 +198,8 @@ template.innerHTML = /*html*/`
 
 	<nav id='menu'>
 		<a href='#/dashboard'>Dashboard</a>
-		<div id="menuContainer">
-		</div>
+		<nav id="menuContainer">
+		</nav>
 		<a href="#/" @click="logout">Sair</a>
 	</nav>
 
