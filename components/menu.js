@@ -104,7 +104,6 @@ template.innerHTML = /*html*/`
 			border-right: 1px solid var(--darkgray2);
 			border-radius: .3rem;
 			cursor: pointer;
-			opacity: .8;
 			text-decoration: none;
 			color: #ddd;
 		}
@@ -116,14 +115,7 @@ template.innerHTML = /*html*/`
 			border-bottom: 1px solid var(--darkgray1);
 			border-right: 1px solid var(--darkgray1);
 		}
-		
-		#menu a:hover,
-		#menu a:focus,
-		#menuContainer a:hover,
-		#menuContainer a:focus  {
-			opacity: 1;
-		}
-		
+
 		#menu a:active,
 		#menuContainer a:active {
 			border-top: 1px solid var(--darkgray1);
@@ -139,7 +131,6 @@ template.innerHTML = /*html*/`
 			border-bottom: 1px solid var(--darkgray4);
 			border-right: 1px solid var(--darkgray4);
 			font-weight: bold;
-			opacity: 1;
 			filter: brightness(.8);
 		}
 		
