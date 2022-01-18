@@ -1,5 +1,10 @@
 if ('serviceWorker' in navigator) {
-	navigator.serviceWorker.register('./sw.js')
+	window.addEventListener('load', function () {
+		navigator.serviceWorker.register('./sw.js')
+			.then((res) => console.log('Service worker Registrado'))
+			.catch((err) => console.log('Erro ao registrar Service worker', err))
+
+	})
 }
 
 let user = JSON.parse(localStorage.getItem('Razion.user'))

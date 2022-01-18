@@ -1,6 +1,7 @@
 {
 	"name": "Razion TaskBoard",
 	"short_name": "TaskBoard",
+	"description": "Kambam gratuito, minimalista e de uso pessoal, que lhe permite organizar suas tarefas 'like a boss'!",
 	"theme_color": "#101010",
 	"background_color": "#161616",
 	"display": "standalone",
