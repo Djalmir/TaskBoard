@@ -78,7 +78,7 @@ export default class Login extends HTMLElement {
 						.then((res) => {
 							app.user = res.user
 							localStorage.setItem('Razion.user', JSON.stringify(app.user))
-							window.location.hash = '#/dashboard'
+							window.location.hash = '#/taskboard'
 						})
 						.catch((err) => {
 							errorMsg.show({message: err.error})

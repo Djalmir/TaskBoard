@@ -144,6 +144,12 @@ template.innerHTML = /*html*/`
 			height: 16px;
 			border-radius: 0 50% 50% 0;
 			background: var(--blue);
+			box-shadow: 1px 0px 3px #0099fff0;
+		}
+
+		#menu #taskboardBt.active::before {
+			background: var(--green);
+			box-shadow: 1px 0px 3px #77FF77f0;
 		}
 
 		#shadow {
@@ -188,7 +194,7 @@ template.innerHTML = /*html*/`
 	</header>
 
 	<nav id='menu'>
-		<a href='#/dashboard'>Dashboard</a>
+		<a href='#/taskboard' id='taskboardBt'>TaskBoard</a>
 		<nav id="menuContainer">
 		</nav>
 		<a href="#/" @click="logout">Sair</a>

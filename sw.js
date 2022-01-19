@@ -20,7 +20,7 @@ self.addEventListener('install', function (event) {
 				'/TaskBoard/services/User.js',
 				'/TaskBoard/services/Visitor.js',
 				'/TaskBoard/views/board.js',
-				'/TaskBoard/views/dashboard.js',
+				'/TaskBoard/views/taskboard.js',
 				'/TaskBoard/views/home.js',
 				'/TaskBoard/views/login.js',
 				'/TaskBoard/views/signup.js',

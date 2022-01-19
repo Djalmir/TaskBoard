@@ -389,6 +389,7 @@ export default class Board extends HTMLElement {
 				e.preventDefault()
 			}
 			listDiv.onmousedown = (e) => {
+				console.log('mouseDown this.lists', this.lists)
 				let target = e.target
 				if (Array.from(target.classList).includes('list')) {
 					this.mouseDownPos = {
@@ -462,9 +463,12 @@ export default class Board extends HTMLElement {
 				board_id: this.board
 			})
 				.then((res) => {
+					console.log('this.lists', this.lists)
+					console.log('list', this.lists[this.lists.indexOf(this.editingList)])
 					this.shadowRoot.querySelector(`#list_${ res._id }`).querySelector('.listName').innerText = res.name
-					this.lists[this.lists.indexOf(this.editingList)].name = res.name
+					this.lists[this.lists.indexOf(this.lists.find(l => l._id == this.editingList._id))].name = res.name
 					this.hideForm()
+					this.editingList = null
 				})
 				.catch((err) => {
 					errorMsg.show({message: err.error})
@@ -748,7 +752,7 @@ export default class Board extends HTMLElement {
 			if (await zionConfirm.confirm(`Quer mesmo deletar o cartão "${ card.title }"?`, 'Essa ação não poderá ser desfeita')) {
 				let theList = this.lists.find(l => l._id == list)
 				theList.cards = theList.cards.filter(c => c != card._id)
-				
+
 				User.editList({
 					cards: theList.cards
 				}, {
@@ -936,9 +940,14 @@ export default class Board extends HTMLElement {
 					let lists = Array.from(container.children).filter(c => Array.from(c.classList).includes('list'))
 					let updatedLists = []
 					lists.map((list) => {
-						updatedLists.push({_id: list.id.split('_')[1]})
+						console.log('list para add', list)
+						updatedLists.push({
+							_id: list.id.split('_')[1],
+							name: list.querySelector('.listName').innerText
+						})
 					})
 					this.lists = updatedLists
+					console.log('mouseUp this.lists', this.lists)
 
 					useMiniLoading = true
 					User.editBoard({

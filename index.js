@@ -10,7 +10,7 @@ if ('serviceWorker' in navigator) {
 let user = JSON.parse(localStorage.getItem('Razion.user'))
 if (user) {
 	app.user = user
-	window.location.hash = localStorage.getItem('RazionTaskboard.lastHash') || '#/dashboard'
+	window.location.hash = localStorage.getItem('RazionTaskboard.lastHash') || '#/taskboard'
 }
 
 let loadingLock = false

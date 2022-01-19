@@ -7,7 +7,7 @@ import Confirm from './components/confirm.js'
 import Home from './views/home.js'
 import Login from './views/login.js'
 import Signup from './views/signup.js'
-import Dashboard from './views/dashboard.js'
+import TaskBoard from './views/taskboard.js'
 import Board from './views/board.js'
 
 import User from './services/User.js'
@@ -16,7 +16,7 @@ const routes = {
 	'#/': Home,
 	'#/login': Login,
 	'#/signup': Signup,
-	'#/dashboard': Dashboard,
+	'#/taskboard': TaskBoard,
 	'#/board': Board
 }
 
