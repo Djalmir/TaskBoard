@@ -439,25 +439,25 @@ export default class Board extends HTMLElement {
 			listDiv.onmousemove = (e) => {
 				if (this.mouseDownPos) {
 					if (this.mouseMoved() && !this.draggingComponent && !e.touches) {
-						// let difX = this.mouseDownPos.x - this.currentMousePos.x
-						// if (difX < 0)
-						// 	difX = difX * -1
-						// let difY = this.mouseDownPos.y - this.currentMousePos.y
-						// if (difY < 0)
-						// 	difY = difY * -1
+						let difX = this.mouseDownPos.x - this.currentMousePos.x
+						if (difX < 0)
+							difX = difX * -1
+						let difY = this.mouseDownPos.y - this.currentMousePos.y
+						if (difY < 0)
+							difY = difY * -1
 
-						// if (difY > difX) {
-						if (!this.scrollListMouseDown)
+						if (difY > difX) {
+							if (!this.scrollListMouseDown)
+								this.scrollListMouseDown = {
+									x: this.mouseDownPos.x,
+									y: this.mouseDownPos.y
+								}
+							listContainer.scrollBy(0, this.scrollListMouseDown.y - this.currentMousePos.y)
 							this.scrollListMouseDown = {
-								x: this.mouseDownPos.x,
-								y: this.mouseDownPos.y
+								x: this.currentMousePos.x,
+								y: this.currentMousePos.y
 							}
-						listContainer.scrollBy(0, this.scrollListMouseDown.y - this.currentMousePos.y)
-						this.scrollListMouseDown = {
-							x: this.currentMousePos.x,
-							y: this.currentMousePos.y
 						}
-						// }
 					}
 					else if (this.draggingShadow) {
 						let y = this.currentMousePos.y - listContainer.offsetTop - 60
@@ -958,18 +958,18 @@ export default class Board extends HTMLElement {
 				e.preventDefault()
 			}
 			else if (this.scrollMouseDownPos) {
-				// let difX = this.scrollMouseDownPos.x - this.currentMousePos.x
-				// if (difX < 0)
-				// 	difX = difX * -1
-				// let difY = this.scrollMouseDownPos.y - this.currentMousePos.y
-				// if (difY < 0)
-				// 	difY = difY * -1
+				let difX = this.scrollMouseDownPos.x - this.currentMousePos.x
+				if (difX < 0)
+					difX = difX * -1
+				let difY = this.scrollMouseDownPos.y - this.currentMousePos.y
+				if (difY < 0)
+					difY = difY * -1
 
-				// if (difX > difY) {
-				let section = this.shadowRoot.querySelector('#section')
-				section.scrollBy(this.scrollMouseDownPos.x - this.currentMousePos.x, this.scrollMouseDownPos.y - this.currentMousePos.y)
-				this.scrollMouseDownPos = this.currentMousePos
-				// }
+				if (difX > difY) {
+					let section = this.shadowRoot.querySelector('#section')
+					section.scrollBy(this.scrollMouseDownPos.x - this.currentMousePos.x, this.scrollMouseDownPos.y - this.currentMousePos.y)
+					this.scrollMouseDownPos = this.currentMousePos
+				}
 			}
 		}
 		this.ontouchmove = this.onmousemove
@@ -1156,7 +1156,7 @@ export default class Board extends HTMLElement {
 				return false
 			return Array.from(comp.classList).includes('list')
 		}
-		
+
 		this.isCard = (comp) => {
 			return Array.from(comp.classList).includes('card')
 		}
