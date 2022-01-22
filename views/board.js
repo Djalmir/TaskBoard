@@ -1156,6 +1156,7 @@ export default class Board extends HTMLElement {
 				return false
 			return Array.from(comp.classList).includes('list')
 		}
+		
 		this.isCard = (comp) => {
 			return Array.from(comp.classList).includes('card')
 		}
