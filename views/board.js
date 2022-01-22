@@ -438,26 +438,26 @@ export default class Board extends HTMLElement {
 
 			listDiv.onmousemove = (e) => {
 				if (this.mouseDownPos) {
-					if (this.mouseMoved() && !this.draggingComponent) {
-						let difX = this.mouseDownPos.x - this.currentMousePos.x
-						if (difX < 0)
-							difX = difX * -1
-						let difY = this.mouseDownPos.y - this.currentMousePos.y
-						if (difY < 0)
-							difY = difY * -1
+					if (this.mouseMoved() && !this.draggingComponent && !e.touches) {
+						// let difX = this.mouseDownPos.x - this.currentMousePos.x
+						// if (difX < 0)
+						// 	difX = difX * -1
+						// let difY = this.mouseDownPos.y - this.currentMousePos.y
+						// if (difY < 0)
+						// 	difY = difY * -1
 
-						if (difY > difX) {
-							if (!this.scrollListMouseDown)
-								this.scrollListMouseDown = {
-									x: this.mouseDownPos.x,
-									y: this.mouseDownPos.y
-								}
-							listContainer.scrollBy(0, this.scrollListMouseDown.y - this.currentMousePos.y)
+						// if (difY > difX) {
+						if (!this.scrollListMouseDown)
 							this.scrollListMouseDown = {
-								x: this.currentMousePos.x,
-								y: this.currentMousePos.y
+								x: this.mouseDownPos.x,
+								y: this.mouseDownPos.y
 							}
+						listContainer.scrollBy(0, this.scrollListMouseDown.y - this.currentMousePos.y)
+						this.scrollListMouseDown = {
+							x: this.currentMousePos.x,
+							y: this.currentMousePos.y
 						}
+						// }
 					}
 					else if (this.draggingShadow) {
 						let y = this.currentMousePos.y - listContainer.offsetTop - 60
@@ -469,8 +469,6 @@ export default class Board extends HTMLElement {
 								container: listContainer,
 								scroll: (y - listContainer.offsetHeight / 2) / 2
 							}
-						else
-							this.listAutoScroll = null
 					}
 				}
 			}
@@ -911,7 +909,6 @@ export default class Board extends HTMLElement {
 
 						if (this.isList(target) && Array.from(target.querySelector('.listContainer').children).length == 0) {
 							container = target.querySelector('.listContainer')
-							// container.style.display = 'flex'
 							container.appendChild(this.draggingComponent)
 						}
 						else if (this.isCard(target))
@@ -961,18 +958,18 @@ export default class Board extends HTMLElement {
 				e.preventDefault()
 			}
 			else if (this.scrollMouseDownPos) {
-				let difX = this.scrollMouseDownPos.x - this.currentMousePos.x
-				if (difX < 0)
-					difX = difX * -1
-				let difY = this.scrollMouseDownPos.y - this.currentMousePos.y
-				if (difY < 0)
-					difY = difY * -1
+				// let difX = this.scrollMouseDownPos.x - this.currentMousePos.x
+				// if (difX < 0)
+				// 	difX = difX * -1
+				// let difY = this.scrollMouseDownPos.y - this.currentMousePos.y
+				// if (difY < 0)
+				// 	difY = difY * -1
 
-				if (difX > difY) {
-					let section = this.shadowRoot.querySelector('#section')
-					section.scrollBy(this.scrollMouseDownPos.x - this.currentMousePos.x, this.scrollMouseDownPos.y - this.currentMousePos.y)
-					this.scrollMouseDownPos = this.currentMousePos
-				}
+				// if (difX > difY) {
+				let section = this.shadowRoot.querySelector('#section')
+				section.scrollBy(this.scrollMouseDownPos.x - this.currentMousePos.x, this.scrollMouseDownPos.y - this.currentMousePos.y)
+				this.scrollMouseDownPos = this.currentMousePos
+				// }
 			}
 		}
 		this.ontouchmove = this.onmousemove
@@ -1022,27 +1019,10 @@ export default class Board extends HTMLElement {
 						}
 
 						if (this.oldContainer) {
-							// atualizando o oldContainer
-							let cards = Array.from(this.oldContainer.children).filter(c => Array.from(c.classList).includes('card'))
-							let updatedCards = []
-							cards.map((card) => {
-								updatedCards.push(card.id.split('_')[1])
-							})
-
-							useMiniLoading = true
-							User.editList({
-								cards: updatedCards
-							}, {
-								board_id: this.board,
-								list_id: this.oldContainer.parentElement.id.split('_')[1]
-							})
-								.then((res) => {
-									useMiniLoading = false
-								})
 
 							//atualizando o newContainer
-							cards = Array.from(newContainer.children).filter(c => Array.from(c.classList).includes('card'))
-							updatedCards = []
+							let cards = Array.from(newContainer.children).filter(c => Array.from(c.classList).includes('card'))
+							let updatedCards = []
 							cards.map((card) => {
 								updatedCards.push(card.id.split('_')[1])
 							})
@@ -1055,7 +1035,22 @@ export default class Board extends HTMLElement {
 								list_id: newContainer.parentElement.id.split('_')[1]
 							})
 								.then((res) => {
-									useMiniLoading = false
+
+									// atualizando o oldContainer
+									cards = Array.from(this.oldContainer.children).filter(c => Array.from(c.classList).includes('card'))
+									updatedCards = []
+									cards.map((card) => {
+										updatedCards.push(card.id.split('_')[1])
+									})
+									User.editList({
+										cards: updatedCards
+									}, {
+										board_id: this.board,
+										list_id: this.oldContainer.parentElement.id.split('_')[1]
+									})
+										.then((res) => {
+											useMiniLoading = false
+										})
 								})
 						}
 					}
@@ -1123,26 +1118,36 @@ export default class Board extends HTMLElement {
 		}
 
 		this.runAutoScroll = () => {
-			if (this.listAutoScroll) {
+			if (this.draggingShadow) {
 				this.autoScrolling = true
-				let container = this.listAutoScroll.container
-				let autoScroll = this.listAutoScroll.scroll
 
-				container.scrollTo(0, container.scrollTop + autoScroll / 10)
-				if (this.listAutoScroll)
-					requestAnimationFrame(this.runAutoScroll)
-				else
-					this.autoScrolling = false
-			}
-			else {
 				let section = this.shadowRoot.querySelector('#section')
-				this.autoScrolling = true
 				section.scrollTo(section.scrollLeft + this.autoScroll / 10, 0)
 				if (this.autoScroll) {
 					requestAnimationFrame(this.runAutoScroll)
 				}
-				else
-					this.autoScrolling = false
+				else {
+					if (this.listAutoScroll) {
+						let container = this.listAutoScroll.container
+						let autoScroll = this.listAutoScroll.scroll
+
+						container.scrollTo(0, container.scrollTop + autoScroll / 10)
+						if (this.listAutoScroll)
+							requestAnimationFrame(this.runAutoScroll)
+						else {
+							this.autoScrolling = false
+							this.listAutoScroll = null
+						}
+					}
+					else {
+						this.autoScrolling = false
+						this.listAutoScroll = null
+					}
+				}
+			}
+			else {
+				this.autoScrolling = false
+				this.listAutoScroll = null
 			}
 		}
 
