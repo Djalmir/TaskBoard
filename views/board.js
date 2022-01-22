@@ -130,7 +130,8 @@ template.innerHTML = /*html*/`
 		flex-direction: column;
 		gap: 5px;
 		max-height: calc(100vh - 180px);
-		overflow: scroll;
+		overflow-y: scroll;
+		overflow-x: hidden;
 		border-top: 1px solid var(--darkgray2);
 		border-left: 1px solid var(--darkgray2);
 		border-bottom: 1px solid var(--gray2);
@@ -241,7 +242,7 @@ template.innerHTML = /*html*/`
 
 	<div id="cardFormContainer">
 		<div id="cardShadow" @click="hideCardForm"></div>
-		<form action="javascript:void(0)" id="cardForm" @submit="cardSubmit" >
+		<form action="javascript:void(0)" id="cardForm" @submit="cardSubmit">
 			<z-input placeholder="Título" z-model="cardTitle" id="cardTitleInput" @focus="removeErrMsg('cardTitle')" @keydown="cardKeydown"></z-input>
 			<z-input zTag="textarea" z-model="cardDescription" zStyle="resize: none; min-height: 73px;" placeholder="Descrição" id="cardDescriptionInput" @focus="removeErrMsg('cardDescription')" @keydown="cardKeydown"></z-input>
 			<button type="submit" class="blueBt">{{editingCard?'Editar':'Adicionar'}}</button>
@@ -274,6 +275,7 @@ export default class Board extends HTMLElement {
 		this.draggingShadow = null
 		this.autoScroll = 0
 		this.autoScrolling = false
+		this.listAutoScroll = null
 		this.scrollMouseDownPos = null
 		this.newCardOwner = null
 		this.cardTitle = ''
@@ -283,6 +285,7 @@ export default class Board extends HTMLElement {
 		this.isTouchScreen = window.matchMedia('(hover: none)').matches
 		this.touchedMoreThanOnce = false // Usada para respeitar a regra de não vibrar antes do primeiro toque do usuário
 		this.shiftDown = false
+		this.scrollListMouseDown = null
 
 		let event = new CustomEvent('editingListUpdated')
 		document.dispatchEvent(event)
@@ -389,7 +392,6 @@ export default class Board extends HTMLElement {
 				e.preventDefault()
 			}
 			listDiv.onmousedown = (e) => {
-				console.log('mouseDown this.lists', this.lists)
 				let target = e.target
 				if (Array.from(target.classList).includes('list')) {
 					this.mouseDownPos = {
@@ -434,6 +436,46 @@ export default class Board extends HTMLElement {
 			let listContainer = listDiv.appendChild(document.createElement('div'))
 			listContainer.classList.add('listContainer')
 
+			listDiv.onmousemove = (e) => {
+				if (this.mouseDownPos) {
+					if (this.mouseMoved() && !this.draggingComponent) {
+						let difX = this.mouseDownPos.x - this.currentMousePos.x
+						if (difX < 0)
+							difX = difX * -1
+						let difY = this.mouseDownPos.y - this.currentMousePos.y
+						if (difY < 0)
+							difY = difY * -1
+
+						if (difY > difX) {
+							if (!this.scrollListMouseDown)
+								this.scrollListMouseDown = {
+									x: this.mouseDownPos.x,
+									y: this.mouseDownPos.y
+								}
+							listContainer.scrollBy(0, this.scrollListMouseDown.y - this.currentMousePos.y)
+							this.scrollListMouseDown = {
+								x: this.currentMousePos.x,
+								y: this.currentMousePos.y
+							}
+						}
+					}
+					else if (this.draggingShadow) {
+						let y = this.currentMousePos.y - listContainer.offsetTop - 60
+						let dif = (listContainer.offsetHeight) / 2 - y
+						if (dif < 0)
+							dif *= -1
+						if (dif > (listContainer.offsetHeight) * 33 / 100)
+							this.listAutoScroll = {
+								container: listContainer,
+								scroll: (y - listContainer.offsetHeight / 2) / 2
+							}
+						else
+							this.listAutoScroll = null
+					}
+				}
+			}
+			listDiv.ontouchmove = listDiv.onmousemove
+
 			this.updateCardsOnList(`list_${ list._id }`)
 
 			let addCardBt = listDiv.appendChild(document.createElement('button'))
@@ -463,8 +505,6 @@ export default class Board extends HTMLElement {
 				board_id: this.board
 			})
 				.then((res) => {
-					console.log('this.lists', this.lists)
-					console.log('list', this.lists[this.lists.indexOf(this.editingList)])
 					this.shadowRoot.querySelector(`#list_${ res._id }`).querySelector('.listName').innerText = res.name
 					this.lists[this.lists.indexOf(this.lists.find(l => l._id == this.editingList._id))].name = res.name
 					this.hideForm()
@@ -581,7 +621,6 @@ export default class Board extends HTMLElement {
 			else
 				this.createCard()
 		}
-
 
 		this.createCard = () => {
 			if (errorMsg.getMessages().length) {
@@ -828,7 +867,7 @@ export default class Board extends HTMLElement {
 					let dif = window.innerWidth / 2 - x
 					if (dif < 0)
 						dif *= -1
-					if (dif > window.innerWidth / 6)
+					if (dif > window.innerWidth * 33 / 100)
 						this.autoScroll = (x - window.innerWidth / 2) / 2
 					else
 						this.autoScroll = 0
@@ -922,9 +961,18 @@ export default class Board extends HTMLElement {
 				e.preventDefault()
 			}
 			else if (this.scrollMouseDownPos) {
-				let section = this.shadowRoot.querySelector('#section')
-				section.scrollBy(this.scrollMouseDownPos.x - this.currentMousePos.x, this.scrollMouseDownPos.y - this.currentMousePos.y)
-				this.scrollMouseDownPos = this.currentMousePos
+				let difX = this.scrollMouseDownPos.x - this.currentMousePos.x
+				if (difX < 0)
+					difX = difX * -1
+				let difY = this.scrollMouseDownPos.y - this.currentMousePos.y
+				if (difY < 0)
+					difY = difY * -1
+
+				if (difX > difY) {
+					let section = this.shadowRoot.querySelector('#section')
+					section.scrollBy(this.scrollMouseDownPos.x - this.currentMousePos.x, this.scrollMouseDownPos.y - this.currentMousePos.y)
+					this.scrollMouseDownPos = this.currentMousePos
+				}
 			}
 		}
 		this.ontouchmove = this.onmousemove
@@ -933,6 +981,8 @@ export default class Board extends HTMLElement {
 			this.autoScroll = 0
 			this.scrollMouseDownPos = null
 			this.mouseDownPos = null
+			this.scrollListMouseDown = null
+			this.listAutoScroll = null
 			clearTimeout(this.mouseDownTimer)
 			if (this.draggingComponent) {
 				if (this.isList(this.draggingComponent)) {
@@ -940,14 +990,12 @@ export default class Board extends HTMLElement {
 					let lists = Array.from(container.children).filter(c => Array.from(c.classList).includes('list'))
 					let updatedLists = []
 					lists.map((list) => {
-						console.log('list para add', list)
 						updatedLists.push({
 							_id: list.id.split('_')[1],
 							name: list.querySelector('.listName').innerText
 						})
 					})
 					this.lists = updatedLists
-					console.log('mouseUp this.lists', this.lists)
 
 					useMiniLoading = true
 					User.editBoard({
@@ -1075,14 +1123,27 @@ export default class Board extends HTMLElement {
 		}
 
 		this.runAutoScroll = () => {
-			let section = this.shadowRoot.querySelector('#section')
-			this.autoScrolling = true
-			section.scrollTo(section.scrollLeft + this.autoScroll / 10, 0)
-			if (this.autoScroll) {
-				requestAnimationFrame(this.runAutoScroll)
+			if (this.listAutoScroll) {
+				this.autoScrolling = true
+				let container = this.listAutoScroll.container
+				let autoScroll = this.listAutoScroll.scroll
+
+				container.scrollTo(0, container.scrollTop + autoScroll / 10)
+				if (this.listAutoScroll)
+					requestAnimationFrame(this.runAutoScroll)
+				else
+					this.autoScrolling = false
 			}
-			else
-				this.autoScrolling = false
+			else {
+				let section = this.shadowRoot.querySelector('#section')
+				this.autoScrolling = true
+				section.scrollTo(section.scrollLeft + this.autoScroll / 10, 0)
+				if (this.autoScroll) {
+					requestAnimationFrame(this.runAutoScroll)
+				}
+				else
+					this.autoScrolling = false
+			}
 		}
 
 		this.isList = (comp) => {

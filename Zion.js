@@ -9,6 +9,7 @@ const zionAttributes = [
 	'@mouseenter', 'z-on:mouseenter',
 	'@mouseleave', 'z-on:mouseleave',
 	'@mousemove', 'z-on:mousemove',
+	'@paste', 'z-on:paste',
 	'@submit', 'z-on:submit',
 
 	'z-model', 'z-for'
