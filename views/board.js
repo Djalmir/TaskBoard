@@ -659,6 +659,7 @@ export default class Board extends HTMLElement {
 							})
 								.then((res) => {
 									useMiniLoading = false
+									this.lists.find(list => list._id == res._id).cards = res.cards
 									this.addCardToList(this.newCardOwner._id, card)
 								})
 								.catch((err) => {
@@ -1081,6 +1082,7 @@ export default class Board extends HTMLElement {
 								list_id: newContainer.parentElement.id.split('_')[1]
 							})
 								.then((res) => {
+									this.lists.find(list => list._id == res._id).cards = res.cards
 
 									// atualizando o oldContainer
 									cards = Array.from(this.oldContainer.children).filter(c => Array.from(c.classList).includes('card'))
@@ -1095,6 +1097,7 @@ export default class Board extends HTMLElement {
 										list_id: this.oldContainer.parentElement.id.split('_')[1]
 									})
 										.then((res) => {
+											this.lists.find(list => list._id == res._id).cards = res.cards
 
 											// atualizando histórico do card
 											User.editCard({
