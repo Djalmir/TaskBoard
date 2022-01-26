@@ -161,6 +161,7 @@ template.innerHTML = /*html*/`
 		min-width: 225px;
 		max-width: 225px;
 		box-sizing: border-box;
+		position: relative;
 	}
 
 	.card * {
@@ -172,6 +173,14 @@ template.innerHTML = /*html*/`
 		margin-bottom: 0;
 		border: none;
 		border-bottom: 1px solid var(--gray1);
+	}
+
+	.cardHistory {
+		font-size: 12px;
+		position: absolute;
+		bottom: 2px;
+		right: 4px;
+		opacity: .5;
 	}
 
 	.addCardBt {
@@ -683,6 +692,17 @@ export default class Board extends HTMLElement {
 			cardDescription.classList.add('cardDescription')
 			cardDescription.innerText = card.description
 
+			if (card.history.length > 0) {
+				cardDescription.style.marginBottom = '30px'
+
+				let history = cardDiv.appendChild(document.createElement('sub'))
+				history.classList.add('cardHistory')
+				let lastUpdate = card.history[card.history.length - 1]
+				let date = lastUpdate.date.split(' ')[0]
+				let time = lastUpdate.date.split(' ')[1].slice(0, 5)
+				history.innerHTML = `&#x1F550 ${ date } - ${ time }`
+			}
+
 			cardDiv.oncontextmenu = (e) => {
 				if (!this.isTouchScreen && Array.from(e.target.classList).includes('card')) {
 					let theCard = this.shadowRoot.querySelector(`#card_${ card._id }`)
@@ -763,7 +783,19 @@ export default class Board extends HTMLElement {
 		this.editCard = () => {
 			User.editCard({
 				title: this.cardTitle,
-				description: this.cardDescription
+				description: this.cardDescription,
+				history: {
+					type: 'edit',
+					date: new Date().toLocaleString('pt-br'),
+					from: {
+						title: this.editingCard.title,
+						description: this.editingCard.description
+					},
+					to: {
+						title: this.cardTitle,
+						description: this.cardDescription
+					}
+				}
 			}, {
 				board_id: this.board,
 				list_id: this.newCardOwner._id,
@@ -776,12 +808,24 @@ export default class Board extends HTMLElement {
 					else if (!res.description && this.shadowRoot.querySelector(`#card_${ res._id }`).querySelector('hr'))
 						this.shadowRoot.querySelector(`#card_${ res._id }`).removeChild(this.shadowRoot.querySelector(`#card_${ res._id }`).querySelector('hr'))
 					this.shadowRoot.querySelector(`#card_${ res._id }`).querySelector('.cardDescription').innerText = res.description
+					let cardHistory = this.shadowRoot.querySelector(`#card_${ res._id }`).querySelector('.cardHistory')
+					if (!cardHistory) {
+						cardHistory = this.shadowRoot.querySelector(`#card_${ res._id }`).appendChild(document.createElement('sub'))
+						cardHistory.classList.add('cardHistory')
+					}
+					let lastUpdate = res.history[res.history.length - 1]
+					let date = lastUpdate.date.split(' ')[0]
+					let time = lastUpdate.date.split(' ')[1].slice(0, 5)
+					cardHistory.innerHTML = `&#x1F550 ${ date } - ${ time }`
 					this.editingCard.title = res.title
 					this.editingCard.description = res.description
 					this.hideCardForm()
 				})
 				.catch((err) => {
-					errorMsg.show({message: err.error})
+					if (err.error)
+						errorMsg.show({message: err.error})
+					else
+						errorMsg.show({message: err})
 				})
 		}
 
@@ -1020,38 +1064,70 @@ export default class Board extends HTMLElement {
 
 						if (this.oldContainer) {
 
-							//atualizando o newContainer
-							let cards = Array.from(newContainer.children).filter(c => Array.from(c.classList).includes('card'))
-							let updatedCards = []
-							cards.map((card) => {
-								updatedCards.push(card.id.split('_')[1])
-							})
+							if (this.oldContainer != newContainer) {
+								let cId = this.draggingComponent.id.split('_')[1]
 
-							useMiniLoading = true
-							User.editList({
-								cards: updatedCards
-							}, {
-								board_id: this.board,
-								list_id: newContainer.parentElement.id.split('_')[1]
-							})
-								.then((res) => {
-
-									// atualizando o oldContainer
-									cards = Array.from(this.oldContainer.children).filter(c => Array.from(c.classList).includes('card'))
-									updatedCards = []
-									cards.map((card) => {
-										updatedCards.push(card.id.split('_')[1])
-									})
-									User.editList({
-										cards: updatedCards
-									}, {
-										board_id: this.board,
-										list_id: this.oldContainer.parentElement.id.split('_')[1]
-									})
-										.then((res) => {
-											useMiniLoading = false
-										})
+								//atualizando o newContainer
+								let cards = Array.from(newContainer.children).filter(c => Array.from(c.classList).includes('card'))
+								let updatedCards = []
+								cards.map((card) => {
+									updatedCards.push(card.id.split('_')[1])
 								})
+
+								setMiniLoading(true)
+								loadingLock = true
+								User.editList({
+									cards: updatedCards
+								}, {
+									board_id: this.board,
+									list_id: newContainer.parentElement.id.split('_')[1]
+								})
+									.then((res) => {
+
+										// atualizando o oldContainer
+										cards = Array.from(this.oldContainer.children).filter(c => Array.from(c.classList).includes('card'))
+										updatedCards = []
+										cards.map((card) => {
+											updatedCards.push(card.id.split('_')[1])
+										})
+										User.editList({
+											cards: updatedCards
+										}, {
+											board_id: this.board,
+											list_id: this.oldContainer.parentElement.id.split('_')[1]
+										})
+											.then((res) => {
+
+												// atualizando histórico do card
+												User.editCard({
+													history: {
+														type: 'move',
+														date: new Date().toLocaleString('pt-br'),
+														from: this.oldContainer.parentElement.querySelector('.listName').innerText,
+														to: newContainer.parentElement.querySelector('.listName').innerText
+													}
+												}, {
+													board_id: this.board,
+													list_id: newContainer.parentElement.id.split('_')[1],
+													card_id: cId
+												})
+													.then((res) => {
+														let cardHistory = this.shadowRoot.querySelector(`#card_${ res._id }`).querySelector('.cardHistory')
+														if (!cardHistory) {
+															cardHistory = this.shadowRoot.querySelector(`#card_${ res._id }`).appendChild(document.createElement('sub'))
+															cardHistory.classList.add('cardHistory')
+														}
+														let lastUpdate = res.history[res.history.length - 1]
+														let date = lastUpdate.date.split(' ')[0]
+														let time = lastUpdate.date.split(' ')[1].slice(0, 5)
+														cardHistory.innerHTML = `&#x1F550 ${ date } - ${ time }`
+														loadingLock = false
+														setMiniLoading(false)
+													})
+											})
+									})
+							}
+
 						}
 					}
 				}
