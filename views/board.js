@@ -1063,71 +1063,67 @@ export default class Board extends HTMLElement {
 						}
 
 						if (this.oldContainer) {
+							let cId = this.draggingComponent.id.split('_')[1]
 
-							if (this.oldContainer != newContainer) {
-								let cId = this.draggingComponent.id.split('_')[1]
+							//atualizando o newContainer
+							let cards = Array.from(newContainer.children).filter(c => Array.from(c.classList).includes('card'))
+							let updatedCards = []
+							cards.map((card) => {
+								updatedCards.push(card.id.split('_')[1])
+							})
 
-								//atualizando o newContainer
-								let cards = Array.from(newContainer.children).filter(c => Array.from(c.classList).includes('card'))
-								let updatedCards = []
-								cards.map((card) => {
-									updatedCards.push(card.id.split('_')[1])
-								})
+							setMiniLoading(true)
+							loadingLock = true
+							User.editList({
+								cards: updatedCards
+							}, {
+								board_id: this.board,
+								list_id: newContainer.parentElement.id.split('_')[1]
+							})
+								.then((res) => {
 
-								setMiniLoading(true)
-								loadingLock = true
-								User.editList({
-									cards: updatedCards
-								}, {
-									board_id: this.board,
-									list_id: newContainer.parentElement.id.split('_')[1]
-								})
-									.then((res) => {
-
-										// atualizando o oldContainer
-										cards = Array.from(this.oldContainer.children).filter(c => Array.from(c.classList).includes('card'))
-										updatedCards = []
-										cards.map((card) => {
-											updatedCards.push(card.id.split('_')[1])
-										})
-										User.editList({
-											cards: updatedCards
-										}, {
-											board_id: this.board,
-											list_id: this.oldContainer.parentElement.id.split('_')[1]
-										})
-											.then((res) => {
-
-												// atualizando histórico do card
-												User.editCard({
-													history: {
-														type: 'move',
-														date: new Date().toLocaleString('pt-br'),
-														from: this.oldContainer.parentElement.querySelector('.listName').innerText,
-														to: newContainer.parentElement.querySelector('.listName').innerText
-													}
-												}, {
-													board_id: this.board,
-													list_id: newContainer.parentElement.id.split('_')[1],
-													card_id: cId
-												})
-													.then((res) => {
-														let cardHistory = this.shadowRoot.querySelector(`#card_${ res._id }`).querySelector('.cardHistory')
-														if (!cardHistory) {
-															cardHistory = this.shadowRoot.querySelector(`#card_${ res._id }`).appendChild(document.createElement('sub'))
-															cardHistory.classList.add('cardHistory')
-														}
-														let lastUpdate = res.history[res.history.length - 1]
-														let date = lastUpdate.date.split(' ')[0]
-														let time = lastUpdate.date.split(' ')[1].slice(0, 5)
-														cardHistory.innerHTML = `&#x1F550 ${ date } - ${ time }`
-														loadingLock = false
-														setMiniLoading(false)
-													})
-											})
+									// atualizando o oldContainer
+									cards = Array.from(this.oldContainer.children).filter(c => Array.from(c.classList).includes('card'))
+									updatedCards = []
+									cards.map((card) => {
+										updatedCards.push(card.id.split('_')[1])
 									})
-							}
+									User.editList({
+										cards: updatedCards
+									}, {
+										board_id: this.board,
+										list_id: this.oldContainer.parentElement.id.split('_')[1]
+									})
+										.then((res) => {
 
+											// atualizando histórico do card
+											User.editCard({
+												history: {
+													type: 'move',
+													date: new Date().toLocaleString('pt-br'),
+													from: this.oldContainer.parentElement.querySelector('.listName').innerText,
+													to: newContainer.parentElement.querySelector('.listName').innerText
+												}
+											}, {
+												board_id: this.board,
+												list_id: newContainer.parentElement.id.split('_')[1],
+												card_id: cId
+											})
+												.then((res) => {
+													let cardHistory = this.shadowRoot.querySelector(`#card_${ res._id }`).querySelector('.cardHistory')
+													if (!cardHistory) {
+														cardHistory = this.shadowRoot.querySelector(`#card_${ res._id }`).appendChild(document.createElement('sub'))
+														cardHistory.classList.add('cardHistory')
+													}
+													let lastUpdate = res.history[res.history.length - 1]
+													let date = lastUpdate.date.split(' ')[0]
+													let time = lastUpdate.date.split(' ')[1].slice(0, 5)
+													cardHistory.innerHTML = `&#x1F550 ${ date } - ${ time }`
+													loadingLock = false
+													setMiniLoading(false)
+												})
+										})
+								})
 						}
 					}
 				}
