@@ -640,7 +640,13 @@ export default class Board extends HTMLElement {
 				if (!errorMsg.getMessages().length) {
 					User.createCard({
 						title: this.cardTitle,
-						description: this.cardDescription
+						description: this.cardDescription,
+						history: [
+							{
+								type: 'create',
+								date: new Date().toLocaleString('pt-br')
+							}
+						]
 					}, {
 						board_id: this.board,
 						list_id: this.newCardOwner._id
