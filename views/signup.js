@@ -37,7 +37,7 @@ template.innerHTML = /*html*/`
 <link rel="stylesheet" href="style.css">
 
 <section>
-	<form id='signupForm' action='javascript:void(0)' @submit='submit' autocomplete='off' @keydown='keydown'>
+	<form id='signupForm' action='javascript:void(0)' @submit='submit' @keydown='keydown'>
 		<z-input type='text' placeholder='Nome' z-model='name' @focus="removeErrMsg('name')"></z-input>
 		<z-input id='emailInput' type='email' placeholder='E-mail' z-model='email' @focus="removeErrMsg('email')"></z-input>
 		<z-input type='password' placeholder='Senha' z-model='password' @focus="removeErrMsg('password')"></z-input>

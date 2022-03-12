@@ -4,7 +4,6 @@ template.innerHTML = /*html*/`
 <style>
 
 	section {
-		/*background: linear-gradient(to bottom, var(--darkgray1),var(--darkgray3));*/
 		padding: 40px 0;
 		text-align: center;
 	}

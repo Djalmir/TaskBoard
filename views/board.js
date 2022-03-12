@@ -306,6 +306,8 @@ export default class Board extends HTMLElement {
 				board_id: this.board
 			})
 				.then((res) => {
+					loadingLock = false
+					setLoading(false)
 					this.lists = res.filter(l => l)
 					let bt = this.shadowRoot.querySelector('#addListBt')
 					let container = this.shadowRoot.querySelector('#container')
@@ -455,17 +457,15 @@ export default class Board extends HTMLElement {
 						if (difY < 0)
 							difY = difY * -1
 
-						if (difY > difX) {
-							if (!this.scrollListMouseDown)
-								this.scrollListMouseDown = {
-									x: this.mouseDownPos.x,
-									y: this.mouseDownPos.y
-								}
-							listContainer.scrollBy(0, this.scrollListMouseDown.y - this.currentMousePos.y)
+						if (!this.scrollListMouseDown)
 							this.scrollListMouseDown = {
-								x: this.currentMousePos.x,
-								y: this.currentMousePos.y
+								x: this.mouseDownPos.x,
+								y: this.mouseDownPos.y
 							}
+						listContainer.scrollBy(0, this.scrollListMouseDown.y - this.currentMousePos.y)
+						this.scrollListMouseDown = {
+							x: this.currentMousePos.x,
+							y: this.currentMousePos.y
 						}
 					}
 					else if (this.draggingShadow) {
@@ -524,30 +524,13 @@ export default class Board extends HTMLElement {
 
 		this.showDeleteForm = async (list) => {
 			if (await zionConfirm.confirm(`Quer mesmo deletar a lista "${ list.name }"?`, 'Essa ação não poderá ser desfeita')) {
-				//REMOVER TODOS OS CARDS RELATIVOS À LISTA
 
-				this.lists = this.lists.filter(l => l._id !== list._id)
+				this.shadowRoot.querySelector('#container').removeChild(this.shadowRoot.querySelector(`#list_${ list._id }`))
 
-				useMiniLoading = true
-				User.editBoard(({
-					board_id: this.board,
-					lists: this.lists
-				}))
-					.then(() => {
-						User.deleteList(list._id, {
-							board_id: this.board
-						})
-							.then(() => {
-								useMiniLoading = false
-								this.updateListsView()
-							})
-							.catch((err) => {
-								useMiniLoading = false
-								errorMsg.show({message: err.error})
-							})
-					})
+				User.deleteList(list._id, {
+					board_id: this.board
+				})
 					.catch((err) => {
-						useMiniLoading = false
 						errorMsg.show({message: err.error})
 					})
 			}
@@ -841,26 +824,17 @@ export default class Board extends HTMLElement {
 				let theList = this.lists.find(l => l._id == list)
 				theList.cards = theList.cards.filter(c => c != card._id)
 
-				User.editList({
-					cards: theList.cards
-				}, {
+				let theCard = this.shadowRoot.querySelector(`#card_${ card._id }`)
+				let parent = theCard.parentElement
+				parent.removeChild(theCard)
+
+				useMiniLoading = true
+				User.deleteCard(card._id, {
 					board_id: this.board,
 					list_id: list
 				})
 					.then((res) => {
-						let theCard = this.shadowRoot.querySelector(`#card_${ card._id }`)
-						let parent = theCard.parentElement
-						parent.removeChild(theCard)
-					})
-					.then(() => {
-						useMiniLoading = true
-						User.deleteCard(card._id, {
-							board_id: this.board,
-							list_id: list
-						})
-							.then((res) => {
-								useMiniLoading = false
-							})
+						useMiniLoading = false
 					})
 			}
 		}
@@ -1016,11 +990,9 @@ export default class Board extends HTMLElement {
 				if (difY < 0)
 					difY = difY * -1
 
-				if (difX > difY) {
-					let section = this.shadowRoot.querySelector('#section')
-					section.scrollBy(this.scrollMouseDownPos.x - this.currentMousePos.x, this.scrollMouseDownPos.y - this.currentMousePos.y)
-					this.scrollMouseDownPos = this.currentMousePos
-				}
+				let section = this.shadowRoot.querySelector('#section')
+				section.scrollBy(this.scrollMouseDownPos.x - this.currentMousePos.x, this.scrollMouseDownPos.y - this.currentMousePos.y)
+				this.scrollMouseDownPos = this.currentMousePos
 			}
 		}
 		this.ontouchmove = this.onmousemove
@@ -1037,18 +1009,24 @@ export default class Board extends HTMLElement {
 					let container = this.shadowRoot.querySelector('#container')
 					let lists = Array.from(container.children).filter(c => Array.from(c.classList).includes('list'))
 					let updatedLists = []
+					let listsIds = []
 					lists.map((list) => {
+						let cards = Array.from(list.querySelectorAll('.card')).map((card) => {
+							return card.id.split('_')[1]
+						})
 						updatedLists.push({
 							_id: list.id.split('_')[1],
-							name: list.querySelector('.listName').innerText
+							name: list.querySelector('.listName').innerText,
+							cards: cards
 						})
+						listsIds.push(list.id.split('_')[1])
 					})
 					this.lists = updatedLists
 
 					useMiniLoading = true
 					User.editBoard({
 						board_id: this.board,
-						lists: this.lists
+						lists: listsIds
 					})
 						.then((res) => {
 							useMiniLoading = false

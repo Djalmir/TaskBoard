@@ -40,15 +40,15 @@ function onRouteChanged() {
 		appMenu.titleSpan.innerText = ''
 		let img = appMenu.titleSpan.appendChild(document.createElement('img'))
 		img.src = './assets/loading.svg'
-		img.style.width = '24px';
+		img.style.width = '24px'
 
 		let hashName = hash.replace(/[#/]/g, '').split('?')[0]
 		if (hashName.toLowerCase() == 'board') {
+			setLoading(true)
 			loadingLock = true
 			User.getBoardName(hash.replace(/[#/]/g, '').split('=')[1])
 				.then((res) => {
 					appMenu.titleSpan.innerText = res.name
-					loadingLock = false
 				})
 		}
 		else

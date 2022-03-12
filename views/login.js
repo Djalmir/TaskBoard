@@ -37,7 +37,7 @@ template.innerHTML = /*html*/`
 	</style>
 
 	<section>			<!--javascript:void(0) faz com que o form não tenha nenhuma action-->
-		<form action='javascript:void(0)' @submit='submit' autocomplete='off'>
+		<form action='javascript:void(0)' @submit='submit'>
 			<z-input id='emailInput' type='email' placeholder='E-mail' z-model='email' @keydown='keydown' @focus="removeErrMsg('email')" z-autofocus></z-input>
 			<z-input type='password' placeholder='Senha' z-model='password' @keydown='keydown' @focus="removeErrMsg('password')"></z-input>
 			<button type='submit' class='blueBt'>Entrar</button>
