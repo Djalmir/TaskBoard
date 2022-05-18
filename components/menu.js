@@ -78,21 +78,21 @@ template.innerHTML = /*html*/`
 
 		#menuContainer {
 			padding: 4px;
-			margin: 4px;
+			margin: 13px 4px;
 			border-radius: .3rem;
-			border-left: 1px solid var(--darkgray1);
+			/*border-left: 1px solid var(--darkgray1);
 			border-top: 1px solid var(--darkgray1);
 			border-right: 1px solid var(--darkgray4);
 			border-bottom: 1px solid var(--darkgray4);
-			background: var(--darkgray2);
+			background: var(--darkgray2);*/
 			box-sizing:border-box;
 			flex: 1;
 			display: flex;
 			flex-direction: column;
 		}
 		
-		#menuContainer a,
-		#menu a {
+		#menuContainer button,
+		#menu button {
 			position: relative;
 			padding: 8px;
 			margin: 2px 4px;
@@ -108,7 +108,7 @@ template.innerHTML = /*html*/`
 			color: #ddd;
 		}
 
-		#menuContainer a {
+		#menuContainer button {
 			margin: 0 2px 2px;
 			border-top: 1px solid var(--darkgray4);
 			border-left: 1px solid var(--darkgray4);
@@ -116,16 +116,17 @@ template.innerHTML = /*html*/`
 			border-right: 1px solid var(--darkgray1);
 		}
 
-		#menu a:active,
-		#menuContainer a:active {
+		#menu button:active,
+		#menuContainer button:active {
+			transform: none;
 			border-top: 1px solid var(--darkgray1);
 			border-left: 1px solid var(--darkgray1);
 			border-bottom: 1px solid var(--darkgray4);
 			border-right: 1px solid var(--darkgray4);
 		}
 		
-		#menu a.active,
-		#menuContainer a.active {
+		#menu button.active,
+		#menuContainer button.active {
 			border-top: 1px solid var(--darkgray1);
 			border-left: 1px solid var(--darkgray1);
 			border-bottom: 1px solid var(--darkgray4);
@@ -134,8 +135,8 @@ template.innerHTML = /*html*/`
 			filter: brightness(.8);
 		}
 		
-		#menu a.active::before,
-		#menuContainer a.active::before {
+		#menu button.active::before,
+		#menuContainer button.active::before {
 			content: '';
 			position: absolute;
 			top: calc(50% - 8px);
@@ -194,10 +195,10 @@ template.innerHTML = /*html*/`
 	</header>
 
 	<nav id='menu'>
-		<a href='#/taskboard' id='taskboardBt'>TaskBoard</a>
+		<button data-hash='#/taskboard' @click="goTo('#/taskboard')" id='taskboardBt'>TaskBoard</button>
 		<nav id="menuContainer">
 		</nav>
-		<a href="#/" @click="logout">Sair</a>
+		<button @click="logout">Sair</button>
 	</nav>
 
 	<div id='shadow' @click='showMenu'></div>
@@ -254,6 +255,10 @@ export default class Menu extends HTMLElement {
 			}
 		}
 
+		this.goTo = (hash) => {
+			location.hash = hash
+		}
+
 		this.removeShadow = () => {
 			let shadowDiv = this.shadowRoot.querySelector('#shadow')
 			shadowDiv.removeEventListener('transitionend', this.removeShadow)
@@ -267,8 +272,8 @@ export default class Menu extends HTMLElement {
 				menu.querySelector('.active').classList.remove('active')
 			else if (menuContainer.querySelector('.active'))
 				menuContainer.querySelector('.active').classList.remove('active')
-			let as = [...Array.from(menu.querySelectorAll('a')), ...Array.from(menuContainer.querySelectorAll('a'))]
-			let activeLink = as.find(a => a.hash == hash)
+			let buttons = [...Array.from(menu.querySelectorAll('button')), ...Array.from(menuContainer.querySelectorAll('button'))]
+			let activeLink = buttons.find(button => button.getAttribute('data-hash') == hash)
 			if (activeLink)
 				activeLink.classList.add('active')
 		}
@@ -278,11 +283,12 @@ export default class Menu extends HTMLElement {
 			this.boards = boards
 			container.innerHTML = ''
 			boards.map((board) => {
-				let a = container.appendChild(document.createElement('a'))
-				a.href = `#/board?id=${ board._id }`
-				a.innerText = board.name
-				if (a.hash == window.location.hash)
-					this.updateActiveLink(a.hash)
+				let button = container.appendChild(document.createElement('button'))
+				button.onclick = () => this.goTo(`#/board?id=${ board._id }`)
+				button.setAttribute('data-hash', `#/board?id=${ board._id }`)
+				button.innerText = board.name
+				if (button.getAttribute('data-hash') == window.location.hash)
+					this.updateActiveLink(button.getAttribute('data-hash'))
 			})
 		}
 
