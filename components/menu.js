@@ -66,7 +66,7 @@ template.innerHTML = /*html*/`
 			width: 100%;
 			max-width: 300px;
 			height: 100%;
-			padding: 40px 0 20px;
+			padding: 43px 0 3px;
 			box-sizing: border-box;
 			z-index: 4;
 			transition: .2s;
@@ -77,7 +77,7 @@ template.innerHTML = /*html*/`
 		}
 
 		#menuContainer {
-			padding: 4px;
+			padding: 4px 0;
 			margin: 13px 4px;
 			border-radius: .3rem;
 			/*border-left: 1px solid var(--darkgray1);
@@ -116,6 +116,18 @@ template.innerHTML = /*html*/`
 			border-right: 1px solid var(--darkgray1);
 		}
 
+		#menu button::before,
+		#menuContainer button::before {
+			content: '';
+			position: absolute;
+			top: calc(50% - 8px);
+			left: 0;
+			width: 2px;
+			height: 16px;
+			border-radius: 0 50% 50% 0;
+			background: var(--darkgray1);
+		}
+
 		#menu button:active,
 		#menuContainer button:active {
 			transform: none;
@@ -123,6 +135,22 @@ template.innerHTML = /*html*/`
 			border-left: 1px solid var(--darkgray1);
 			border-bottom: 1px solid var(--darkgray4);
 			border-right: 1px solid var(--darkgray4);
+		}
+
+		#menu button:active::before,
+		#menuContainer button:active::before {
+			background: var(--blue);
+			box-shadow: 1px 0px 3px #0099fff0;
+		}
+
+		#menu #taskboardBt:active::before {
+			background: var(--green);
+			box-shadow: 1px 0px 3px #77FF77f0;
+		}
+
+		#menu #logoutBt:active::before {
+			background: var(--red);
+			box-shadow: 1px 0px 3px #FF5555f0;
 		}
 		
 		#menu button.active,
@@ -137,13 +165,6 @@ template.innerHTML = /*html*/`
 		
 		#menu button.active::before,
 		#menuContainer button.active::before {
-			content: '';
-			position: absolute;
-			top: calc(50% - 8px);
-			left: 0;
-			width: 2px;
-			height: 16px;
-			border-radius: 0 50% 50% 0;
 			background: var(--blue);
 			box-shadow: 1px 0px 3px #0099fff0;
 		}
@@ -198,7 +219,7 @@ template.innerHTML = /*html*/`
 		<button data-hash='#/taskboard' @click="goTo('#/taskboard')" id='taskboardBt'>TaskBoard</button>
 		<nav id="menuContainer">
 		</nav>
-		<button @click="logout">Sair</button>
+		<button id="logoutBt" @click="logout">Sair</button>
 	</nav>
 
 	<div id='shadow' @click='showMenu'></div>
