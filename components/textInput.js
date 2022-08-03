@@ -54,11 +54,19 @@ template.innerHTML = /*html*/`
 	:focus {
 		box-shadow: inset 0 0 5px #0000004d;
 	}
+
+	:-webkit-autofill,
+	:-webkit-autofill:hover,
+	:-webkit-autofill:focus {
+		-webkit-box-shadow: inset 0 0 5px #0000004d, inset 0 0 0 1000px var(--gray2);
+		box-shadow: inset 0 0 5px #0000004d, inset 0 0 0 1000px var(--gray2);
+		-webkit-text-fill-color: var(--white)!important;
+	}
 </style>
 <link rel="stylesheet" href="style.css">
 
 <span id='span'>
-	<input type='text' id='input' @focus='setActiveClass' @blur='removeActiveClass'/>
+	<input type='text' id='input' z-onfocus='setActiveClass' z-onblur='removeActiveClass'/>
 	<label for='input' id='label'></label>
 </span>
 `
@@ -72,12 +80,11 @@ export default class TextInput extends HTMLElement {
 		this.zTag = this.getAttribute('zTag')
 
 		if (this.zTag) {
-
 			let span = this.shadowRoot.querySelector('#span')
 			let newComp = document.createElement(this.zTag)
 			newComp.id = `${ this.zTag }ZionInput`
-			newComp.setAttribute('zion_focus', 'setActiveClass')
-			newComp.setAttribute('zion_blur', 'removeActiveClass')
+			newComp.setAttribute('z-onfocus', 'setActiveClass')
+			newComp.setAttribute('z-onblur', 'removeActiveClass')
 			newComp.setAttribute('style', `
 				background: var(--gray2);
 				border: none;
@@ -111,63 +118,79 @@ export default class TextInput extends HTMLElement {
 			span.insertBefore(newComp, oldComp)
 			span.removeChild(oldComp)
 		}
+		else if (!this.getAttribute('type'))
+			this.setAttribute('type', 'text')
+
+		this.input = this.shadowRoot.querySelector(this.zTag ? `#${ this.zTag }ZionInput` : '#input')
+		this.label = this.shadowRoot.querySelector(this.zTag ? `#${ this.zTag }Label` : '#label')
 
 		this.focus = () => {
-			this.shadowRoot.querySelector(this.zTag ? `#${ this.zTag }ZionInput` : '#input').focus()
+			this.input.focus()
 		}
 
 		this.setActiveClass = () => {
-			let label = this.shadowRoot.querySelector(this.zTag ? `#${ this.zTag }Label` : '#label')
-			if (label.classList.length > 0) {
-				if (!Array.from(label.classList).includes('active'))
-					label.classList.add('active')
+			if (this.label.classList.length > 0) {
+				if (!Array.from(this.label.classList).includes('active'))
+					this.label.classList.add('active')
 			}
 			else
-				label.classList.add('active')
+				this.label.classList.add('active')
 		}
 
 		this.removeActiveClass = () => {
-			let label = this.shadowRoot.querySelector(this.zTag ? `#${ this.zTag }Label` : '#label')
-			let input = this.shadowRoot.querySelector(this.zTag ? `#${ this.zTag }ZionInput` : '#input')
-			if (input.value == '') {
-				if (label.classList.length > 0) {
-					if (Array.from(label.classList).includes('active'))
-						label.classList.remove('active')
+			if (this.input.value.trim() == '') {
+				if (this.label.classList.length > 0) {
+					if (Array.from(this.label.classList).includes('active'))
+						this.label.classList.remove('active')
 				}
 			}
 		}
 
 		this.checkValidity = () => {
-			return this.shadowRoot.querySelector(this.zTag ? `#${ this.zTag }ZionInput` : '#input').checkValidity()
+			return this.input.checkValidity()
 		}
 
-		this.shadowRoot.querySelector(this.zTag ? `#${ this.zTag }Label` : '#label').innerText = this.getAttribute('placeholder')
+		this.label.innerText = this.getAttribute('placeholder')
 		if (this.getAttribute('type'))
-			this.shadowRoot.querySelector(this.zTag ? `#${ this.zTag }ZionInput` : '#input').type = this.getAttribute('type')
+			this.input.type = this.getAttribute('type')
 
 		let style = this.getAttribute('zStyle')
 		if (style) {
-			let input = this.shadowRoot.querySelector(this.zTag ? `#${ this.zTag }ZionInput` : '#input')
 			style = style.split(';')
 			style.map((prop) => {
 				prop = prop.split(':')
-				prop.map((p,index)=>{
+				prop.map((p, index) => {
 					prop[index] = p.trim()
 				})
-				input.style[prop[0]] = prop[1]
+				this.input.style[prop[0]] = prop[1]
 			})
-			
 		}
 
-		runZion(this)
-	}
-
-	connectedCallback() {
-		if (Array.from(this.attributes).find(attr => attr.nodeName == 'z-autofocus')) {
-			this.focus()
+		this.checkClass = () => {
+			if (this.input.value.trim())
+				this.setActiveClass()
+			else if (this.shadowRoot.activeElement != this.input)
+				this.removeActiveClass()
 		}
-	}
 
+		document.addEventListener('updated', (e) => {
+			if (e.detail.component == this.input) {
+				this.checkClass()
+			}
+		})
+
+		ZION(this)
+			.then(() => {
+				if (this.input.value.trim())
+					this.setActiveClass()
+				else
+					this.removeActiveClass()
+
+				if (Array.from(this.attributes).find(attr => attr.nodeName == 'z-autofocus')) {
+					this.focus()
+				}
+			})
+	}
 }
 
 customElements.define('z-input', TextInput)

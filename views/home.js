@@ -50,6 +50,10 @@ template.innerHTML = /*html*/`
 		max-width: 460px;
 	}
 
+	.welcomeDiv h1 {
+		margin: 17px 0;
+	}
+
 	#successMsgContainer{
 		position: fixed;
 		top: 0;
@@ -163,9 +167,10 @@ template.innerHTML = /*html*/`
 				</div>
 				<div class="formDiv">
 					<view-login id="loginForm"></view-login>
+					<br>
 					<p>
 						Ainda não tem um cadastro?<br/>
-						<a href="javascript:void(0)" z-on:click="goTo('signup')" >clique aqui</a> e cadastre-se gratuitamente!
+						<a href="javascript:void(0)" z-onclick="goTo('signup')" >clique aqui</a> e cadastre-se gratuitamente!
 					</p>
 				</div>
 			</div>
@@ -181,9 +186,10 @@ template.innerHTML = /*html*/`
 				</div>
 				<div class="formDiv">
 					<view-signup id="signupForm"></view-signup>
+					<br>
 					<p>
 						Já tem um cadastro?<br/>
-						<a href="javascript:void(0)" z-on:click="goTo('login')" >clique aqui</a> para entrar!
+						<a href="javascript:void(0)" z-onclick="goTo('login')" >clique aqui</a> para entrar!
 					</p>
 				</div>
 			</div>
@@ -258,7 +264,7 @@ export default class Home extends HTMLElement {
 					window.location.hash = '#/taskboard'
 				})
 				.catch((err) => {
-					errorMsg.show({message: err.error})
+					errorMsg.show({message: err.error, field: err.field})
 				})
 		}
 
@@ -278,8 +284,6 @@ export default class Home extends HTMLElement {
 				}
 			}, 1000)
 		})
-
-		runZion(this)
 	}
 }
 

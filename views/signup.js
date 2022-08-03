@@ -37,11 +37,11 @@ template.innerHTML = /*html*/`
 <link rel="stylesheet" href="style.css">
 
 <section>
-	<form id='signupForm' action='javascript:void(0)' @submit='submit' @keydown='keydown'>
-		<z-input type='text' placeholder='Nome' z-model='name' @focus="removeErrMsg('name')"></z-input>
-		<z-input id='emailInput' type='email' placeholder='E-mail' z-model='email' @focus="removeErrMsg('email')"></z-input>
-		<z-input type='password' placeholder='Senha' z-model='password' @focus="removeErrMsg('password')"></z-input>
-		<z-input type='password' placeholder='Confirme sua Senha' z-model='confirmPassword' @focus="removeErrMsg('confirmPassword')"></z-input>
+	<form id='signupForm' action='javascript:void(0)' z-onsubmit='submit' z-onkeydown='keydown'>
+		<z-input type='text' placeholder='Nome' z-model='name' z-onfocus="removeErrMsg('name')"></z-input>
+		<z-input id='emailInput' type='email' placeholder='E-mail' z-model='email' z-onfocus="removeErrMsg('email')"></z-input>
+		<z-input type='password' placeholder='Senha' z-model='password' z-onfocus="removeErrMsg('password')"></z-input>
+		<z-input type='password' placeholder='Confirme sua Senha' z-model='confirmPassword' z-onfocus="removeErrMsg('confirmPassword')"></z-input>
 		<button type='submit' class='blueBt'>Cadastrar</button>
 	</form>
 </section>
@@ -61,7 +61,7 @@ export default class Signup extends HTMLElement {
 
 		this.submit = () => {
 			if(errorMsg.getMessages().length)
-				errorMsg.callAtention()
+				errorMsg.callAttention()
 			else{
 				if (this.password != this.confirmPassword) {
 					errorMsg.show({field: 'confirmPassword', message: 'As senhas não coincidem'})
@@ -116,7 +116,7 @@ export default class Signup extends HTMLElement {
 				this.submit()
 		}
 
-		runZion(this)
+		ZION(this)
 	}
 }
 

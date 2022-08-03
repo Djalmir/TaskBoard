@@ -192,7 +192,7 @@ template.innerHTML = /*html*/`
 
 	<header id='header'>
 		<div id='menuBtContainer'>
-			<button id='menuBt' z-on:click='showMenu'>
+			<button id='menuBt' z-onclick='showMenu'>
 				<svg id = "menuSVG" viewBox = "0 0 32 32" >
 					<g style="stroke-width:6; stroke-linecap:round;">
 						<line x1="3" y1="3" x2="29" y2="3">
@@ -216,13 +216,13 @@ template.innerHTML = /*html*/`
 	</header>
 
 	<nav id='menu'>
-		<button data-hash='#/taskboard' @click="goTo('#/taskboard')" id='taskboardBt'>TaskBoard</button>
+		<button data-hash='#/taskboard' z-onclick="goTo('#/taskboard')" id='taskboardBt'>TaskBoard</button>
 		<nav id="menuContainer">
 		</nav>
-		<button id="logoutBt" @click="logout">Sair</button>
+		<button id="logoutBt" z-onclick="logout">Sair</button>
 	</nav>
 
-	<div id='shadow' @click='showMenu'></div>
+	<div id='shadow' z-onclick='showMenu'></div>
 `
 
 export default class Menu extends HTMLElement {
@@ -312,8 +312,7 @@ export default class Menu extends HTMLElement {
 					this.updateActiveLink(button.getAttribute('data-hash'))
 			})
 		}
-
-		runZion(this)
+		ZION(this)
 	}
 
 	connectedCallback() {

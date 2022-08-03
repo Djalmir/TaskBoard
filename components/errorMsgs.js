@@ -24,18 +24,18 @@ export default class ErrorMsgs extends HTMLElement {
 
 			.errorMsg {
 				box-sizing: border-box;
-				background: var(--darkgray3);
+				background: var(--darkgray2);
 				display: flex;
 				align-items: center;
 				gap: 15px;
-				padding: 10px 14px;
+				padding: 7px 14px;
 				box-sizing: border-box;
 				transition: .2s;
 				border-radius: .2rem;
-				border-left: 1px solid var(--gray1);
-				border-top: 1px solid var(--gray1);
-				border-right: 1px solid var(--darkgray2);
-				border-bottom: 1px solid var(--darkgray2);
+				border-left: 1px solid var(--darkgray5);
+				border-top: 1px solid var(--darkgray5);
+				border-right: 1px solid var(--darkgray1);
+				border-bottom: 1px solid var(--darkgray1);
 			}
 			
 			.errorMsgText {
@@ -48,7 +48,7 @@ export default class ErrorMsgs extends HTMLElement {
 				width: 32px;
 				height: 32px;
 				border-radius: 30%;
-				background: transparent;
+				background: var(--darkgray3);
 				cursor: pointer;
 				display: flex;
 				align-items: center;
@@ -56,26 +56,30 @@ export default class ErrorMsgs extends HTMLElement {
 				border-top: 1px solid var(--gray1);
 				border-right: 1px solid var(--darkgray2);
 				border-bottom: 1px solid var(--darkgray2);
-				transition: .2s;
+				filter: brightness(.8);
 			}
 
 			.closeErrorBtn:hover,
 			.closeErrorBtn:focus {
-				transform: scale(1.04);
+				filter: brightness(1);
 			}
 
 			.closeErrorBtn:active {
-				transform scale(.98);
+				filter: brightness(.8);
 				border-left: 1px solid var(--darkgray2);
 				border-top: 1px solid var(--darkgray2);
-				border-right: 1px solid var(--gray1);
-				border-bottom: 1px solid var(--gray1);
+				border-right: 1px solid var(--darkgray4);
+				border-bottom: 1px solid var(--darkgray4);
 			}
 
 			.closeErrorBtn svg {
 				stroke: var(--red);
 				stroke-width: 3;
 				stroke-linecap: round;
+			}
+
+			button {
+				margin: 0;
 			}
 
 			@keyframes show {
@@ -95,6 +99,24 @@ export default class ErrorMsgs extends HTMLElement {
 
 				to {
 					transform: translateX(125%);
+				}
+			}
+
+			@keyframes attention {
+				0% {
+					transform: rotateZ(0);
+				}
+				25% {
+					transform: rotateZ(5deg);
+				}
+				50%{
+					transform: rotateZ(-5deg);
+				}
+				75% {
+					transform: rotateZ(5deg);
+				}
+				100% {
+					transform: rotateZ(0);
 				}
 			}
 		`
@@ -166,14 +188,14 @@ export default class ErrorMsgs extends HTMLElement {
 			})
 		}
 
-		this.callAtention = () => {
-			navigator.vibrate(['100', '50', '200'])
+		this.callAttention = () => {
+			navigator.vibrate(['100', '50', '150','50','50'])
 			Array.from(wrapper.children).map((errorMsg) => {
 				const removeAnimation = () => {
 					errorMsg.style.animation = ''
 					errorMsg.removeEventListener('animationend', removeAnimation)
 				}
-				errorMsg.style.animation = 'atention .2s linear 2'
+				errorMsg.style.animation = 'attention .2s linear 2'
 				errorMsg.addEventListener('animationend', removeAnimation)
 			})
 		}

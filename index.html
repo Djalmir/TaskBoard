@@ -23,16 +23,22 @@
 	</head>
 
 	<body>
+
+		<div id="app">
+			<img src="./assets/loading.svg" style="width: 4em; position: absolute; top: 25%; left: 50%; transform: translate(-50%, -50%); filter: drop-shadow(0 0 10px #09f);">
+		</div>
+
 		<z-menu id="appMenu"></z-menu>
 		<error-msgs id="errorMsg"></error-msgs>
 		<sub-menu id="subMenu"></sub-menu>
 		<zion-confirm id="zionConfirm"></zion-confirm>
-
-		<div id="app"></div>
+		<zion-loading id="appLoading"></zion-loading>
 
 		<!-- <script src="https://cdn.jsdelivr.net/gh/Djalmir/consoleMobile@0.1.8/console.js"></script> -->
 		<script src="index.js"></script>
-		<script src="Zion.js"></script>
+		<!-- <script src="Zion old.js"></script> -->
+		<!-- <script src="zion.js"></script> -->
+		<script src="https://cdn.jsdelivr.net/gh/Djalmir/ZionJS/zion.js"></script>
 		<script src="app.js" type="module"></script>
 	</body>
 

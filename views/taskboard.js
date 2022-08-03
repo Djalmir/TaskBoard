@@ -107,7 +107,7 @@ template.innerHTML = /*html*/`
 
 <section>
 	<div id="container">
-		<button class="board" id="addBoardBt" @click="showForm">
+		<button class="board" id="addBoardBt" z-onclick="showForm">
 			<b>
 				+
 			</b>
@@ -118,10 +118,10 @@ template.innerHTML = /*html*/`
 	</div>
 
 	<div id="formContainer">
-		<div id="shadow" @click="hideForm"></div>
-		<form action="javascript:void(0)" id="form" @submit="submit">
-			<z-input placeholder="Nome do Quadro" z-model="boardName" id="zInput" @focus="removeErrMsg('name')" @keydown="keydown"></z-input>
-			<button type="submit" class="blueBt">{{editingBoard?'Renomear':'Adicionar'}}</button>
+		<div id="shadow" z-onclick="hideForm"></div>
+		<form action="javascript:void(0)" id="form" z-onsubmit="submit">
+			<z-input placeholder="Nome do Quadro" z-model="boardName" id="zInput" z-onfocus="removeErrMsg('name')" z-onkeydown="keydown"></z-input>
+			<button type="submit" class="blueBt">{{this.editingBoard?'Renomear':'Adicionar'}}</button>
 		</form>
 	</div>
 
@@ -203,7 +203,7 @@ export default class TaskBoard extends HTMLElement {
 
 		this.createBoard = () => {
 			if (errorMsg.getMessages().length) {
-				errorMsg.callAtention()
+				errorMsg.callAttention()
 			}
 			else {
 				if (this.boardName.trim() == '')
@@ -295,7 +295,7 @@ export default class TaskBoard extends HTMLElement {
 				this.submit()
 		}
 
-		runZion(this)
+		// runZion(this)
 	}
 
 	connectedCallback() {

@@ -170,7 +170,7 @@ template.innerHTML = /*html*/`
 	}
 
 	.card hr {
-		margin-bottom: 0;
+		margin: 7px 0 13px;
 		border: none;
 		border-bottom: 1px solid var(--gray1);
 	}
@@ -231,7 +231,7 @@ template.innerHTML = /*html*/`
 
 <section id="section">
 	<div id="container">
-		<button id="addListBt" @click="showForm">
+		<button id="addListBt" z-onclick="showForm">
 			<b>
 				+
 			</b>
@@ -242,18 +242,18 @@ template.innerHTML = /*html*/`
 	</div>
 
 	<div id="formContainer">
-		<div id="shadow" @click="hideForm"></div>
-		<form action="javascript:void(0)" id="form" @submit="submit">
-			<z-input placeholder="Nome da Lista" z-model="listName" id="zInput" @focus="removeErrMsg('name')" @keydown="keydown"></z-input>
+		<div id="shadow" z-onclick="hideForm"></div>
+		<form action="javascript:void(0)" id="form" z-onsubmit="submit">
+			<z-input placeholder="Nome da Lista" z-model="listName" id="zInput" z-onfocus="removeErrMsg('name')" z-onkeydown="keydown"></z-input>
 			<button type="submit" class="blueBt">{{editingList?'Renomear':'Adicionar'}}</button>
 		</form>
 	</div>
 
 	<div id="cardFormContainer">
-		<div id="cardShadow" @click="hideCardForm"></div>
-		<form action="javascript:void(0)" id="cardForm" @submit="cardSubmit">
-			<z-input placeholder="Título" z-model="cardTitle" id="cardTitleInput" @focus="removeErrMsg('cardTitle')" @keydown="cardKeydown"></z-input>
-			<z-input zTag="textarea" z-model="cardDescription" zStyle="resize: none; min-height: 73px;" placeholder="Descrição" id="cardDescriptionInput" @focus="removeErrMsg('cardDescription')" @keydown="cardKeydown"></z-input>
+		<div id="cardShadow" z-onclick="hideCardForm"></div>
+		<form action="javascript:void(0)" id="cardForm" z-onsubmit="cardSubmit">
+			<z-input placeholder="Título" z-model="cardTitle" id="cardTitleInput" z-onfocus="removeErrMsg('cardTitle')" z-onkeydown="cardKeydown"></z-input>
+			<z-input zTag="textarea" z-model="cardDescription" zStyle="resize: none; min-height: 73px;" placeholder="Descrição" id="cardDescriptionInput" z-onfocus="removeErrMsg('cardDescription')" z-onkeydown="cardKeydown"></z-input>
 			<button type="submit" class="blueBt">{{editingCard?'Editar':'Adicionar'}}</button>
 		</form>
 	</div>
@@ -307,7 +307,7 @@ export default class Board extends HTMLElement {
 			})
 				.then((res) => {
 					loadingLock = false
-					setLoading(false)
+					appLoading.loading = false
 					this.lists = res.filter(l => l)
 					let bt = this.shadowRoot.querySelector('#addListBt')
 					let container = this.shadowRoot.querySelector('#container')
@@ -336,7 +336,6 @@ export default class Board extends HTMLElement {
 
 		this.hideForm = () => {
 			this.listName = ''
-			this.editingList = null
 			removeErrMsg('name')
 			const removeForm = () => {
 				this.shadowRoot.removeEventListener('animationend', removeForm)
@@ -344,6 +343,7 @@ export default class Board extends HTMLElement {
 				this.shadowRoot.addEventListener('animationend', removeContainer)
 			}
 			const removeContainer = () => {
+				this.editingList = null
 				this.shadowRoot.removeEventListener('animationend', removeContainer)
 				this.shadowRoot.querySelector('#zInput').removeActiveClass()
 				container.style.display = 'none'
@@ -367,7 +367,7 @@ export default class Board extends HTMLElement {
 
 		this.createList = () => {
 			if (errorMsg.getMessages().length) {
-				errorMsg.callAtention()
+				errorMsg.callAttention()
 			}
 			else {
 				if (this.listName.trim() == '')
@@ -416,7 +416,7 @@ export default class Board extends HTMLElement {
 							if (this.isTouchScreen && this.touchedMoreThanOnce)
 								navigator.vibrate(['250'])
 							this.draggingComponent = target
-							target.style.animation = 'smoothAtention .2s linear 2'
+							target.style.animation = 'smoothAttention .2s linear 2'
 							const removeAnimation = () => {
 								target.removeEventListener('animationend', removeAnimation)
 								target.style.animation = 'unset'
@@ -582,13 +582,13 @@ export default class Board extends HTMLElement {
 		this.hideCardForm = () => {
 			this.cardTitle = ''
 			this.cardDescription = ''
-			this.editingCard = null
 			removeErrMsg('cardTitle')
 			removeErrMsg('cardDescription')
 			const removeForm = () => {
 				this.shadowRoot.removeEventListener('animationend', removeForm)
 				form.style.animation = 'rollOut .5s ease-out forwards'
 				this.shadowRoot.addEventListener('animationend', removeContainer)
+				this.editingCard = null
 			}
 			const removeContainer = () => {
 				this.shadowRoot.removeEventListener('animationend', removeContainer)
@@ -614,7 +614,7 @@ export default class Board extends HTMLElement {
 
 		this.createCard = () => {
 			if (errorMsg.getMessages().length) {
-				errorMsg.callAtention()
+				errorMsg.callAttention()
 			}
 			else {
 				if (this.cardTitle.trim() == '')
@@ -639,7 +639,6 @@ export default class Board extends HTMLElement {
 
 							this.newCardOwner.cards.push(card._id)
 
-							useMiniLoading = true
 							User.editList({
 								cards: this.newCardOwner.cards
 							}, {
@@ -647,12 +646,10 @@ export default class Board extends HTMLElement {
 								board_id: this.board
 							})
 								.then((res) => {
-									useMiniLoading = false
 									this.lists.find(list => list._id == res._id).cards = res.cards
 									this.addCardToList(this.newCardOwner._id, card)
 								})
 								.catch((err) => {
-									useMiniLoading = false
 									errorMsg.show({message: err.error})
 								})
 						})
@@ -717,7 +714,7 @@ export default class Board extends HTMLElement {
 								navigator.vibrate(['250'])
 							this.draggingComponent = target
 
-							target.style.animation = 'smoothAtention .2s linear 2'
+							target.style.animation = 'smoothAttention .2s linear 2'
 							const removeAnimation = () => {
 								target.removeEventListener('animationend', removeAnimation)
 								target.style.animation = 'unset'
@@ -828,14 +825,10 @@ export default class Board extends HTMLElement {
 				let parent = theCard.parentElement
 				parent.removeChild(theCard)
 
-				useMiniLoading = true
 				User.deleteCard(card._id, {
 					board_id: this.board,
 					list_id: list
 				})
-					.then((res) => {
-						useMiniLoading = false
-					})
 			}
 		}
 
@@ -1023,14 +1016,10 @@ export default class Board extends HTMLElement {
 					})
 					this.lists = updatedLists
 
-					useMiniLoading = true
 					User.editBoard({
 						board_id: this.board,
 						lists: listsIds
 					})
-						.then((res) => {
-							useMiniLoading = false
-						})
 				}
 				else if (this.isCard(this.draggingComponent)) {
 
@@ -1057,7 +1046,7 @@ export default class Board extends HTMLElement {
 								updatedCards.push(card.id.split('_')[1])
 							})
 
-							setMiniLoading(true)
+							appLoading.loading = true
 							loadingLock = true
 							User.editList({
 								cards: updatedCards
@@ -1107,7 +1096,7 @@ export default class Board extends HTMLElement {
 													let time = lastUpdate.date.split(' ')[1].slice(0, 5)
 													cardHistory.innerHTML = `&#x1F550 ${ date } - ${ time }`
 													loadingLock = false
-													setMiniLoading(false)
+													appLoading.loading = false
 												})
 										})
 								})
@@ -1220,7 +1209,6 @@ export default class Board extends HTMLElement {
 			return Array.from(comp.classList).includes('card')
 		}
 
-		runZion(this)
 	}
 
 	connectedCallback() {

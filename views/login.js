@@ -37,9 +37,17 @@ template.innerHTML = /*html*/`
 	</style>
 
 	<section>			<!--javascript:void(0) faz com que o form não tenha nenhuma action-->
-		<form action='javascript:void(0)' @submit='submit'>
-			<z-input id='emailInput' type='email' placeholder='E-mail' z-model='email' @keydown='keydown' @focus="removeErrMsg('email')" z-autofocus></z-input>
-			<z-input type='password' placeholder='Senha' z-model='password' @keydown='keydown' @focus="removeErrMsg('password')"></z-input>
+		<form action='javascript:void(0)' z-onsubmit='submit'>
+			<z-input id='emailInput' type='email' placeholder='E-mail' z-model='email' z-onkeydown='keydown' z-onfocus="removeErrMsg('email')" z-autofocus></z-input>
+			<z-input type='password' placeholder='Senha' z-model='password' z-onkeydown='keydown' z-onfocus="removeErrMsg('password')"></z-input>
+			<!-- <label class="inputWrapper">
+				<input type="email" id="emailInput" placeholder="E-mail" z-model="email" z-onkeydown='keydown' onfocus="removeErrMsg('email')" z-autofocus>
+				<b>E-mail</b>
+			</label>
+			<label class="inputWrapper">
+				<input type="password" placeholder="Senha" z-model="password" z-onkeydown='keydown' onfocus="removeErrMsg('password')">
+				<b>Senha</b>
+			</label> -->
 			<button type='submit' class='blueBt'>Entrar</button>
 		</form>
 	</section>
@@ -57,10 +65,10 @@ export default class Login extends HTMLElement {
 		this.password = ''
 
 		this.submit = () => {
-			if(errorMsg.getMessages().length){
-				errorMsg.callAtention()
+			if (errorMsg.getMessages().length) {
+				errorMsg.callAttention()
 			}
-			else{
+			else {
 				if (this.password.trim() == '') {
 					errorMsg.show({field: 'password', message: 'Digite sua senha'})
 				}
@@ -81,7 +89,7 @@ export default class Login extends HTMLElement {
 							window.location.hash = '#/taskboard'
 						})
 						.catch((err) => {
-							errorMsg.show({message: err.error})
+							errorMsg.show({message: err.error, field: err.field})
 						})
 				}
 			}
@@ -93,11 +101,11 @@ export default class Login extends HTMLElement {
 				this.submit()
 		}
 
-		runZion(this)
+		ZION(this)
 	}
 
 	connectedCallback() {
-
+		
 	}
 }
 

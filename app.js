@@ -3,6 +3,7 @@ import ErrorMsgs from './components/errorMsgs.js'
 import TextInput from './components/textInput.js'
 import SubMenu from './components/subMenu.js'
 import Confirm from './components/confirm.js'
+import zionLoading from './components/loading.js'
 
 import Home from './views/home.js'
 import Login from './views/login.js'
@@ -20,6 +21,10 @@ const routes = {
 	'#/board': Board
 }
 
+if (appMenu.showingMenu)
+	appMenu.showMenu()
+appMenu.style.display = 'none'
+
 function onRouteChanged() {
 	const hash = window.location.hash
 
@@ -31,10 +36,14 @@ function onRouteChanged() {
 
 	errorMsg.closeAll()
 	const view = new routes[hash.split('?')[0]]()
-	app.innerHTML = ''
+
+	while (app.firstChild)
+		app.removeChild(app.firstChild)
 	app.appendChild(view)
 
-	if (hash !== '#/') {
+	if (hash == '#/')
+		appMenu.style.display = 'none'
+	else {
 		appMenu.style.display = 'block'
 
 		appMenu.titleSpan.innerText = ''
@@ -44,7 +53,7 @@ function onRouteChanged() {
 
 		let hashName = hash.replace(/[#/]/g, '').split('?')[0]
 		if (hashName.toLowerCase() == 'board') {
-			setLoading(true)
+			appLoading.loading = true
 			loadingLock = true
 			User.getBoardName(hash.replace(/[#/]/g, '').split('=')[1])
 				.then((res) => {
@@ -58,9 +67,11 @@ function onRouteChanged() {
 
 		if (appMenu.showingMenu)
 			appMenu.showMenu()
+		appMenu.removeShadow()
 	}
-	else
-		appMenu.style.display = 'none'
+
+	app.currentView = view
+	ZION(view)
 }
 
 if (!window.location.hash)
