@@ -1,5 +1,6 @@
-const baseUrl = 'https://razion-apis.herokuapp.com/'
+const baseUrl = 'https://razion-apis.onrender.com/'
 // const baseUrl = 'http://192.168.100.100:3333/'
+// const baseUrl = 'https://razion-apis.herokuapp.com/'
 const headers = () => {
 	if (!app.user)
 		return
@@ -18,7 +19,7 @@ const User = {
 		return zGet(`${ baseUrl }taskBoard/board/listAll`, headers())
 	},
 	getBoardName: (id) => {
-		return zGet(`${baseUrl}taskBoard/board/get/${id}`, headers())
+		return zGet(`${ baseUrl }taskBoard/board/get/${ id }`, headers())
 	},
 	editBoard: (infos) => {
 		return zPut(`${ baseUrl }taskBoard/board/update/${ infos.board_id }`, infos, headers())
