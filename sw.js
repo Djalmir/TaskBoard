@@ -29,8 +29,7 @@ self.addEventListener('install', function (event) {
 					'/TaskBoard/icon.ico',
 					'/TaskBoard/index.html',
 					'/TaskBoard/index.js',
-					'/TaskBoard/style.css',
-					'/TaskBoard/Zion.js'
+					'/TaskBoard/style.css'
 				])
 			})
 	)
