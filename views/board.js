@@ -306,16 +306,14 @@ export default class Board extends HTMLElement {
 				board_id: this.board
 			})
 				.then((res) => {
-					loadingLock = false
-					appLoading.loading = false
 					this.lists = res.filter(l => l)
 					let bt = this.shadowRoot.querySelector('#addListBt')
 					let container = this.shadowRoot.querySelector('#container')
 					while (container.firstChild)
 						container.removeChild(container.firstChild)
 					this.shadowRoot.querySelector('#container').appendChild(bt)
-					this.lists.map((list) => {
-						this.addListToView(list)
+					this.lists.map((list, index) => {
+						this.addListToView(list, index)
 					})
 				})
 				.catch((err) => {
@@ -381,7 +379,7 @@ export default class Board extends HTMLElement {
 					})
 						.then((list) => {
 							this.hideForm()
-							this.addListToView(list)
+							this.addListToView(list, this.lists.length)
 						})
 						.catch((err) => {
 							errorMsg.show({message: err.error})
@@ -390,7 +388,7 @@ export default class Board extends HTMLElement {
 			}
 		}
 
-		this.addListToView = (list) => {
+		this.addListToView = (list, index) => {
 			if (!this.lists.find(l => l == list))
 				this.lists.push(list)
 			let container = this.shadowRoot.querySelector('#container')
@@ -483,7 +481,7 @@ export default class Board extends HTMLElement {
 			}
 			listDiv.ontouchmove = listDiv.onmousemove
 
-			this.updateCardsOnList(`list_${ list._id }`)
+			this.updateCardsOnList(`list_${ list._id }`, index)
 
 			let addCardBt = listDiv.appendChild(document.createElement('button'))
 			addCardBt.classList.add('addCardBt')
@@ -541,7 +539,7 @@ export default class Board extends HTMLElement {
 				this.submit()
 		}
 
-		this.updateCardsOnList = (listId) => {
+		this.updateCardsOnList = (listId, index) => {
 			let clearId = listId.split('_')[1]
 			let listDiv = this.shadowRoot.querySelector(`#${ listId }`)
 			let listContainer = listDiv.querySelector('.listContainer')
@@ -551,18 +549,20 @@ export default class Board extends HTMLElement {
 			let loading = listContainer.appendChild(document.createElement('img'))
 			loading.src = './assets/loading.svg'
 			loading.style = `
-				width: 32px;
-				margin: auto;
-			`
+					width: 32px;
+					margin: auto;
+				`
 			User.getCards(clearId, {
 				board_id: this.board
 			})
 				.then((res) => {
-					// if (res.length == 0)
-					// 	listContainer.style.display = 'none'
 					res.map((r) => {
 						this.addCardToList(clearId, r)
 					})
+					if (index >= this.lists.length - 1) {
+						loadingLock = false
+						appLoading.loading = false
+					}
 					listContainer.removeChild(loading)
 				})
 		}
@@ -1025,11 +1025,11 @@ export default class Board extends HTMLElement {
 
 					if (e) {
 						let newContainer
-						if (this.isList(e.path[0])) {//Se o mouse estiver sobre uma lista, pega a div container de cards dentro dela
-							newContainer = e.path[0].querySelector('.listContainer')
+						if (this.isList(e.composedPath()[0])) {//Se o mouse estiver sobre uma lista, pega a div container de cards dentro dela
+							newContainer = e.composedPath()[0].querySelector('.listContainer')
 						}
 						else {
-							newContainer = e.path.find(p => this.isList(p))
+							newContainer = e.composedPath().find(p => this.isList(p))
 							if (newContainer)
 								newContainer = newContainer.querySelector('.listContainer')
 							else
@@ -1216,7 +1216,11 @@ export default class Board extends HTMLElement {
 			if (appMenu.showingMenu)
 				appMenu.showMenu()
 
+			appLoading.loading = true
+			loadingLock = true
+
 			this.updateListsView()
+
 		}
 	}
 }
