@@ -312,9 +312,14 @@ export default class Board extends HTMLElement {
 					while (container.firstChild)
 						container.removeChild(container.firstChild)
 					this.shadowRoot.querySelector('#container').appendChild(bt)
-					this.lists.map((list, index) => {
-						this.addListToView(list, index)
-					})
+					if (!this.lists.length) {
+						loadingLock = false
+						appLoading.loading = false
+					}
+					else
+						this.lists.map((list, index) => {
+							this.addListToView(list, index)
+						})
 				})
 				.catch((err) => {
 					errorMsg.show({message: err.error})
