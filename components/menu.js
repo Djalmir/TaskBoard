@@ -190,10 +190,10 @@ template.innerHTML = /*html*/`
 	</style>
 	<link rel="stylesheet" href="style.css">
 
-	<header id='header'>
-		<div id='menuBtContainer'>
-			<button id='menuBt' z-onclick='showMenu'>
-				<svg id = "menuSVG" viewBox = "0 0 32 32" >
+	<header id="header">
+		<div id="menuBtContainer">
+			<button id="menuBt" z-onclick="showMenu">
+				<svg id="menuSVG" viewBox="0 0 32 32">
 					<g style="stroke-width:6; stroke-linecap:round;">
 						<line x1="3" y1="3" x2="29" y2="3">
 							<animate class="showAnimation" attributeType="XML" attributeName="x1" begin="indefinite" from="3" to="18" dur=".4s" fill="freeze" />
@@ -212,23 +212,23 @@ template.innerHTML = /*html*/`
 				</svg >
 			</button>
 		</div>
-		<span id='titleSpan'></span>
+		<span id="titleSpan"></span>
 	</header>
 
-	<nav id='menu'>
-		<button data-hash='#/taskboard' z-onclick="goTo('#/taskboard')" id='taskboardBt'>TaskBoard</button>
+	<nav id="menu">
+		<button data-hash="#/taskboard" z-onclick="goTo('#/taskboard')" id="taskboardBt">TaskBoard</button>
 		<nav id="menuContainer">
 		</nav>
 		<button id="logoutBt" z-onclick="logout">Sair</button>
 	</nav>
 
-	<div id='shadow' z-onclick='showMenu'></div>
+	<div id="shadow" z-onclick="showMenu"></div>
 `
 
 export default class Menu extends HTMLElement {
 	constructor() {
 		super()
-		this.attachShadow({mode: 'open'})
+		this.attachShadow({ mode: 'open' })
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 
 		//DATA
