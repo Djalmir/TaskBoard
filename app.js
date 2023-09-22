@@ -1,6 +1,7 @@
+import * as zionComponents from 'https://zioncomponents.razion.app.br/zionComponents.js'
 import Menu from './components/menu.js'
 import ErrorMsgs from './components/errorMsgs.js'
-import TextInput from './components/textInput.js'
+// import TextInput from './components/textInput.js'
 import SubMenu from './components/subMenu.js'
 import Confirm from './components/confirm.js'
 import zionLoading from './components/loading.js'

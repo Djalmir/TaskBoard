@@ -29,26 +29,13 @@ template.innerHTML = /*html*/`
 		z-input {
 			width: 100%;
 		}
-
-		.blueBt {
-			width: 100%;
-			padding: 8px;
-		}
 	</style>
 
-	<section>			<!--javascript:void(0) faz com que o form não tenha nenhuma action-->
+	<section>
 		<form action='javascript:void(0)' z-onsubmit='submit'>
-			<z-input id='emailInput' type='email' placeholder='E-mail' z-model='email' z-onkeydown='keydown' z-onfocus="removeErrMsg('email')" z-autofocus></z-input>
-			<z-input type='password' placeholder='Senha' z-model='password' z-onkeydown='keydown' z-onfocus="removeErrMsg('password')"></z-input>
-			<!-- <label class="inputWrapper">
-				<input type="email" id="emailInput" placeholder="E-mail" z-model="email" z-onkeydown='keydown' onfocus="removeErrMsg('email')" z-autofocus>
-				<b>E-mail</b>
-			</label>
-			<label class="inputWrapper">
-				<input type="password" placeholder="Senha" z-model="password" z-onkeydown='keydown' onfocus="removeErrMsg('password')">
-				<b>Senha</b>
-			</label> -->
-			<button type='submit' class='blueBt'>Entrar</button>
+			<z-input class='dark-bg3' id='emailInput' type='email' placeholder='E-mail' z-model='email' z-onfocus="removeErrMsg('email')" autofocus></z-input>
+			<z-input class='dark-bg3' type='password' placeholder='Senha' z-model='password' z-onfocus="removeErrMsg('password')"></z-input>
+			<z-button type='submit' class='primary' style="width: 100%; padding: 8px">Entrar</z-button>
 		</form>
 	</section>
 `
@@ -57,7 +44,7 @@ import Visitor from '../services/Visitor.js'
 export default class Login extends HTMLElement {
 	constructor() {
 		super()
-		this.attachShadow({mode: 'open'})
+		this.attachShadow({ mode: 'open' })
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 
 		//DATA
@@ -70,13 +57,13 @@ export default class Login extends HTMLElement {
 			}
 			else {
 				if (this.password.trim() == '') {
-					errorMsg.show({field: 'password', message: 'Digite sua senha'})
+					errorMsg.show({ field: 'password', message: 'Digite sua senha' })
 				}
 				if (this.email.trim() == '') {
-					errorMsg.show({field: 'email', message: 'Informe seu email'})
+					errorMsg.show({ field: 'email', message: 'Informe seu email' })
 				}
 				if (!this.shadowRoot.querySelector('#emailInput').checkValidity()) {
-					errorMsg.show({field: 'email', message: 'Email inválido'})
+					errorMsg.show({ field: 'email', message: 'Email inválido' })
 				}
 				if (!errorMsg.getMessages().length) {
 					Visitor.login({
@@ -89,23 +76,18 @@ export default class Login extends HTMLElement {
 							window.location.hash = '#/taskboard'
 						})
 						.catch((err) => {
-							errorMsg.show({message: err.error, field: err.field})
+							errorMsg.show({ message: err.error, field: err.field })
 						})
 				}
 			}
 			return false
 		}
 
-		this.keydown = (e) => {
-			if (e.key == 'Enter')
-				this.submit()
-		}
-
 		ZION(this)
 	}
 
 	connectedCallback() {
-		
+
 	}
 }
 

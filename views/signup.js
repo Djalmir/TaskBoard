@@ -28,21 +28,16 @@ template.innerHTML = /*html*/`
 	z-input {
 		width: 100%;
 	}
-
-	.blueBt {
-		width: 100%;
-		padding: 8px;
-	}
 </style>
 <link rel="stylesheet" href="style.css">
 
 <section>
 	<form id='signupForm' action='javascript:void(0)' z-onsubmit='submit' z-onkeydown='keydown'>
-		<z-input type='text' placeholder='Nome' z-model='name' z-onfocus="removeErrMsg('name')"></z-input>
-		<z-input id='emailInput' type='email' placeholder='E-mail' z-model='email' z-onfocus="removeErrMsg('email')"></z-input>
-		<z-input type='password' placeholder='Senha' z-model='password' z-onfocus="removeErrMsg('password')"></z-input>
-		<z-input type='password' placeholder='Confirme sua Senha' z-model='confirmPassword' z-onfocus="removeErrMsg('confirmPassword')"></z-input>
-		<button type='submit' class='blueBt'>Cadastrar</button>
+		<z-input class='dark-bg3' type='text' placeholder='Nome' z-model='name' z-onfocus="removeErrMsg('name')" autofocus></z-input>
+		<z-input class='dark-bg3' id='emailInput' type='email' placeholder='E-mail' z-model='email' z-onfocus="removeErrMsg('email')"></z-input>
+		<z-input class='dark-bg3' type='password' placeholder='Senha' z-model='password' z-onfocus="removeErrMsg('password')"></z-input>
+		<z-input class='dark-bg3' type='password' placeholder='Confirme sua Senha' z-model='confirmPassword' z-onfocus="removeErrMsg('confirmPassword')"></z-input>
+		<z-button type='submit' class='primary' style="width: 100%; padding: 8px">Cadastrar</z-button>
 	</form>
 </section>
 `

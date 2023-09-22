@@ -85,7 +85,8 @@ template.innerHTML = /*html*/`
 
 	#form {
 		z-index: 2;
-		max-width: 98%;
+		width: 90%;
+		max-width: 400px;
 		padding: 30px 20px 20px;
 		box-sizing: border-box;
 		border-radius: .3rem;
@@ -120,8 +121,8 @@ template.innerHTML = /*html*/`
 	<div id="formContainer">
 		<div id="shadow" z-onclick="hideForm"></div>
 		<form action="javascript:void(0)" id="form" z-onsubmit="submit">
-			<z-input placeholder="Nome do Quadro" z-model="boardName" id="zInput" z-onfocus="removeErrMsg('name')" z-onkeydown="keydown"></z-input>
-			<button type="submit" class="blueBt">{{this.editingBoard?'Renomear':'Adicionar'}}</button>
+			<z-input class="dark-bg3" placeholder="Nome do Quadro" z-model="boardName" id="zInput" z-onfocus="removeErrMsg('name')" style="width: 100%;" autofocus autocomplete="off"></z-input>
+			<z-button type="submit" class="primary" style="width: 100%; padding: 8px">{{this.editingBoard?'Renomear':'Adicionar'}}</z-button>
 		</form>
 	</div>
 
@@ -132,7 +133,7 @@ import User from '../services/User.js'
 export default class TaskBoard extends HTMLElement {
 	constructor() {
 		super()
-		this.attachShadow({mode: 'open'})
+		this.attachShadow({ mode: 'open' })
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 
 		this.boards = []
@@ -155,7 +156,7 @@ export default class TaskBoard extends HTMLElement {
 					appMenu.updateBoards(this.boards)
 				})
 				.catch((err) => {
-					errorMsg.show({message: err.error})
+					errorMsg.show({ message: err.error })
 				})
 		}
 
@@ -164,8 +165,7 @@ export default class TaskBoard extends HTMLElement {
 			let shadow = this.shadowRoot.querySelector('#shadow')
 			let form = this.shadowRoot.querySelector('#form')
 			container.style.display = 'flex'
-			let input = container.querySelector('#zInput')
-			input.focus()
+			// container.querySelector('#zInput').focus()
 			shadow.style.animation = 'fadeIn .2s linear'
 			form.style.animation = 'rollIn .2s ease-out'
 		}
@@ -181,7 +181,7 @@ export default class TaskBoard extends HTMLElement {
 			}
 			const removeContainer = () => {
 				this.shadowRoot.removeEventListener('animationend', removeContainer)
-				this.shadowRoot.querySelector('#zInput').removeActiveClass()
+				// this.shadowRoot.querySelector('#zInput').removeActiveClass()
 				container.style.display = 'none'
 				let event = new CustomEvent('editingBoardUpdated')
 				document.dispatchEvent(event)
@@ -207,7 +207,7 @@ export default class TaskBoard extends HTMLElement {
 			}
 			else {
 				if (this.boardName.trim() == '')
-					errorMsg.show({field: 'name', message: 'Informe o nome do novo Quadro.'})
+					errorMsg.show({ field: 'name', message: 'Informe o nome do novo Quadro.' })
 				else
 					User.createBoard({
 						name: this.boardName
@@ -217,7 +217,7 @@ export default class TaskBoard extends HTMLElement {
 							this.addBoardToList(board)
 						})
 						.catch((err) => {
-							errorMsg.show({message: err.error})
+							errorMsg.show({ message: err.error })
 						})
 			}
 		}
@@ -271,7 +271,7 @@ export default class TaskBoard extends HTMLElement {
 					this.hideForm()
 				})
 				.catch((err) => {
-					errorMsg.show({message: err.error})
+					errorMsg.show({ message: err.error })
 				})
 		}
 
@@ -285,17 +285,10 @@ export default class TaskBoard extends HTMLElement {
 						this.updateBoardsList()
 					})
 					.catch((err) => {
-						errorMsg.show({message: err.error})
+						errorMsg.show({ message: err.error })
 					})
 			}
 		}
-
-		this.keydown = (e) => {
-			if (e.key == 'Enter')
-				this.submit()
-		}
-
-		// runZion(this)
 	}
 
 	connectedCallback() {

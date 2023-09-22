@@ -71,7 +71,7 @@ template.innerHTML = /*html*/`
 	#form,
 	#cardForm {
 		z-index: 2;
-		width: 98%;
+		width: 90%;
 		max-width: 400px;
 		max-height: 90%;
 		overflow: auto;
@@ -80,7 +80,7 @@ template.innerHTML = /*html*/`
 		border-radius: .3rem;
 		box-shadow: 0 0 5px var(--transparentBg);
 		display: flex;
-		gap: 22px;
+		gap: 23px;
 		flex-direction: column;
 		align-items: center;
 		justify-content: flex-start;
@@ -89,11 +89,6 @@ template.innerHTML = /*html*/`
 
 	z-input {
 		width: 100%;
-	}
-
-	.blueBt {
-		width: 100%;
-		padding: 8px;
 	}
 
 	#container {
@@ -244,17 +239,17 @@ template.innerHTML = /*html*/`
 	<div id="formContainer">
 		<div id="shadow" z-onclick="hideForm"></div>
 		<form action="javascript:void(0)" id="form" z-onsubmit="submit">
-			<z-input placeholder="Nome da Lista" z-model="listName" id="zInput" z-onfocus="removeErrMsg('name')" z-onkeydown="keydown"></z-input>
-			<button type="submit" class="blueBt">{{editingList?'Renomear':'Adicionar'}}</button>
+			<z-input class="dark-bg3" placeholder="Nome da Lista" z-model="listName" id="zInput" z-onfocus="removeErrMsg('name')" autofocus autocomplete="off"></z-input>
+			<z-button type="submit" class="primary" style="width: 100%; padding: 8px; margin: 7px 0 0;">{{editingList?'Renomear':'Adicionar'}}</z-button>
 		</form>
 	</div>
 
 	<div id="cardFormContainer">
 		<div id="cardShadow" z-onclick="hideCardForm"></div>
 		<form action="javascript:void(0)" id="cardForm" z-onsubmit="cardSubmit">
-			<z-input placeholder="Título" z-model="cardTitle" id="cardTitleInput" z-onfocus="removeErrMsg('cardTitle')" z-onkeydown="cardKeydown"></z-input>
-			<z-input zTag="textarea" z-model="cardDescription" zStyle="resize: none; min-height: 73px;" placeholder="Descrição" id="cardDescriptionInput" z-onfocus="removeErrMsg('cardDescription')" z-onkeydown="cardKeydown"></z-input>
-			<button type="submit" class="blueBt">{{editingCard?'Editar':'Adicionar'}}</button>
+			<z-input class="dark-bg3" placeholder="Título" z-model="cardTitle" id="cardTitleInput" z-onfocus="removeErrMsg('cardTitle')" autofocus autocomplete="off"></z-input>
+			<z-textarea class="dark-bg3" z-model="cardDescription" style="resize: vertical; min-height: 73px; max-height: 133px; min-width: 100%; width: 100%;" placeholder="Descrição" id="cardDescriptionInput" z-onfocus="removeErrMsg('cardDescription')" autocomplete="off"></z-textarea>
+			<z-button type="submit" class="primary" style="width: 100%; padding: 8px; margin: 7px 0 0;">{{editingCard?'Editar':'Adicionar'}}</z-button>
 		</form>
 	</div>
 </section>
@@ -271,7 +266,7 @@ export default class Board extends HTMLElement {
 
 		this.board = window.location.hash.split('?')[1].split('=')[1]
 
-		this.attachShadow({mode: 'open'})
+		this.attachShadow({ mode: 'open' })
 		this.shadowRoot.appendChild(template.content.cloneNode(true))
 
 		this.lists = []
@@ -322,7 +317,7 @@ export default class Board extends HTMLElement {
 						})
 				})
 				.catch((err) => {
-					errorMsg.show({message: err.error})
+					errorMsg.show({ message: err.error })
 				})
 		}
 
@@ -348,7 +343,7 @@ export default class Board extends HTMLElement {
 			const removeContainer = () => {
 				this.editingList = null
 				this.shadowRoot.removeEventListener('animationend', removeContainer)
-				this.shadowRoot.querySelector('#zInput').removeActiveClass()
+				// this.shadowRoot.querySelector('#zInput').removeActiveClass()
 				container.style.display = 'none'
 				let event = new CustomEvent('editingListUpdated')
 				document.dispatchEvent(event)
@@ -374,7 +369,7 @@ export default class Board extends HTMLElement {
 			}
 			else {
 				if (this.listName.trim() == '')
-					errorMsg.show({field: 'name', message: 'Informe o nome da nova Lista.'})
+					errorMsg.show({ field: 'name', message: 'Informe o nome da nova Lista.' })
 				else {
 					User.createList({
 						name: this.listName,
@@ -387,7 +382,7 @@ export default class Board extends HTMLElement {
 							this.addListToView(list, this.lists.length)
 						})
 						.catch((err) => {
-							errorMsg.show({message: err.error})
+							errorMsg.show({ message: err.error })
 						})
 				}
 			}
@@ -521,7 +516,7 @@ export default class Board extends HTMLElement {
 					this.editingList = null
 				})
 				.catch((err) => {
-					errorMsg.show({message: err.error})
+					errorMsg.show({ message: err.error })
 				})
 		}
 
@@ -534,14 +529,9 @@ export default class Board extends HTMLElement {
 					board_id: this.board
 				})
 					.catch((err) => {
-						errorMsg.show({message: err.error})
+						errorMsg.show({ message: err.error })
 					})
 			}
-		}
-
-		this.keydown = (e) => {
-			if (e.key == 'Enter')
-				this.submit()
 		}
 
 		this.updateCardsOnList = (listId, index) => {
@@ -597,7 +587,7 @@ export default class Board extends HTMLElement {
 			}
 			const removeContainer = () => {
 				this.shadowRoot.removeEventListener('animationend', removeContainer)
-				this.shadowRoot.querySelector('#cardTitleInput').removeActiveClass()
+				// this.shadowRoot.querySelector('#cardTitleInput').removeActiveClass()
 				container.style.display = 'none'
 				let event = new CustomEvent('editingCardUpdated')
 				document.dispatchEvent(event)
@@ -623,7 +613,7 @@ export default class Board extends HTMLElement {
 			}
 			else {
 				if (this.cardTitle.trim() == '')
-					errorMsg.show({field: 'cardTitle', message: 'Informe o Título do novo Cartão.'})
+					errorMsg.show({ field: 'cardTitle', message: 'Informe o Título do novo Cartão.' })
 
 				if (!errorMsg.getMessages().length) {
 					User.createCard({
@@ -655,11 +645,11 @@ export default class Board extends HTMLElement {
 									this.addCardToList(this.newCardOwner._id, card)
 								})
 								.catch((err) => {
-									errorMsg.show({message: err.error})
+									errorMsg.show({ message: err.error })
 								})
 						})
 						.catch((err) => {
-							errorMsg.show({message: err.error})
+							errorMsg.show({ message: err.error })
 						})
 				}
 			}
@@ -815,9 +805,9 @@ export default class Board extends HTMLElement {
 				})
 				.catch((err) => {
 					if (err.error)
-						errorMsg.show({message: err.error})
+						errorMsg.show({ message: err.error })
 					else
-						errorMsg.show({message: err})
+						errorMsg.show({ message: err })
 				})
 		}
 
@@ -837,13 +827,6 @@ export default class Board extends HTMLElement {
 			}
 		}
 
-		this.cardKeydown = (e) => {
-			if (e.key == 'Shift')
-				this.shiftDown = true
-			if (e.key == 'Enter' && !this.shiftDown)
-				this.cardSubmit()
-		}
-
 		this.onkeyup = (e) => {
 			if (e.key == 'Shift')
 				this.shiftDown = false
@@ -852,10 +835,13 @@ export default class Board extends HTMLElement {
 		this.onmousedown = (e) => {
 			if (!this.touchedMoreThanOnce)
 				this.touchedMoreThanOnce = true
-
-			this.scrollMouseDownPos = {
-				x: (e.touches ? e.touches[0].clientX : e.clientX),
-				y: (e.touches ? e.touches[0].clientY : e.clientY)
+			let listForm = this.shadowRoot.querySelector('#formContainer')
+			let cardForm = this.shadowRoot.querySelector('#cardFormContainer')
+			if (listForm.style.display != 'flex' && cardForm.style.display != 'flex') {
+				this.scrollMouseDownPos = {
+					x: (e.touches ? e.touches[0].clientX : e.clientX),
+					y: (e.touches ? e.touches[0].clientY : e.clientY)
+				}
 			}
 		}
 
@@ -1225,7 +1211,6 @@ export default class Board extends HTMLElement {
 			loadingLock = true
 
 			this.updateListsView()
-
 		}
 	}
 }
