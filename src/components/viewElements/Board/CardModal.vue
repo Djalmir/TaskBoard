@@ -4,9 +4,9 @@
 			<b>{{ editing ? 'Editar' : 'Novo' }} Card</b>
 		</template>
 
-		<Input v-model="title" label="Título" class="input" @focus="message.closeByField('title')" />
+		<Input v-model="title" label="Título" class="input" @focus="message.closeByField('title')" @keydown.enter.stop="handleEnterKey" />
 
-		<Textarea v-model="description" label="Descrição" class="input" style="resize: vertical;" />
+		<Textarea v-model="description" label="Descrição" class="input" style="resize: vertical;" @keydown.enter.stop="handleEnterKey" />
 
 		<fieldset>
 			<legend v-if="todos.length">Todos</legend>
@@ -47,9 +47,9 @@
 		</div>
 
 		<template v-slot:footer>
-			<Button class="secondary" @click="clearAndClose">Cancelar</Button>
-			<Button v-if="editing" type="submit" @click="editCard">Atualizar</Button>
-			<Button v-else type="submit" @click="createCard">Criar</Button>
+			<Button class="secondary" @click="close(true)">Cancelar</Button>
+			<Button v-if="editing" @click="editCard">Atualizar</Button>
+			<Button v-else @click="createCard">Criar</Button>
 		</template>
 	</Modal>
 	<ProfileModal ref="profileModal">
@@ -76,7 +76,7 @@ const carousel = ref()
 const dropDown = ref()
 const profileModal = ref()
 
-const boardId = route.params.boardId
+const boardId = computed(() => route.params.boardId)
 const props = defineProps({
 	members: {
 		type: Array
@@ -253,7 +253,7 @@ function removeAssigning() {
 
 function generateBody() {
 	let body = new FormData()
-	body.append('board', boardId)
+	body.append('board', boardId.value)
 	body.append('list', list.value._id || list.value)
 	body.append('title', title.value)
 	body.append('description', description.value)
@@ -277,6 +277,18 @@ function generateBody() {
 	return body
 }
 
+function handleEnterKey(e) {
+	if (e.shiftKey)
+		return
+
+	if (editing.value)
+		editCard()
+	else
+		createCard()
+
+	e.preventDefault()
+}
+
 function createCard() {
 	if (!title.value)
 		return message.show({ error: 'Por favor, insira um título para o Card' })
@@ -286,7 +298,7 @@ function createCard() {
 	taskboardApi.createCard(body)
 		.then((res) => {
 			emit('cardCreated', res.data)
-			clearAndClose()
+			close(true)
 		})
 }
 
@@ -295,33 +307,25 @@ function editCard() {
 		return message.show({ error: 'Por favor, insira um título para o Card' })
 
 	let body = generateBody()
-
 	body.append('cardId', cardId.value)
-
-	for (let pair of body.entries()) {
-		console.log(pair[0] + ', ' + pair[1])
-	}
 
 	taskboardApi.updateCard(body)
 		.then((res) => {
 			emit('cardEdited', res.data)
-			clearAndClose()
+			close(true)
 		})
 }
 
-function clearAndClose() {
-	title.value = ''
-	description.value = ''
-	todos.value = []
-	images.value = []
-	legends.value = {}
-	assignedTo.value = []
-	comments.value = []
-
-	close()
-}
-
-function close() {
+function close(clear) {
+	if (clear || editing.value) {
+		title.value = ''
+		description.value = ''
+		todos.value = []
+		images.value = []
+		legends.value = {}
+		assignedTo.value = []
+		comments.value = []
+	}
 	modal.value.close()
 	window.removeEventListener('resize', updateStyles)
 }

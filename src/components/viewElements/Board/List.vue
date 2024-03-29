@@ -1,5 +1,5 @@
 <template>
-	<div :id="list._id" :class="`list ${dragging ? 'dragging' : ''}`" ref="listEl" @mousedown.stop.prevent="startDragging" @touchstart.stop.prevent="startDragging">
+	<div :id="list._id" :class="`list ${dragging ? 'dragging' : ''}`" ref="listEl" @mousedown.stop.prevent="startDragging" @touchstart.stop.prevent="startDragging" @mouseup="mouseDown = false" @touchend="mouseDown = false">
 		<header>
 			<b>{{ list.name }}</b>
 			<Button class="optionsBt" @mousedown.stop @touchstart.stop @click.stop="(e) => showListDropdown(e.target, list)">
@@ -43,6 +43,8 @@ const draggingShadow = ref(null)
 const indexBeforeDragging = ref(null)
 const draggingTimer = ref(null)
 let xOffset, yOffset
+let mouseDown = false
+
 watch(dragging, () => {
 	store.dispatch('board/setDraggingList', dragging.value?._id)
 	if (dragging.value) {
@@ -113,10 +115,13 @@ function showCardDropdown(a, b, c) {
 
 function startDragging(e) {
 	clearTimeout(draggingTimer.value)
+	mouseDown = true
 	draggingTimer.value = setTimeout(() => {
-		if (e.button == 0 || e.touches) {
-			indexBeforeDragging.value = props.lists.findIndex(l => l._id === props.list._id)
-			dragging.value = { _id: props.list._id, e }
+		if (mouseDown) {
+			if (e.button == 0 || e.touches) {
+				indexBeforeDragging.value = props.lists.findIndex(l => l._id === props.list._id)
+				dragging.value = { _id: props.list._id, e }
+			}
 		}
 	}, 150)
 }

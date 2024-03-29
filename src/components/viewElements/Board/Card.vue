@@ -1,5 +1,6 @@
 <template>
-	<div :id="card._id" :class="`card ${dragging ? 'dragging' : ''}`" ref="cardEl" @mousemove="card.mouseIn = true" @mousedown.stop.prevent="startDragging" @touchstart.stop.prevent="(e) => { card.mouseIn = true; startDragging(e) }" @mouseleave="card.mouseIn = false" @mouseenter.stop.prevent="mouseEnter" @touchmove.stop.prevent="mouseEnter">
+	<div :id="card._id" :class="`card ${dragging ? 'dragging' : ''}`" ref="cardEl" @mousemove="card.mouseIn = true" @mousedown.stop.prevent="startDragging" @touchstart.stop.prevent="(e) => { card.mouseIn = true; startDragging(e) }" @mouseleave="card.mouseIn = false" @mouseenter.stop.prevent="mouseEnter" @touchmove.stop.prevent="mouseEnter" @mouseup="mouseDown = false" @touchend="mouseDown = false">
+
 		<header>
 			<b>{{ card.title }}</b>
 			<Button v-if="!draggingCard && card.mouseIn" class="optionsBt" @mousedown.stop @touchstart.stop @click.stop="(e) => showCardDropdown(e.target, card)">
@@ -16,7 +17,7 @@
 				</div>
 			</div>
 		</section>
-		<footer v-if="(!draggingCard && !draggingList && card.mouseIn) || cardTabs?.showingContent">
+		<footer>
 			<Tabs ref="cardTabs" @click.stop @mousedown.stop @touchstart.stop>
 				<div v-if="card.todos?.length" tab-icon="check-square" tab-id="todosTab"><!--tab-title="Todos"-->
 					<ul class="todosList">
@@ -85,7 +86,6 @@ import UserBadge from '@/components/uiElements/UserBadge.vue'
 import taskboardApi from '@/services/taskboardApi'
 
 const store = useStore()
-const draggingList = computed(() => store.state.board.draggingList)
 const draggingCard = computed(() => store.state.board.draggingCard)
 
 const cardEl = ref()
@@ -106,6 +106,7 @@ const listBeforeDragging = ref(null)
 const indexBeforeDragging = ref(null)
 const draggingTimer = ref(null)
 let xOffset, yOffset
+let mouseDown = false
 
 watch(dragging, () => {
 	if (dragging.value) {
@@ -131,7 +132,6 @@ watch(dragging, () => {
 		window.addEventListener('touchmove', drag)
 	}
 	else {
-
 		if (draggingShadow.value) {
 			window.removeEventListener('mouseup', stopDragging)
 			draggingShadow.value.remove()
@@ -251,13 +251,16 @@ async function removeComment(comment) {
 
 function startDragging(e) {
 	clearTimeout(draggingTimer.value)
+	mouseDown = true
 	draggingTimer.value = setTimeout(() => {
-		listBeforeDragging.value = props.lists.find(l => l.cards.find(c => c._id == props.card._id))
-		indexBeforeDragging.value = listBeforeDragging.value.cards.findIndex(c => c._id == props.card._id)
-		store.dispatch('board/setDraggingCard', {
-			...props.card,
-			e: e
-		})
+		if (mouseDown) {
+			listBeforeDragging.value = props.lists.find(l => l.cards.find(c => c._id == props.card._id))
+			indexBeforeDragging.value = listBeforeDragging.value.cards.findIndex(c => c._id == props.card._id)
+			store.dispatch('board/setDraggingCard', {
+				...props.card,
+				e: e
+			})
+		}
 	}, 150)
 }
 
@@ -280,6 +283,7 @@ function drag(e) {
 function stopDragging() {
 	let currentList = props.lists.find(l => l.cards.find(c => c._id == props.card._id))
 	if (listBeforeDragging.value._id != currentList._id || indexBeforeDragging.value != currentList.cards.findIndex(c => c._id == props.card._id)) {
+		props.card.list = currentList._id
 		dispatchEvent('moveCard')
 	}
 	else
@@ -311,14 +315,15 @@ onBeforeUnmount(() => {
 header {
 	padding: 7px;
 	font-weight: bold;
-	display: flex;
-	align-items: center;
+	position: relative;
+	width: 100%;
 }
 
 header b {
 	flex: 1;
 	padding: 3px;
-
+	display: block;
+	width: calc(100% - 23px);
 }
 
 .optionsBt {
@@ -328,6 +333,9 @@ header b {
 	place-items: center;
 	background: linear-gradient(145deg, var(--dark-bg3), var(--dark-bg1));
 	color: var(--dark-font1);
+	position: absolute;
+	top: 7px;
+	right: 7px;
 }
 
 .light-theme .optionsBt {
@@ -349,6 +357,7 @@ hr {
 
 section {
 	padding: 7px;
+	white-space: pre-wrap;
 }
 
 footer {
