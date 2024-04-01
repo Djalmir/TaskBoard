@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { store } from '@/store/store.js'
-import { dispatchEvent } from 'RazionUtils'
+import { dispatchEvent } from '@/utils/events.js'
 import Home from '@/views/Home.vue'
 
 const routes = [

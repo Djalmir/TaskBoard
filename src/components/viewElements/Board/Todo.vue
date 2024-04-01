@@ -15,7 +15,10 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { Input, Checkbox, Button, Icon } from 'RazionComponents'
+import Input from '@/components/formElements/Input.vue'
+import Checkbox from '@/components/formElements/Checkbox.vue'
+import Button from '@/components/uiElements/Button.vue'
+import Icon from '@/components/uiElements/Icon.vue'
 
 const props = defineProps({ todo: Object })
 const input = ref()

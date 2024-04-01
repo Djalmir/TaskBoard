@@ -71,9 +71,18 @@
 
 import { ref, onMounted, inject } from 'vue'
 import { useStore } from 'vuex'
-import { Image, Icon, Input, Button, Radio, PasswordEditionModal, AccountDeletionModal, ProfilePictureModal } from 'RazionComponents'
-import { strToDate, dateToStr, phoneMask, dateMask, dispatchEvent } from 'RazionUtils'
-import { authApi } from 'RazionServices'
+import Image from '@/components/uiElements/Image.vue'
+import Icon from '@/components/uiElements/Icon.vue'
+import Input from '@/components/formElements/Input.vue'
+import Button from '@/components/uiElements/Button.vue'
+import Radio from '@/components/formElements/Radio.vue'
+import PasswordEditionModal from '@/components/viewElements/Profile/PasswordEditionModal.vue'
+import AccountDeletionModal from '@/components/viewElements/Profile/AccountDeletionModal.vue'
+import ProfilePictureModal from '@/components/viewElements/Profile/ProfilePictureModal.vue'
+import { strToDate, dateToStr } from '@/utils/date.js'
+import { phoneMask, dateMask } from '@/utils/masks.js'
+import { dispatchEvent } from '@/utils/events.js'
+import authApi from '@/services/authApi.js'
 
 const store = useStore()
 

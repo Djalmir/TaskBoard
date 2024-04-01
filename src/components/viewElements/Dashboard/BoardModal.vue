@@ -30,9 +30,12 @@
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount, inject } from 'vue'
 import { useStore } from 'vuex'
-import { authApi } from 'RazionServices'
+import authApi from '@/services/authApi.js'
 import taskboardApi from '@/services/taskboardApi'
-import { Modal, Input, Button, DropDown } from 'RazionComponents'
+import Modal from '@/components/uiElements/Modal.vue'
+import Input from '@/components/formElements/Input.vue'
+import Button from '@/components/uiElements/Button.vue'
+import DropDown from '@/components/uiElements/DropDown.vue'
 import UserBadge from '@/components/uiElements/UserBadge.vue'
 import ProfileModal from '@/components/uiElements/ProfileModal.vue'
 

@@ -19,7 +19,9 @@
 
 import { ref, inject } from 'vue'
 import { useRoute } from 'vue-router'
-import { Modal, Input, Button } from 'RazionComponents'
+import Modal from '@/components/uiElements/Modal.vue'
+import Input from '@/components/formElements/Input.vue'
+import Button from '@/components/uiElements/Button.vue'
 import taskboardApi from '@/services/taskboardApi'
 
 const modal = ref()

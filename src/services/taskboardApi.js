@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { dispatchEvent } from 'RazionUtils'
+import { dispatchEvent } from '@/utils/events.js'
 
 export const taskboardApi = axios.create({
 	baseURL: import.meta.env.VITE_BASE_URL,

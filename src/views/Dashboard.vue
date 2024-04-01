@@ -61,7 +61,11 @@
 import { ref, computed, onMounted, inject } from 'vue'
 import { useStore } from 'vuex'
 import taskboardApi from '@/services/taskboardApi'
-import { Button, Icon, Image, DropDown, PillButton } from 'RazionComponents'
+import Button from '@/components/uiElements/Button.vue'
+import Icon from '@/components/uiElements/Icon.vue'
+import Image from '@/components/uiElements/Image.vue'
+import DropDown from '@/components/uiElements/DropDown.vue'
+import PillButton from '@/components/uiElements/PillButton.vue'
 import ProfileModal from '@/components/uiElements/ProfileModal.vue'
 import BoardModal from '@/components/viewElements/Dashboard/BoardModal.vue'
 

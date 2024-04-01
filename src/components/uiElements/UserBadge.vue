@@ -10,7 +10,8 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Image, Icon } from 'RazionComponents'
+import Image from '@/components/uiElements/Image.vue'
+import Icon from '@/components/uiElements/Icon.vue'
 
 const props = defineProps({
 	user: {

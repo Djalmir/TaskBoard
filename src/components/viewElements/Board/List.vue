@@ -23,7 +23,8 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
-import { Button, Icon } from 'RazionComponents'
+import Button from '@/components/uiElements/Button.vue'
+import Icon from '@/components/uiElements/Icon.vue'
 import Card from '@/components/viewElements/Board/Card.vue'
 
 const store = useStore()

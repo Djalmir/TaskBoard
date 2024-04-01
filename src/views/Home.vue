@@ -8,7 +8,7 @@
 import { onMounted, inject } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import { AuthBox } from 'RazionComponents'
+import AuthBox from '@/components/uiElements/AuthBox.vue'
 const store = useStore()
 const router = useRouter()
 const message = inject('Message').value

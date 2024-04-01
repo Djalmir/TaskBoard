@@ -3,9 +3,13 @@
 		<div v-if="store.state.userProfile">
 			<MenuItem label="Dashboard" icon="home" pathName="Dashboard" />
 			<div class="boards">
-				<b v-if="boards.myBoards?.length"><Icon class="layout" /> - Meus TaskBoards</b>
+				<b v-if="boards.myBoards?.length">
+					<Icon class="layout" /> - Meus TaskBoards
+				</b>
 				<MenuItem v-for="board in boards.myBoards" :key="board._id" :label="board.name" pathName="Board" :pathParams="{ boardId: board._id }" />
-				<b v-if="boards.sharedWithMe?.length"><Icon class="send" /> - Compartilhados comigo</b>
+				<b v-if="boards.sharedWithMe?.length">
+					<Icon class="send" /> - Compartilhados comigo
+				</b>
 				<MenuItem v-for="board in boards.sharedWithMe" :key="board._id" :label="board.name" pathName="Board" :pathParams="{ boardId: board._id }" />
 			</div>
 		</div>
@@ -18,7 +22,12 @@
 
 <script setup>
 import { onMounted, ref, computed, provide } from 'vue'
-import { Header, MainMenu, MenuItem, Dialog, Message, Icon } from 'RazionComponents'
+import Header from '@/components/uiElements/Header.vue'
+import MainMenu from '@/components/uiElements/MainMenu.vue'
+import MenuItem from '@/components/uiElements/MenuItem.vue'
+import Dialog from '@/components/uiElements/Dialog.vue'
+import Message from '@/components/uiElements/Message.vue'
+import Icon from '@/components/uiElements/Icon.vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 
@@ -104,5 +113,4 @@ function keyDown(e) {
 	color: var(--light-font1);
 	user-select: none;
 }
-
 </style>

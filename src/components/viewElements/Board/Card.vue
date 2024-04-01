@@ -78,9 +78,14 @@
 
 <script setup>
 import { ref, computed, watch, inject, onMounted, onBeforeUnmount } from 'vue'
-import { Store, useStore } from 'vuex'
-import { Tabs, Carousel, Textarea, Button, Image, Icon } from 'RazionComponents'
-import { dispatchEvent } from 'RazionUtils'
+import { useStore } from 'vuex'
+import Tabs from '@/components/uiElements/Tabs.vue'
+import Carousel from '@/components/uiElements/Carousel.vue'
+import Textarea from '@/components/formElements/Textarea.vue'
+import Button from '@/components/uiElements/Button.vue'
+import Image from '@/components/uiElements/Image.vue'
+import Icon from '@/components/uiElements/Icon.vue'
+import { dispatchEvent } from '@/utils/events.js'
 import Todo from '@/components/viewElements/Board/Todo.vue'
 import UserBadge from '@/components/uiElements/UserBadge.vue'
 import taskboardApi from '@/services/taskboardApi'

@@ -25,8 +25,9 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Modal, ProfilePictureModal } from 'RazionComponents'
-import { dateToStr } from 'RazionUtils'
+import Modal from '@/components/uiElements/Modal.vue'
+import ProfilePictureModal from '@/components/viewElements/Profile/ProfilePictureModal.vue'
+import { dateToStr } from '@/utils/date.js'
 import UserBadge from '@/components/uiElements/UserBadge.vue'
 
 const modal = ref()
