@@ -9,15 +9,15 @@
 		</header>
 		<hr v-if="card.description" />
 		<section v-if="card.description || card.assignedTo">
-			{{ card.description }}
-			<div class="assignedToListWrapper">
+			<p style="padding-bottom: 24px;">{{ card.description }}</p>
+			<div class="assignedToListWrapper" :style="`${showingFooter ? 'bottom: 2px' : 'bottom: -22px'};`">
 				<div v-for="user in card.assignedTo" :key="`${card._id}-${user._id}`">
 					<Image v-if="user.profilePictureUrl" class="user" :src="user.profilePictureUrl" alt="user avatar" rounded :size="1.5" @click.stop.prevent="profileModal.show(user)" @mousedown.stop @touchstart.stop />
 					<Icon v-else class="user" :size="1.5" rounded @click.stop.prevent="profileModal.show(user)" @mousedown.stop @touchstart.stop />
 				</div>
 			</div>
 		</section>
-		<footer>
+		<footer :style="`opacity: ${showingFooter ? 1 : 0};`">
 			<Tabs ref="cardTabs" @click.stop @mousedown.stop @touchstart.stop>
 				<div v-if="card.todos?.length" tab-icon="check-square" tab-id="todosTab"><!--tab-title="Todos"-->
 					<ul class="todosList">
@@ -41,9 +41,9 @@
 						<li v-for="comment in card.comments" :key="comment" @mouseenter="comment.mouseIn = true" @mouseleave="comment.mouseIn = false">
 							<UserBadge :user="comment.user" style="font-weight: bold;" />
 							<div v-if="comment.editing" class="commentEditor">
-								<Textarea placeholder="Editar comentario" v-model="comment.text" class="commentInput" @keypress.enter.stop="editComment(comment)" />
+								<Textarea placeholder="Editar comentario" v-model="comment.text" class="commentInput" @keypress.enter.stop="(e) => editComment(e, comment)" />
 								<div>
-									<Button type="submit" class="commentButton" @click="editComment(comment)">
+									<Button type="submit" class="commentButton" @click="editComment(null, comment)">
 										<Icon class="edit" :size="1" />
 									</Button>
 									<Button class="secondary commentButton" @click="comment.editing = false">
@@ -112,6 +112,7 @@ const indexBeforeDragging = ref(null)
 const draggingTimer = ref(null)
 let xOffset, yOffset
 let mouseDown = false
+const showingFooter = computed(() => (!dragging.value && props.card.mouseIn) || cardTabs.value?.showingContent)
 
 watch(dragging, () => {
 	if (dragging.value) {
@@ -209,6 +210,8 @@ async function removeTodo(todo) {
 }
 
 function addComment(e) {
+	if (e.shiftKey)
+		return
 	if (props.card.newComment) {
 		if (!props.card.comments)
 			props.card.comments = []
@@ -227,7 +230,9 @@ function addComment(e) {
 	}
 }
 
-function editComment(comment) {
+function editComment(e, comment) {
+	if (e?.shiftKey)
+		return
 	if (!comment.text)
 		return Message.show({ error: 'O comentário não pode estar vazio' })
 
@@ -363,6 +368,7 @@ hr {
 section {
 	padding: 7px;
 	white-space: pre-wrap;
+	position: relative;
 }
 
 footer {
@@ -496,11 +502,14 @@ ul.todosList {
 }
 
 .assignedToListWrapper {
+	position: absolute;
+	right: 7px;
 	display: flex;
 	justify-content: flex-end;
 	overflow: visible;
 	margin-top: 7px;
 	padding: 0 7px;
+	transition: .2s;
 }
 
 .assignedToListWrapper>* {
