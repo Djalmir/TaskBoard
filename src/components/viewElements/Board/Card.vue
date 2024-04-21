@@ -523,7 +523,7 @@ ul.todosList {
 }
 
 .light-theme .assignedToListWrapper>* {
-	border: 1px solid var(--dark-bg1-transparent);
+	border: 1px solid var(--dark-bg4-transparent);
 	box-shadow: var(--light-box-shadow);
 }
 

@@ -18,11 +18,13 @@
 </template>
 
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, onBeforeMount } from 'vue'
+import { useRoute } from 'vue-router'
 import Input from '@/components/formElements/Input.vue'
 import Button from '@/components/uiElements/Button.vue'
 import authApi from '@/services/authApi.js'
 
+const route = useRoute()
 const message = inject('Message').value
 
 const name = ref('')
@@ -31,6 +33,11 @@ const password = ref('')
 const confirmPassword = ref('')
 
 const emit = defineEmits(['goToLogin', 'signedUp'])
+
+onBeforeMount(() => {
+	if (route.query.name) name.value = route.query.name
+	if (route.query.email) email.value = route.query.email
+})
 
 function signup() {
 	if (!name.value)

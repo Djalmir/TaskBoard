@@ -76,5 +76,8 @@ export default {
 	},
 	searchProfile({ search }) {
 		return authApi.post('auth/search', { search }, configs())
+	},
+	sendInvitationEmail({ name, email }) {
+		return authApi.post('auth/sendInvitationEmail', { name, email }, configs())
 	}
 }

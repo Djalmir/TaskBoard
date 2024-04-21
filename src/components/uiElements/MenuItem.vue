@@ -53,7 +53,7 @@ const props = defineProps({
 const vModel = ref(props.modelValue)
 
 const activeRoute = computed(() => {
-	return route.name === props.pathName && route.params?.boardId === props.pathParams?.boardId
+	return route.name && route.name === props.pathName && route.params?.boardId === props.pathParams?.boardId
 })
 
 const showingSubmenu = ref(false)

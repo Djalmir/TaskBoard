@@ -64,8 +64,8 @@ const configs = () => {
 }
 
 export default {
-	createBoard({ name, sharedWith }) {
-		return taskboardApi.post('taskboard/boards/create', { name, sharedWith }, configs())
+	createBoard({ name, sharedWith, invitedUsers }) {
+		return taskboardApi.post('taskboard/boards/create', { name, sharedWith, invitedUsers }, configs())
 	},
 	listBoards() {
 		return taskboardApi.get('taskboard/boards/list', configs())
@@ -73,8 +73,8 @@ export default {
 	getBoardDetails(boardId) {
 		return taskboardApi.get(`taskboard/boards/boardDetails/${ boardId }`, configs())
 	},
-	updateBoard({ boardId, name, sharedWith, listsOrder }) {
-		return taskboardApi.put(`taskboard/boards/update/${ boardId }`, { name, sharedWith, listsOrder }, configs())
+	updateBoard({ boardId, name, sharedWith, invitedUsers, listsOrder }) {
+		return taskboardApi.put(`taskboard/boards/update/${ boardId }`, { name, sharedWith, invitedUsers, listsOrder }, configs())
 	},
 	deleteBoard(boardId) {
 		return taskboardApi.delete(`taskboard/boards/delete/${ boardId }`, configs())

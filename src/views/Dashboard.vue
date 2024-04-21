@@ -8,13 +8,15 @@
 			<div class="boards">
 				<div v-for="board in myBoards" :key="board._id">
 					<router-link :to="{ name: 'Board', params: { boardId: board._id } }" class="board">
-						<b style="flex: 1;">{{ board.name }}</b>
+						<div class="boardHeader">
+							<b style="flex: 1;">{{ board.name }}</b>
+						</div>
 						<div v-if="board.sharedWith?.length" class="sharingList">
 							<span>Compartilhado com:</span>
 							<!-- <UserBadge v-for="user in board.sharedWith" :key="`${board._id}-${user._id}`" :user="user" /> -->
 							<div class="sharingListWrapper">
 								<div v-for="user in board.sharedWith" :key="`${board._id}-${user._id}`">
-									<Image v-if="user.profilePictureUrl" class="user" :src="user.profilePictureUrl" alt="user avatar" rounded :size="2.5" @click.prevent="profileModal.show(user)" />
+									<Image v-if="user.profilePictureUrl" class="user" :src="user.profilePictureUrl" alt="user avatar" rounded :size="2.25" @click.prevent="profileModal.show(user)" />
 									<Icon v-else class="user" :size="2.5" rounded @click.prevent="profileModal.show(user)" />
 								</div>
 							</div>
@@ -32,23 +34,25 @@
 				<Icon class="send" :size="2" /> - Compartilhados comigo
 			</h2>
 			<div class="boards">
-				<router-link v-for=" board  in  sharedWithMe " :key="board._id" :to="{ name: 'Board', params: { boardId: board._id } }" class="board">
-					<div class="boardHeader">
-						<b style="flex: 1;">{{ board.name }}</b>
-						<Image v-if="board.owner.profilePictureUrl" class="user" :src="board.owner.profilePictureUrl" alt="user avatar" rounded :size="2.5" @click.prevent="profileModal.show(board.owner)" />
-						<Icon v-else class="user" :size="2.5" rounded @click.prevent="profileModal.show(board.owner)" />
-					</div>
-					<div v-if="board.sharedWith?.filter(user => user._id !== store.state.userProfile?._id).length" class="sharingList">
-						<span>Compartilhado com:</span>
-						<!-- <UserBadge v-for="user in board.sharedWith" :key="`${board._id}-${user._id}`" :user="user" /> -->
-						<div class="sharingListWrapper">
-							<div v-for=" user  in  board.sharedWith.filter(user => user.id !== store.state.userProfile?._id) " :key="`${board._id}-${user._id}`">
-								<Image v-if="user.profilePictureUrl" class="user" :src="user.profilePictureUrl" alt="user avatar" rounded :size="2.5" @click.prevent="profileModal.show(user)" />
-								<Icon v-else class="user" :size="2" @click.prevent="profileModal.show(user)" />
+				<div v-for="board in sharedWithMe" :key="board._id">
+					<router-link :to="{ name: 'Board', params: { boardId: board._id } }" class="board">
+						<div class="boardHeader">
+							<b style="flex: 1;">{{ board.name }}</b>
+							<Image v-if="board.owner.profilePictureUrl" class="user" :src="board.owner.profilePictureUrl" alt="user avatar" rounded :size="2.5" @click.prevent="profileModal.show(board.owner)" />
+							<Icon v-else class="user" :size="2.5" rounded @click.prevent="profileModal.show(board.owner)" />
+						</div>
+						<div v-if="board.sharedWith?.filter(user => user._id !== store.state.userProfile?._id).length" class="sharingList">
+							<span>Compartilhado com:</span>
+							<!-- <UserBadge v-for="user in board.sharedWith" :key="`${board._id}-${user._id}`" :user="user" /> -->
+							<div class="sharingListWrapper">
+								<div v-for=" user in board.sharedWith.filter(user => user.id !== store.state.userProfile?._id) " :key="`${board._id}-${user._id}`">
+									<Image v-if="user.profilePictureUrl" class="user" :src="user.profilePictureUrl" alt="user avatar" rounded :size="2.25" @click.prevent="profileModal.show(user)" />
+									<Icon v-else class="user" :size="2" @click.prevent="profileModal.show(user)" />
+								</div>
 							</div>
 						</div>
-					</div>
-				</router-link>
+					</router-link>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -204,7 +208,7 @@ h2 {
 .board {
 	flex: 1;
 	padding: 7px;
-	height: 145px;
+	height: 141px;
 	border-radius: .3rem;
 	text-decoration: none;
 	background: linear-gradient(145deg, var(--dark-bg3), var(--dark-bg1));
@@ -242,6 +246,7 @@ h2 {
 .board b {
 	display: block;
 	margin: 7px;
+	max-width: calc(100% - 48px);
 }
 
 .optionsBt {
@@ -267,8 +272,12 @@ h2 {
 
 .sharingList {
 	border-top: 2px solid var(--dark-bg2);
-	margin: 17px 0 0;
+	/* margin: 17px 0 0; */
 	padding: 7px;
+	position: absolute;
+	width: 100%;
+	bottom: 0;
+	left: 0;
 }
 
 .light-theme .sharingList {
@@ -277,6 +286,7 @@ h2 {
 
 .user {
 	box-shadow: var(--dark-box-shadow);
+	margin: 0;
 }
 
 .light-theme .user {
@@ -285,7 +295,6 @@ h2 {
 
 .sharingList>span {
 	display: block;
-	margin-bottom: 7px;
 	font-size: .9rem;
 	color: var(--dark-font1);
 }
@@ -296,7 +305,25 @@ h2 {
 
 .sharingListWrapper {
 	display: flex;
-	gap: 7px;
 	overflow: auto;
+	padding: 9px;
+}
+
+.sharingListWrapper>* {
+	margin-right: -7px;
+	transition: .2s;
+	border-radius: 50%;
+	border: 1px solid var(--light-bg1-transparent);
+	box-shadow: var(--dark-box-shadow);
+}
+
+.light-theme .sharingListWrapper>* {
+	border: 1px solid var(--dark-bg4-transparent);
+	box-shadow: var(--light-box-shadow);
+}
+
+.sharingListWrapper>*:hover {
+	transform: scale(1.1);
+	z-index: 1;
 }
 </style>

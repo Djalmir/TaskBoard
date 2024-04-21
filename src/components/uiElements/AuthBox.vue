@@ -10,11 +10,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onBeforeMount } from 'vue'
+import { useRoute } from 'vue-router'
 import Login from '@/components/componentElements/AuthBox/Login.vue'
 import Signup from '@/components/componentElements/AuthBox/Signup.vue'
 
+const route = useRoute()
 const hasAccount = ref(true)
+
+onBeforeMount(() => {
+	if (route.path === '/signup')
+		hasAccount.value = false
+})
 
 const emit = defineEmits(['loggedIn', 'signedUp'])
 </script>
