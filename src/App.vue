@@ -18,10 +18,11 @@
 	<router-view />
 	<Dialog ref="dialog" />
 	<Message ref="message" />
+	<Icon v-if="loading" class="loader cursorLoader" :size="1.5" />
 </template>
 
 <script setup>
-import { onMounted, ref, computed, provide } from 'vue'
+import { onMounted, ref, computed, provide, onBeforeUnmount } from 'vue'
 import Header from '@/components/uiElements/Header.vue'
 import MainMenu from '@/components/uiElements/MainMenu.vue'
 import MenuItem from '@/components/uiElements/MenuItem.vue'
@@ -39,14 +40,18 @@ const dialog = ref()
 provide('Dialog', dialog)
 const message = ref()
 provide('Message', message)
-
 const prefersDark = ref(window.matchMedia("(prefers-color-scheme: dark)"))
 const boards = computed(() => store.state.boards)
+const loading = ref(true)
+const mouseX = ref(window.innerWidth / 2 + 'px')
+const mouseY = ref(window.innerHeight / 2 + 'px')
 
 onMounted(() => {
 	document.addEventListener('showMessage', showMessage)
 	document.addEventListener('confirm', confirm)
 	document.addEventListener('keydown', keyDown)
+	document.addEventListener('mousemove', mouseMove)
+	document.addEventListener('setLoading', setLoading)
 	if (!prefersDark.value.matches) {
 		changeTheme()
 	}
@@ -63,11 +68,6 @@ onMounted(() => {
 
 function showMessage(msg) {
 	message.value.show(msg.detail)
-	// dialog.value.showMessage(msg.detail.error ?
-	// 	{ error: `<b style="white-space: wrap; display: block; color: #ff5757">${ msg.detail.error }</b>` } :
-	// 	msg.detail.success ?
-	// 		{ success: `<b style="white-space: wrap; display: block; color: #00921d">${ msg.detail.success }</b>` } :
-	// 		{ message: msg.detail })
 }
 
 function changeTheme() {
@@ -95,6 +95,23 @@ function keyDown(e) {
 			break
 	}
 }
+
+function mouseMove(e) {
+	mouseX.value = `${ e.clientX + 17 }px`
+	mouseY.value = `${ e.clientY + 17 }px`
+}
+
+function setLoading(e) {
+	loading.value = e.detail
+}
+
+onBeforeUnmount(() => {
+	document.removeEventListener('showMessage', showMessage)
+	document.removeEventListener('confirm', confirm)
+	document.removeEventListener('keydown', keyDown)
+	document.removeEventListener('mousemove', mouseMove)
+	document.removeEventListener('setLoading', setLoading)
+})
 </script>
 
 <style scoped>
@@ -112,5 +129,16 @@ function keyDown(e) {
 	gap: 5px;
 	color: var(--light-font1);
 	user-select: none;
+}
+
+.cursorLoader {
+	color: var(--primary);
+	background: radial-gradient(circle at center, transparent 40%, var(--primary) 100%);
+	border-radius: 50%;
+	padding: 3px;
+	position: absolute;
+	top: v-bind(mouseY);
+	left: v-bind(mouseX);
+	z-index: 99999;
 }
 </style>
