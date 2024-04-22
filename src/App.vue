@@ -43,8 +43,8 @@ provide('Message', message)
 const prefersDark = ref(window.matchMedia("(prefers-color-scheme: dark)"))
 const boards = computed(() => store.state.boards)
 const loading = ref(true)
-const mouseX = ref(window.innerWidth / 2 + 'px')
-const mouseY = ref(window.innerHeight / 2 + 'px')
+const mouseX = ref('-100px')
+const mouseY = ref('-100px')
 
 onMounted(() => {
 	document.addEventListener('showMessage', showMessage)
@@ -97,8 +97,10 @@ function keyDown(e) {
 }
 
 function mouseMove(e) {
-	mouseX.value = `${ e.clientX + 17 }px`
-	mouseY.value = `${ e.clientY + 17 }px`
+	if (loading.value) {
+		mouseX.value = `${ e.clientX + 17 }px`
+		mouseY.value = `${ e.clientY + 17 }px`
+	}
 }
 
 function setLoading(e) {
