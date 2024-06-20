@@ -50,7 +50,7 @@ onMounted(() => {
 	document.addEventListener('showMessage', showMessage)
 	document.addEventListener('confirm', confirm)
 	document.addEventListener('keydown', keyDown)
-	document.addEventListener('mousemove', mouseMove)
+	document.addEventListener('mousemove', updateMousePosition)
 	document.addEventListener('setLoading', setLoading)
 	if (!prefersDark.value.matches) {
 		changeTheme()
@@ -96,11 +96,18 @@ function keyDown(e) {
 	}
 }
 
-function mouseMove(e) {
-	if (loading.value) {
-		mouseX.value = `${ e.clientX + 17 }px`
-		mouseY.value = `${ e.clientY + 17 }px`
+let timeout
+let throttleRate = 33
+function updateMousePosition(e) {
+	// if (loading) {
+	if (!timeout) {
+		timeout = setTimeout(() => {
+			mouseX.value = `${e.clientX + 17}px`
+			mouseY.value = `${e.clientY + 17}px`
+			timeout = null
+		}, throttleRate)
 	}
+	// }
 }
 
 function setLoading(e) {
@@ -111,7 +118,7 @@ onBeforeUnmount(() => {
 	document.removeEventListener('showMessage', showMessage)
 	document.removeEventListener('confirm', confirm)
 	document.removeEventListener('keydown', keyDown)
-	document.removeEventListener('mousemove', mouseMove)
+	document.removeEventListener('mousemove', updateMousePosition)
 	document.removeEventListener('setLoading', setLoading)
 })
 </script>

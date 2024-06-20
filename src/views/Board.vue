@@ -92,7 +92,7 @@ function showDropdown(target, list, card) {
 			size: 1.15,
 			label: 'Excluir',
 			action: async () => {
-				if (await Dialog.confirm(`Deseja mesmo excluir ${ card ? 'o card' : 'a lista' } <b style='font-size: 1.2em;'>${ card ? card.title : list.name }</b>?`)) {
+				if (await Dialog.confirm(`Deseja mesmo excluir ${card ? 'o card' : 'a lista'} <b style='font-size: 1.2em;'>${card ? card.title : list.name}</b>?`)) {
 					if (card) {
 						taskboardApi.deleteCard(card._id)
 							.then(() => {
@@ -215,6 +215,10 @@ function moveCardToList({ from, to }) {
 	if (!toList.cards)
 		toList.cards = []
 	toList.cards.unshift(draggingCard)
+	store.dispatch('board/setDraggingCard', {
+		...store.state.board.draggingCard,
+		list: to
+	})
 }
 
 function changeCardsPositions(e) {
