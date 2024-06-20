@@ -42,7 +42,7 @@ const message = ref()
 provide('Message', message)
 const prefersDark = ref(window.matchMedia("(prefers-color-scheme: dark)"))
 const boards = computed(() => store.state.boards)
-const loading = ref(true)
+const loading = ref(false)
 const mouseX = ref('-100px')
 const mouseY = ref('-100px')
 
