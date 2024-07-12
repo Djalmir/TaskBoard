@@ -69,6 +69,26 @@ function getBoardDetails() {
 		})
 }
 
+function generateBody(card) {
+	let body = new FormData()
+	body.append('board', boardId.value)
+	body.append('list', card.list)
+	body.append('title', card.title)
+	body.append('description', card.description)
+	body.append('todos', JSON.stringify(card.todos.map((todo) => {
+		return {
+			todo: todo.todo,
+			done: todo.done
+		}
+	})))
+	card.images.map((img) => {
+		body.append('copyImages', JSON.stringify(img))
+	})
+	body.append('comments', JSON.stringify(card.comments))
+	body.append('assignedTo', JSON.stringify(card.assignedTo))
+	return body
+}
+
 function showDropdown(target, list, card) {
 	if (dropDown.value.showing) {
 		dropDown.value.hide()
@@ -85,6 +105,14 @@ function showDropdown(target, list, card) {
 			size: 1.15,
 			label: card ? 'Editar' : 'Renomear',
 			action: () => card ? showCardModal(list, card) : listModal.value.show(list)
+		},
+		{
+			vIf: card !== undefined,
+			leftComponent: 'Icon',
+			class: 'copy',
+			size: 1.15,
+			label: 'Duplicar',
+			action: () => duplicateCard(card)
 		},
 		{
 			leftComponent: 'Icon',
@@ -160,6 +188,15 @@ function updateListsPositions() {
 
 function cardCreated(card) {
 	lists.value.find(l => l._id === card.list).cards.push(card)
+}
+
+function duplicateCard(card) {
+	let body = generateBody(card)
+	taskboardApi.createCard(body)
+		.then((res) => {
+			lists.value.find(l => l._id === card.list).cards.splice(lists.value.find(l => l._id === card.list).cards.findIndex(c => c._id === card._id) + 1, 0, res.data)
+			dropDown.value.toggleShowing()
+		})
 }
 
 function cardRemoved(card) {

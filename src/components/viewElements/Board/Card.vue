@@ -170,7 +170,7 @@ const wrapperPadding = computed(() => {
 
 const wrapperDisplay = ref(window.innerWidth < window.innerHeight ? 'grid' : 'auto')
 const slideHeight = ref(carousel.value?.fullScreen && window.innerWidth > window.innerHeight ? 'calc(100% - 33px)' : 'unset')
-const slideMargin = ref(`calc(50% - ${ slideHeight.value } / 2)`)
+const slideMargin = ref(`calc(50% - ${slideHeight.value} / 2)`)
 
 watch(fullScreenCarousel, () => {
 	updateStyles()
@@ -178,6 +178,11 @@ watch(fullScreenCarousel, () => {
 
 onMounted(() => {
 	window.addEventListener('resize', updateStyles)
+	let newCard = document.getElementById(props.card._id)
+	newCard.addEventListener('animationend', () => {
+		newCard.classList.remove('createdCard')
+	})
+	newCard.classList.add('createdCard')
 })
 
 function showCardDropdown(target, card) {
@@ -188,7 +193,7 @@ function updateStyles() {
 	if (carousel.value) {
 		wrapperDisplay.value = window.innerWidth < window.innerHeight ? 'grid' : 'auto'
 		slideHeight.value = carousel.value.fullScreen && window.innerWidth > window.innerHeight ? 'calc(100% - 33px)' : 'unset'
-		slideMargin.value = `calc(50% - ${ slideHeight.value } / 2)`
+		slideMargin.value = `calc(50% - ${slideHeight.value} / 2)`
 	}
 }
 
@@ -283,10 +288,10 @@ function mouseEnter() {
 function drag(e) {
 	if (draggingShadow.value) {
 		try {
-			draggingShadow.value.style.left = `${ (e.clientX || e.touches[e.touches.length - 1].clientX) - xOffset }px`
-			draggingShadow.value.style.top = `${ (e.clientY || e.touches[e.touches.length - 1].clientY) - yOffset }px`
+			draggingShadow.value.style.left = `${(e.clientX || e.touches[e.touches.length - 1].clientX) - xOffset}px`
+			draggingShadow.value.style.top = `${(e.clientY || e.touches[e.touches.length - 1].clientY) - yOffset}px`
 		}
-		catch {}
+		catch { }
 	}
 }
 
@@ -535,5 +540,38 @@ ul.todosList {
 .dragging {
 	opacity: .3;
 	pointer-events: none;
+}
+
+.createdCard {
+	position: relative;
+	overflow: hidden;
+}
+
+.createdCard:after {
+	content: '';
+	position: absolute;
+	top: 0%;
+	left: 0%;
+	width: 300%;
+	height: 300%;
+	background: linear-gradient(145deg, transparent 30%, var(--dark-bg4) 50%, transparent 70%);
+	opacity: .7;
+	border-radius: .3rem;
+	animation: createdCard 1.7s linear 1;
+	pointer-events: none;
+}
+
+.light-theme .createdCard:after {
+	background: linear-gradient(145deg, transparent 30%, var(--light-bg4) 50%, transparent 70%);
+}
+
+@keyframes createdCard {
+	0% {
+		transform: translate(-100%, -100%);
+	}
+
+	100% {
+		transform: translate(100%, 100%);
+	}
 }
 </style>

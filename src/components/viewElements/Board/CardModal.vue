@@ -59,7 +59,6 @@
 
 <script setup>
 import { ref, inject, watch, computed } from 'vue'
-import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import Modal from '@/components/uiElements/Modal.vue'
 import Input from '@/components/formElements/Input.vue'
@@ -73,7 +72,6 @@ import UserBadge from '@/components/uiElements/UserBadge.vue'
 import Todo from '@/components/viewElements/Board/Todo.vue'
 import taskboardApi from '@/services/taskboardApi'
 
-const store = useStore()
 const modal = ref()
 const route = useRoute()
 const message = inject('Message').value

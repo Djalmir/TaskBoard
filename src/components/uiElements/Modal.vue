@@ -32,7 +32,7 @@ const message = inject('Message').value
 
 const modal = ref()
 const modalFooter = ref()
-const observer = ref()
+// const observer = ref()
 
 const sectionPadding = computed(() => {
 	let showingHeader = modal.value?.querySelector('.modalHeader').children.length
