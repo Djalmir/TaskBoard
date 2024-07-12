@@ -140,10 +140,12 @@ function mouseEnter() {
 		emit('changeListsPositions', props.list._id)
 	}
 	if (draggingCard.value && !props.list.cards.find(c => c._id == draggingCard.value._id)) {
-		emit('moveCardToList', {
-			from: props.lists.find(l => l.cards.find(c => c._id == draggingCard.value._id))._id,
-			to: props.list._id
-		})
+		setTimeout(() => {
+			emit('moveCardToList', {
+				from: props.lists.find(l => l.cards.find(c => c._id == draggingCard.value._id))._id,
+				to: props.list._id
+			})
+		}, 0)
 	}
 }
 
@@ -151,10 +153,10 @@ function drag(e) {
 	if (draggingList.value || draggingCard.value) {
 		if (draggingList.value == listEl.value.id) {
 			try {
-				draggingShadow.value.style.left = `${ (e.clientX || e.touches[e.touches.length - 1].clientX) - xOffset }px`
-				draggingShadow.value.style.top = `${ (e.clientY || e.touches[e.touches.length - 1].clientY) - yOffset }px`
+				draggingShadow.value.style.left = `${(e.clientX || e.touches[e.touches.length - 1].clientX) - xOffset}px`
+				draggingShadow.value.style.top = `${(e.clientY || e.touches[e.touches.length - 1].clientY) - yOffset}px`
 			}
-			catch {}
+			catch { }
 		}
 		else {
 			let elementsFromPoint = e.touches?.length ? document.elementsFromPoint(e.touches[e.touches.length - 1].clientX, e.touches[e.touches.length - 1].clientY) : document.elementsFromPoint(e.clientX, e.clientY)

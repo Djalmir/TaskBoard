@@ -59,6 +59,7 @@ onMounted(() => {
 })
 
 function getBoardDetails() {
+	sessionStorage.setItem('mountingBoard', true)
 	taskboardApi.getBoardDetails(boardId.value)
 		.then((res) => {
 			name.value = res.data.board.name
@@ -66,6 +67,9 @@ function getBoardDetails() {
 			owner.value = res.data.board.owner
 			sharedWith.value = res.data.board.sharedWith
 			lists.value = res.data.lists
+		})
+		.finally(() => {
+			sessionStorage.removeItem('mountingBoard')
 		})
 }
 
@@ -86,6 +90,7 @@ function generateBody(card) {
 	})
 	body.append('comments', JSON.stringify(card.comments))
 	body.append('assignedTo', JSON.stringify(card.assignedTo))
+	body.append('duplicateIndex', lists.value.find(l => l._id === card.list).cards.findIndex(c => c._id === card._id) + 1)
 	return body
 }
 

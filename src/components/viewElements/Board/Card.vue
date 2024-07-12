@@ -178,11 +178,13 @@ watch(fullScreenCarousel, () => {
 
 onMounted(() => {
 	window.addEventListener('resize', updateStyles)
-	let newCard = document.getElementById(props.card._id)
-	newCard.addEventListener('animationend', () => {
-		newCard.classList.remove('createdCard')
-	})
-	newCard.classList.add('createdCard')
+	if (!sessionStorage.getItem('mountingBoard')) {
+		let newCard = document.getElementById(props.card._id)
+		newCard.addEventListener('animationend', () => {
+			newCard.classList.remove('createdCard')
+		})
+		newCard.classList.add('createdCard')
+	}
 })
 
 function showCardDropdown(target, card) {
