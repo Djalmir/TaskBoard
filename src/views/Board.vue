@@ -1,6 +1,6 @@
 <template>
 	<section ref="section" @mousedown="startDragScrolling" @mousemove="dragScroll" @mouseup="stopDragScrolling" @mouseleave="stopDragScrolling">
-		<List v-for="list in lists" class="boardList" :id="list._id" :key="list._id" :lists="lists" :list="list" @showListDropdown="showDropdown" @changeListsPositions="changeListsPositions" @updateListsPositions="updateListsPositions" @showCardModal="showCardModal(list, null)" @showCardDropdown="showDropdown" @moveCardToList="moveCardToList" />
+		<List v-for="list in lists" class="boardList" :id="`list-${list._id}`" :key="list._id" :lists="lists" :list="list" @showListDropdown="showDropdown" @changeListsPositions="changeListsPositions" @updateListsPositions="updateListsPositions" @showCardModal="showCardModal(list, null)" @showCardDropdown="showDropdown" @moveCardToList="moveCardToList" />
 	</section>
 	<PillButton id="newListBt" @click="listModal.show()">Nova Lista</PillButton>
 	<DropDown ref="dropDown" :list="dropDownList" />
@@ -192,15 +192,23 @@ function updateListsPositions() {
 }
 
 function cardCreated(card) {
-	lists.value.find(l => l._id === card.list).cards.push(card)
+	let list = lists.value.find(l => l._id === card.list)
+	list.cards.push(card)
+	setTimeout(() => {
+		document.querySelector(`#list-${list._id} section`).scrollTo({ top: document.querySelector(`#list-${list._id} section`).scrollHeight, behavior: 'smooth' })
+	}, 0)
 }
 
 function duplicateCard(card) {
 	let body = generateBody(card)
 	taskboardApi.createCard(body)
 		.then((res) => {
-			lists.value.find(l => l._id === card.list).cards.splice(lists.value.find(l => l._id === card.list).cards.findIndex(c => c._id === card._id) + 1, 0, res.data)
+			let list = lists.value.find(l => l._id === card.list)
+			list.cards.splice(list.cards.findIndex(c => c._id === card._id) + 1, 0, res.data)
 			dropDown.value.toggleShowing()
+			setTimeout(() => {
+				document.querySelector(`#list-${list._id} section #card-${card._id}`).scrollIntoView({ behavior: 'smooth', block: 'center' })
+			}, 0)
 		})
 }
 

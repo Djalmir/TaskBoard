@@ -179,7 +179,7 @@ watch(fullScreenCarousel, () => {
 onMounted(() => {
 	window.addEventListener('resize', updateStyles)
 	if (!sessionStorage.getItem('mountingBoard')) {
-		let newCard = document.getElementById(props.card._id)
+		let newCard = document.getElementById(`card-${props.card._id}`)
 		newCard.addEventListener('animationend', () => {
 			newCard.classList.remove('createdCard')
 		})

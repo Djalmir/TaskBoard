@@ -8,7 +8,7 @@
 		</header>
 		<section>
 			<div class="cardsWrapper" ref="cardsWrapper">
-				<Card v-for="card in list.cards" :key="card._id" :lists="lists" :card="card" @showCardDropdown="showCardDropdown" />
+				<Card v-for="card in list.cards" :id="`card-${card._id}`" :key="card._id" :lists="lists" :card="card" @showCardDropdown="showCardDropdown" />
 			</div>
 		</section>
 		<footer>
