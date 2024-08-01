@@ -27,6 +27,12 @@ const routes = [
 		component: () => import('@/views/Board.vue'),
 		authRequired: true
 	},
+	{
+		path: '/svgLib',
+		name: 'SvgLib',
+		component: () => import('@/views/SvgLibViewer.vue'),
+		authRequired: true
+	},
 
 	{
 		path: '/:pathMatch(.*)',

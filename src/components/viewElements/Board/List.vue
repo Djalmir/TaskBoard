@@ -40,7 +40,7 @@ const props = defineProps({
 const emit = defineEmits(['showListDropdown', 'showCardDropdown', 'showCardModal', 'changeListsPositions', 'updateListsPositions', 'moveCardToList'])
 
 const dragging = ref(false)
-const draggingShadow = ref(null)
+const draggingShadow = computed(() => store.state.board.draggingShadow)
 const indexBeforeDragging = ref(null)
 const draggingTimer = ref(null)
 let xOffset, yOffset
@@ -58,16 +58,16 @@ watch(dragging, () => {
 		xOffset = (e.clientX || e.touches[0].clientX) - boundings.left
 		yOffset = (e.clientY || e.touches[0].clientY) - boundings.top
 
-		draggingShadow.value = listEl.value.cloneNode(true)
-		draggingShadow.value.style = listEl.value.style
-		draggingShadow.value.style.height = listEl.value.offsetHeight + 'px'
-		draggingShadow.value.style.position = 'absolute'
-		draggingShadow.value.style.pointerEvents = 'none'
-		draggingShadow.value.style.zIndex = '100'
-		document.body.appendChild(draggingShadow.value)
+		let draggingShadow = listEl.value.cloneNode(true)
+		draggingShadow.style = listEl.value.style
+		draggingShadow.style.height = listEl.value.offsetHeight + 'px'
+		draggingShadow.style.position = 'absolute'
+		draggingShadow.style.pointerEvents = 'none'
+		draggingShadow.style.zIndex = '100'
+		document.body.appendChild(draggingShadow)
 		document.body.style.userSelect = 'none'
 		document.body.style.cursor = 'grabbing'
-
+		store.dispatch('board/setDraggingShadow', draggingShadow)
 	}
 	else {
 		window.removeEventListener('mouseup', stopDragging)
@@ -151,7 +151,7 @@ function mouseEnter() {
 
 function drag(e) {
 	if (draggingList.value || draggingCard.value) {
-		if (draggingList.value == listEl.value.id) {
+		if (`list-${draggingList.value}` == listEl.value.id) {
 			try {
 				draggingShadow.value.style.left = `${(e.clientX || e.touches[e.touches.length - 1].clientX) - xOffset}px`
 				draggingShadow.value.style.top = `${(e.clientY || e.touches[e.touches.length - 1].clientY) - yOffset}px`

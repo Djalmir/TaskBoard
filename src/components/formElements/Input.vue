@@ -3,12 +3,27 @@
 		<span v-if="label">
 			{{ label }}
 		</span>
-		<input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" v-bind="$attrs" />
+		<div class="inputWrapper">
+			<Icon v-if="showLeftIcon" :class="`${leftIcon.class} icon`" @click="leftIcon.action" :size="leftIcon.size || 1.2" :style="leftIcon.style" :bold="leftIcon.bold"></Icon>
+			<input :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" v-bind="$attrs" />
+			<Icon v-if="showRightIcon" :class="`${rightIcon.class} icon rightIcon`" @click="rightIcon.action" :size="rightIcon.size || 1.2" :style="rightIcon.style" :bold="rightIcon.bold"></Icon>
+		</div>
 	</label>
 </template>
 
 <script setup>
-const props = defineProps(['modelValue', 'label'])
+import { computed } from 'vue'
+import Icon from '@/components/uiElements/Icon.vue'
+const props = defineProps(['modelValue', 'label', 'leftIcon', 'rightIcon'])
+const showLeftIcon = computed(() => {
+	return props.leftIcon && (props.leftIcon.vIf != undefined ? props.leftIcon.vIf : true)
+})
+const showRightIcon = computed(() => {
+	return props.rightIcon && (props.rightIcon.vIf != undefined ? props.rightIcon.vIf : true)
+})
+const iconPadding = computed(() => {
+	return props.leftIcon || props.rightIcon ? '33px' : '7px'
+})
 </script>
 
 <style scoped>
@@ -27,14 +42,33 @@ span {
 	font-weight: bold;
 }
 
+.inputWrapper {
+	position: relative;
+}
+
+.inputWrapper .icon {
+	position: absolute;
+	top: 50%;
+	left: 7px;
+	transform: translateY(-50%);
+	/* padding: 7px; */
+	cursor: pointer;
+}
+
+.inputWrapper .icon.rightIcon {
+	right: 7px;
+	left: auto;
+}
+
 input {
 	font-family: 'Roboto', sans-serif;
 	font-size: 1rem;
-	padding: 7px;
+	padding: 7px v-bind(iconPadding);
 	border-radius: .3rem;
 	box-shadow: var(--inset-dark-box-shadow);
 	background: linear-gradient(145deg, var(--dark-bg2), var(--dark-bg1));
 	color: var(--dark-font1);
+	width: 100%;
 }
 
 input:-webkit-autofill,

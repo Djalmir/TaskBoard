@@ -19,19 +19,24 @@ const props = defineProps({
 	rounded: {
 		type: Boolean,
 		default: false
+	},
+	bold: {
+		type: Boolean,
+		default: false
 	}
 })
 const getIcon = computed(() => {
-	return `${ svgLib }#${ className.value.split(' ')[0] }`
+	return `${svgLib}#${className.value.split(' ')[0]}`
 })
 const className = computed(() => { return props.class })
 const minSize = props.size + 'rem'
+const strokeColor = props.bold ? 'currentColor' : 'transparent'
 </script>
 
 <style scoped>
 svg {
 	fill: currentColor;
-	/* border-radius: .4rem; */
+	stroke: v-bind(strokeColor);
 	min-width: v-bind(minSize);
 	min-height: v-bind(minSize);
 	width: v-bind(minSize);

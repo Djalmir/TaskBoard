@@ -23,6 +23,9 @@
 		</div>
 		<header>
 			<h1>{{ title }}</h1>
+			<transition name="fade">
+				<Icon v-if="loading" class="settings loader" :size="2" />
+			</transition>
 			<div style="margin-left: auto; display: flex; gap: 17px">
 				<Button class="headerBt" @click="e => { dropdown.toggleShowing(e.target, 'right') }">
 					<Icon class="more-vertical" :size="1.25" style="pointer-events: none;" />
@@ -34,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex'
 import Button from '@/components/uiElements/Button.vue'
 import Icon from '@/components/uiElements/Icon.vue'
@@ -45,6 +48,7 @@ const store = useStore()
 const userProfile = computed(() => { return store.state.userProfile })
 
 const title = computed(() => store.state.title)
+const loading = ref(false)
 
 const storeDarkTheme = computed(() => {
 	return store.state.darkTheme
@@ -114,9 +118,21 @@ const headerTransition = computed(() => {
 	return showingMenu.value ? '0' : '.3s ease-in'
 })
 
+onMounted(() => {
+	document.addEventListener('setLoading', setLoading)
+})
+
+function setLoading(e) {
+	loading.value = e.detail
+}
+
 function toggleMenu() {
 	store.dispatch('toggleMenu')
 }
+
+onBeforeUnmount(() => {
+	document.removeEventListener('setLoading', setLoading)
+})
 
 </script>
 
@@ -182,7 +198,7 @@ header {
 	padding: v-bind(headerPadding);
 	display: flex;
 	align-items: center;
-	gap: 17px;
+	gap: 7px;
 	transition: v-bind(headerTransition);
 }
 
@@ -195,6 +211,9 @@ h1 {
 	-webkit-text-fill-color: transparent;
 	filter: drop-shadow(1px 1px 0 var(--dark-bg1));
 	user-select: none;
+	white-space: nowrap;
+	max-width: calc(100vw - 85px);
+	overflow: auto;
 }
 
 .light-theme h1 {
@@ -219,4 +238,22 @@ h1 {
 	background: linear-gradient(145deg, var(--light-bg3), var(--light-bg2));
 	color: var(--light-font2);
 }
-</style>./Button.vue./Icon.vue./DropDown.vue./Button.vue./Icon.vue./DropDown.vue./Button.vue./Icon.vue./DropDown.vue./Button.vue./Icon.vue./DropDown.vue
+
+.loader {
+	color: var(--primary);
+	background: radial-gradient(circle at center, var(--dark-bg1) 40%, var(--primary) 100%);
+	border-radius: 50%;
+	padding: 3px;
+	position: absolute;
+	top: 7px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 99999;
+	box-shadow: 0 0 2px 1px #00000080;
+}
+
+.light-theme .loader {
+	background: radial-gradient(circle at center, var(--light-bg1) 40%, var(--primary) 100%);
+	box-shadow: 0 0 2px 1px #00000040;
+}
+</style>
