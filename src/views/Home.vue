@@ -14,6 +14,16 @@ const router = useRouter()
 const message = inject('Message').value
 
 onMounted(() => {
+	fetch('https://api.razion.app.br/auth/access', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			app: location.host,
+			// geolocation: geolocation
+		})
+	})
 	if (store.state.userProfile) {
 		router.push({ name: 'Dashboard' })
 	}
@@ -25,7 +35,7 @@ async function login(data, welcomeBack = true) {
 	await router.push({ name: 'Dashboard' })
 		.then(() => {
 			if (welcomeBack) {
-				message.show({ success: `Olá, ${ data.name.split(' ')[0] }! Que bom te ver de novo! 😊` })
+				message.show({ success: `Olá, ${data.name.split(' ')[0]}! Que bom te ver de novo! 😊` })
 			}
 		})
 }
@@ -33,7 +43,7 @@ async function login(data, welcomeBack = true) {
 function signup(data) {
 	login(data, false)
 		.then(() => {
-			message.show({ success: `Boas vindas, ${ data.name.split(' ')[0] }! É muito bom ter você conosco! 😊` })
+			message.show({ success: `Boas vindas, ${data.name.split(' ')[0]}! É muito bom ter você conosco! 😊` })
 		})
 }
 
