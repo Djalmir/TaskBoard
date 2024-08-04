@@ -64,6 +64,17 @@ onMounted(() => {
 		store.dispatch('setUserProfile', null)
 		router.push({ name: 'Home' })
 	})
+	
+	fetch('https://api.razion.app.br/auth/access', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			app: location.host,
+			// geolocation: geolocation
+		})
+	})
 })
 
 function showMessage(msg) {

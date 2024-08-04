@@ -14,16 +14,6 @@ const router = useRouter()
 const message = inject('Message').value
 
 onMounted(() => {
-	fetch('https://api.razion.app.br/auth/access', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({
-			app: location.host,
-			// geolocation: geolocation
-		})
-	})
 	if (store.state.userProfile) {
 		router.push({ name: 'Dashboard' })
 	}
