@@ -18,7 +18,6 @@
 	<router-view />
 	<Dialog ref="dialog" />
 	<Message ref="message" />
-	<!-- <Icon v-if="loading" class="loader cursorLoader" :size="1.5" /> -->
 </template>
 
 <script setup>
@@ -42,16 +41,11 @@ const message = ref()
 provide('Message', message)
 const prefersDark = ref(window.matchMedia("(prefers-color-scheme: dark)"))
 const boards = computed(() => store.state.boards)
-// const loading = ref(false)
-// const mouseX = ref('-100px')
-// const mouseY = ref('-100px')
 
 onMounted(() => {
 	document.addEventListener('showMessage', showMessage)
 	document.addEventListener('confirm', confirm)
 	document.addEventListener('keydown', keyDown)
-	// document.addEventListener('mousemove', updateMousePosition)
-	// document.addEventListener('setLoading', setLoading)
 	if (!prefersDark.value.matches) {
 		changeTheme()
 	}
@@ -64,7 +58,7 @@ onMounted(() => {
 		store.dispatch('setUserProfile', null)
 		router.push({ name: 'Home' })
 	})
-	
+
 	fetch('https://api.razion.app.br/auth/access', {
 		method: 'POST',
 		headers: {
@@ -72,6 +66,9 @@ onMounted(() => {
 		},
 		body: JSON.stringify({
 			app: location.host,
+			user: localStorage.getItem('userProfile') ? JSON.parse(localStorage.getItem('userProfile'))._id : null,
+			browser: navigator.userAgent,
+			language: navigator.language,
 			// geolocation: geolocation
 		})
 	})
@@ -107,30 +104,10 @@ function keyDown(e) {
 	}
 }
 
-// let timeout
-// let throttleRate = 33
-// function updateMousePosition(e) {
-// 	// if (loading) {
-// 	if (!timeout) {
-// 		timeout = setTimeout(() => {
-// 			mouseX.value = `${e.clientX + 17}px`
-// 			mouseY.value = `${e.clientY + 17}px`
-// 			timeout = null
-// 		}, throttleRate)
-// 	}
-// 	// }
-// }
-
-// function setLoading(e) {
-// 	loading.value = e.detail
-// }
-
 onBeforeUnmount(() => {
 	document.removeEventListener('showMessage', showMessage)
 	document.removeEventListener('confirm', confirm)
 	document.removeEventListener('keydown', keyDown)
-	// document.removeEventListener('mousemove', updateMousePosition)
-	// document.removeEventListener('setLoading', setLoading)
 })
 </script>
 
@@ -150,15 +127,4 @@ onBeforeUnmount(() => {
 	color: var(--light-font1);
 	user-select: none;
 }
-
-/* .cursorLoader {
-	color: var(--primary);
-	background: radial-gradient(circle at center, transparent 40%, var(--primary) 100%);
-	border-radius: 50%;
-	padding: 3px;
-	position: absolute;
-	top: v-bind(mouseY);
-	left: v-bind(mouseX);
-	z-index: 99999;
-} */
 </style>
