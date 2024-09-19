@@ -59,7 +59,7 @@ onMounted(() => {
 		router.push({ name: 'Home' })
 	})
 
-	fetch('https://api.razion.app.br/auth/access', {
+	fetch(`${import.meta.env.VITE_BASE_URL}auth/access`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
