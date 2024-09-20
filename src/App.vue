@@ -59,6 +59,7 @@ onMounted(() => {
 		router.push({ name: 'Home' })
 	})
 
+	let userProfile = localStorage.getItem('userProfile') ? JSON.parse(localStorage.getItem('userProfile')) : null
 	fetch(`${import.meta.env.VITE_BASE_URL}auth/access`, {
 		method: 'POST',
 		headers: {
@@ -66,7 +67,7 @@ onMounted(() => {
 		},
 		body: JSON.stringify({
 			app: location.host,
-			user: localStorage.getItem('userProfile') ? JSON.parse(localStorage.getItem('userProfile'))._id : null,
+			user: userProfile,
 			browser: navigator.userAgent,
 			language: navigator.language,
 			// geolocation: geolocation
