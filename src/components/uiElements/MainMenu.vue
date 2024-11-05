@@ -66,43 +66,32 @@ const topMenuItems = computed(() => {
 					icon: 'user',
 					pathName: 'Profile'
 				},
-				{
-					label: 'Preferências',
-					icon: 'sliders',
-					submenu: [
-						{
-							label: 'Tema',
-							rightComponent: 'Switch',
-							leftIcon: 'moon',
-							rightIcon: 'sun',
-							vModel: darkTheme,
-							action: () => {
-								emit('toggleTheme')
-							}
-						}
-					]
-				}
+				settingsMenu
 			]
 		},
 		{
 			vIf: !userProfile.value,
-			label: 'Preferências',
-			icon: 'sliders',
-			submenu: [
-				{
-					label: 'Tema',
-					rightComponent: 'Switch',
-					leftIcon: 'moon',
-					rightIcon: 'sun',
-					vModel: darkTheme,
-					action: () => {
-						emit('toggleTheme')
-					}
-				}
-			]
+			...settingsMenu
 		}
 	]
 })
+
+const settingsMenu = {
+	label: 'Preferências',
+	icon: 'sliders',
+	submenu: [
+		{
+			label: 'Tema',
+			rightComponent: 'Switch',
+			leftIcon: 'moon',
+			rightIcon: 'sun',
+			vModel: darkTheme,
+			action: () => {
+				emit('toggleTheme')
+			}
+		}
+	]
+}
 
 const bottomMenuItems = [
 	{
@@ -123,7 +112,7 @@ const showing = computed(() => {
 
 function close() {
 	if (showing.value)
-		store.dispatch('toggleMenu')
+		store.state.toggleMenu()
 }
 
 defineExpose({
@@ -179,12 +168,13 @@ defineExpose({
 }
 
 #appMenu {
-	position: absolute;
+	/* position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 100dvh;
-	padding: 133px 7px;
+	height: 100dvh; */
+	/* padding: 133px 7px; */
+	padding: 33px 7px;
 	overflow-y: auto;
 	pointer-events: all;
 }

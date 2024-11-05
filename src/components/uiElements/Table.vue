@@ -1,12 +1,12 @@
 <template>
-	<div class="tableWrapper">
+	<div class="tableWrapper" ref="tableWrapper">
 		<div v-if="renderingTable" class="loaderWrapper">
 			<div class="loaderDiv">
 				<Icon class="loader" :size="2" />
 				Carregando...
 			</div>
 		</div>
-		<div class="table" :style="{ display: renderingTable ? 'none' : 'block' }">
+		<div class="table">
 			<div class="headingRow" ref="headingRow">
 				<slot name="headingRow"></slot>
 			</div>
@@ -28,6 +28,7 @@ const props = defineProps({
 	},
 })
 
+const tableWrapper = ref(null)
 const headingRow = ref(null)
 const rows = ref(null)
 const observer = ref(null)
@@ -40,6 +41,8 @@ const rowsWrapperHeight = computed(() => {
 	return windowHeight.value - bounding.value.top - 62 + 'px'
 })
 
+const emit = defineEmits(['nextPage'])
+
 onMounted(() => {
 	if (props.templateColumns) {
 		document.documentElement.style.setProperty('--template-columns', props.templateColumns)
@@ -50,7 +53,13 @@ onMounted(() => {
 		windowHeight.value = window.innerHeight
 	})
 
-	document.addEventListener('setLoading', setLoading)
+	tableWrapper.value.addEventListener('scroll', () => {
+		if (tableWrapper.value.scrollTop + tableWrapper.value.clientHeight > tableWrapper.value.scrollHeight * .7 && !renderingTable.value) {
+			emit('nextPage')
+		}
+	})
+
+	window.addEventListener('setLoading', setLoading)
 })
 
 const darkTheme = ref(document.documentElement.classList.contains('dark-theme'))
@@ -66,18 +75,12 @@ const lightTitlesRow = `
 	padding: 0 17px;
 	color: var(--light-font2);
 `
-const titleSpanStyle = `
-	white-space: nowrap;
-	overflow: hidden;
-	padding: 11px 7px;
-	font-weight: bold;
-	font-size: 1.2rem;
-`
+
 const darkRow = (idx) => {
 	return `
 		display: grid;
 		grid-template-columns: var(--template-columns);
-		background: ${ idx % 2 ? 'var(--dark-bg1)' : 'var(--dark-bg3)' };
+		background: ${idx % 2 ? 'var(--dark-bg1)' : 'var(--dark-bg3)'};
 		padding: 0 17px;
 		color: var(--dark-font1);
 		cursor: pointer;
@@ -88,75 +91,48 @@ const lightRow = (idx) => {
 	return `
 		display: grid;
 		grid-template-columns: var(--template-columns);
-		background: ${ idx % 2 ? 'var(--light-bg1)' : 'var(--light-bg3)' };
+		background: ${idx % 2 ? 'var(--light-bg1)' : 'var(--light-bg3)'};
 		padding: 0 17px;
 		color: var(--light-font1);
 		cursor: pointer;
 		transition: .1s;
 	`
 }
-const spanStyle = `
-	overflow: hidden;
-	padding: 11px 7px;
-`
+
 let titleStyleDone = false
 function handleChildrenChanged() {
-	renderingTable.value = true
 	autoUpdating.value = true
 
-	setTimeout(() => {
-		if (!titleStyleDone) {
-			let titlesRow = headingRow.value.children[0]
-			titlesRow.classList.add('titlesRow')
-			titlesRow.style = darkTheme.value ? darkTitlesRow : lightTitlesRow
-			let tds = titlesRow.innerText.split('%|').reduce((arr, curr) => {
-				arr.push(curr.trim())
-				return arr
-			}, [])
-			titlesRow.innerText = ''
-			tds.map((td) => {
-				let span = titlesRow.appendChild(document.createElement('span'))
-				span.style = titleSpanStyle
-				span.innerText = td
-			})
-			titleStyleDone = true
-		}
+	if (!titleStyleDone) {
+		let titlesRow = headingRow.value.children[0]
+		titlesRow.classList.add('titlesRow')
+		titlesRow.style = darkTheme.value ? darkTitlesRow : lightTitlesRow
+		titleStyleDone = true
+	}
 
-		let rowsChildren = Array.from(rows.value.children)
-		rowsChildren.map((row, idx) => {
-			if (row.innerText.includes('%|')) {
-				row.style = darkTheme.value ? darkRow(idx) : lightRow(idx)
-				row.onmouseenter = () => {
-					row.style.filter = 'brightness(1.2)'
-					row.style.padding = '7px 17px'
-				}
-				row.onmousedown = () => {
-					row.style.filter = 'brightness(.7)'
-				}
-				row.onmouseup = () => {
-					row.style.filter = 'brightness(1.2)'
-				}
-				row.onmouseleave = () => {
-					row.style.filter = 'brightness(1)'
-					row.style.padding = '0 17px'
-				}
-				let tds = row.innerText.split('%|').reduce((arr, curr) => {
-					arr.push(curr.trim())
-					return arr
-				}, [])
-				row.innerText = ''
-				tds.map((td) => {
-					let span = row.appendChild(document.createElement('span'))
-					span.style = spanStyle
-					span.innerText = td
-				})
-			}
-		})
-		setTimeout(() => {
-			renderingTable.value = false
-			autoUpdating.value = false
-		}, 0)
-	}, 0)
+	let rowsChildren = Array.from(rows.value.children)
+	rowsChildren.map((row, idx) => {
+		row.style = darkTheme.value ? darkRow(idx) : lightRow(idx)
+		row.onmouseenter = () => {
+			row.style.filter = 'brightness(1.2)'
+			row.style.padding = '17px'
+		}
+		row.onmousedown = () => {
+			row.style.filter = 'brightness(.7)'
+		}
+		row.onmouseup = () => {
+			row.style.filter = 'brightness(1.2)'
+		}
+		row.onmouseleave = () => {
+			row.style.filter = 'brightness(1)'
+			row.style.padding = '0 17px'
+		}
+	})
+
+	autoUpdating.value = false
+	setTimeout(() => {
+		renderingTable.value = false
+	}, 100)
 }
 
 function themeUpdated() {
@@ -199,7 +175,7 @@ function refresh() {
 }
 
 function setLoading(loading) {
-	if (loading)
+	if (loading.detail)
 		renderingTable.value = true
 }
 
@@ -223,18 +199,19 @@ defineExpose({
 	user-select: none;
 }
 
-.table {
-	min-width: 1024px;
-}
-
 .headingRow {
 	position: sticky;
-	top: -35px;
+	top: 0;
 	left: 0;
+	min-width: fit-content;
 	z-index: 1;
-	padding-top: 47px;
 	background: linear-gradient(145deg, var(--dark-bg2), var(--dark-bg1));
 	box-shadow: var(--dark-box-shadow);
+}
+
+.rows {
+	min-width: fit-content;
+	padding-bottom: 25vh;
 }
 
 .light-theme .headingRow {

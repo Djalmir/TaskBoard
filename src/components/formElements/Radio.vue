@@ -1,5 +1,5 @@
 <template>
-	<input type="radio" :name="name" :value="value" @change="$emit('update:modelValue', value)" v-bind="$attrs" />
+	<input type="radio" :name="name" :value="value" @change="$emit('update:modelValue', value)" v-bind="$attrs" :checked="modelValue === value" />
 </template>
 
 <script setup>
@@ -9,6 +9,10 @@ defineProps({
 		required: true
 	},
 	value: {
+		type: [String, Number, Boolean],
+		required: true
+	},
+	modelValue: {
 		type: [String, Number, Boolean],
 		required: true
 	}
