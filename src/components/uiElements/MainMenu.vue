@@ -112,7 +112,7 @@ const showing = computed(() => {
 
 function close() {
 	if (showing.value)
-		store.state.toggleMenu()
+		store.dispatch('toggleMenu')
 }
 
 defineExpose({
