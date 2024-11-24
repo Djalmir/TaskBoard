@@ -1,7 +1,10 @@
 <template>
 	<li class="todo" @click="() => { if (!todo.editing) todo.done = !todo.done }" @mouseenter="todo.mouseIn = true" @mouseleave="todo.mouseIn = false">
 		<Checkbox v-model="todo.done" />
-		<Input ref="input" :disabled="!todo.editing" @blur="blurTodo" @keypress.enter="enterKey" class="todoInput" v-model="todo.todo" placeholder="Descreva a tarefa" :style="`${todo.editing ? '' : 'box-shadow: none; background: transparent; cursor: pointer; pointer-events: none;'} width: 100%;`" />
+		<Input ref="input" v-if="todo.editing" @blur="blurTodo" @keypress.enter="enterKey" class="todoInput" v-model="todo.todo" placeholder="Descreva a tarefa" :style="`${todo.editing ? '' : 'box-shadow: none; background: transparent; cursor: pointer; pointer-events: none;'} width: 100%;`" />
+		<SpinnerText v-else style="font-size: 1rem; padding: 7px 0;" class="spinnerText">
+			{{ todo.todo }}
+		</SpinnerText>
 		<div class="todoActions" v-if="todo.mouseIn && todo.canEdit">
 			<Button class="flat actionButton" @click.stop="enterEditionMode" v-if="!todo.editing">
 				<Icon class="edit" :size="1.25" />
@@ -19,6 +22,7 @@ import Input from '@/components/formElements/Input.vue'
 import Checkbox from '@/components/formElements/Checkbox.vue'
 import Button from '@/components/uiElements/Button.vue'
 import Icon from '@/components/uiElements/Icon.vue'
+import SpinnerText from '@/components/uiElements/SpinnerText.vue'
 
 const props = defineProps({ todo: Object })
 const input = ref()

@@ -1,12 +1,12 @@
 <template>
 	<div :id="list._id" :class="`list ${dragging ? 'dragging' : ''}`" ref="listEl" @mousedown.stop.prevent="startDragging" @touchstart.stop.prevent="startDragging" @mouseup="mouseDown = false" @touchend="mouseDown = false">
 		<header>
-			<b>{{ list.name }}</b>
+			<SpinnerText><b>{{ list.name }}</b></SpinnerText>
 			<Button class="optionsBt" @mousedown.stop @touchstart.stop @click.stop="(e) => showListDropdown(e.target, list)">
 				<Icon class="more-vertical" :size="1.5" />
 			</Button>
 		</header>
-		<section>
+		<section ref="section">
 			<div class="cardsWrapper" ref="cardsWrapper">
 				<Card v-for="card in list.cards" :id="`card-${card._id}`" :key="card._id" :lists="lists" :card="card" @showCardDropdown="showCardDropdown" />
 			</div>
@@ -26,8 +26,10 @@ import { useStore } from 'vuex'
 import Button from '@/components/uiElements/Button.vue'
 import Icon from '@/components/uiElements/Icon.vue'
 import Card from '@/components/viewElements/Board/Card.vue'
+import SpinnerText from '@/components/uiElements/SpinnerText.vue'
 
 const store = useStore()
+const section = ref()
 const draggingList = computed(() => store.state.board.draggingList)
 const draggingCard = computed(() => store.state.board.draggingCard)
 
@@ -43,8 +45,11 @@ const dragging = ref(false)
 const draggingShadow = computed(() => store.state.board.draggingShadow)
 const indexBeforeDragging = ref(null)
 const draggingTimer = ref(null)
+const autoScrolling = ref(false)
+const mouseIn = ref(false)
 let xOffset, yOffset
 let mouseDown = false
+const mousePosition = ref({ x: 0, y: 0 })
 
 watch(dragging, () => {
 	store.dispatch('board/setDraggingList', dragging.value?._id)
@@ -65,6 +70,7 @@ watch(dragging, () => {
 		draggingShadow.style.pointerEvents = 'none'
 		draggingShadow.style.zIndex = '100'
 		document.body.appendChild(draggingShadow)
+		draggingShadow.querySelector('section').scrollTop = section.value.scrollTop
 		document.body.style.userSelect = 'none'
 		document.body.style.cursor = 'grabbing'
 		store.dispatch('board/setDraggingShadow', draggingShadow)
@@ -90,6 +96,8 @@ onMounted(() => {
 	listHeight.value = cardsWrapper.value ? cardsWrapper.value.offsetHeight + 123 + 'px' : 0
 	window.addEventListener('mousemove', drag)
 	window.addEventListener('touchmove', drag)
+	window.addEventListener('mousemove', updateMousePosition)
+	window.addEventListener('touchmove', updateMousePosition)
 })
 
 function initObserver() {
@@ -167,10 +175,45 @@ function drag(e) {
 	}
 }
 
+function updateMousePosition(e) {
+	mousePosition.value = e.touches?.length ? { x: e.touches[e.touches.length - 1].clientX, y: e.touches[e.touches.length - 1].clientY } : { x: e.clientX, y: e.clientY }
+	let elementsFromPoint = document.elementsFromPoint(mousePosition.value.x, mousePosition.value.y)
+	if (elementsFromPoint.find(el => el.id == listEl.value.id)) {
+		mouseIn.value = true
+	}
+	else {
+		mouseIn.value = false
+	}
+}
+
+watch(mouseIn, () => {
+	if (draggingCard.value && mouseIn.value && !autoScrolling.value) {
+		autoScroll()
+	}
+})
+
+function autoScroll() {
+	autoScrolling.value = true
+	let halfHeight = section.value.offsetHeight / 2
+	let neutralZone = .5
+	let diff = mousePosition.value.y - halfHeight
+	let scrollSpeed = diff / 70
+	if (diff > halfHeight * neutralZone || diff < halfHeight * -neutralZone) {
+		section.value.scrollTop += scrollSpeed
+	}
+	if (draggingCard.value && mouseIn.value) {
+		requestAnimationFrame(autoScroll)
+	}
+	else
+		autoScrolling.value = false
+}
+
 onBeforeUnmount(() => {
 	observer.value?.disconnect()
 	window.removeEventListener('mousemove', drag)
 	window.removeEventListener('touchmove', drag)
+	window.removeEventListener('mousemove', updateMousePosition)
+	window.removeEventListener('touchmove', updateMousePosition)
 })
 
 </script>
@@ -222,6 +265,7 @@ onBeforeUnmount(() => {
 .list header b {
 	flex: 1;
 	padding: 0 7px;
+	white-space: nowrap;
 }
 
 .optionsBt {

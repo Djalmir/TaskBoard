@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, inject, provide, computed, onBeforeUnmount } from 'vue'
+import { ref, watch, onMounted, inject, provide, computed, onBeforeUnmount, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import PillButton from '@/components/uiElements/PillButton.vue'
@@ -56,6 +56,7 @@ onMounted(() => {
 	getBoardDetails()
 	document.addEventListener('moveCard', moveCard)
 	document.addEventListener('changeCardsPositions', changeCardsPositions)
+	document.addEventListener('mousemove', updateMousePosition)
 })
 
 function getBoardDetails() {
@@ -73,34 +74,13 @@ function getBoardDetails() {
 		})
 }
 
-function generateBody(card) {
-	let body = new FormData()
-	body.append('board', boardId.value)
-	body.append('list', card.list)
-	body.append('title', card.title)
-	body.append('description', card.description)
-	body.append('todos', JSON.stringify(card.todos.map((todo) => {
-		return {
-			todo: todo.todo,
-			done: todo.done
-		}
-	})))
-	card.images.map((img) => {
-		body.append('copyImages', JSON.stringify(img))
-	})
-	body.append('comments', JSON.stringify(card.comments))
-	body.append('assignedTo', JSON.stringify(card.assignedTo))
-	body.append('duplicateIndex', lists.value.find(l => l._id === card.list).cards.findIndex(c => c._id === card._id) + 1)
-	return body
-}
-
 function showDropdown(target, list, card) {
 	if (dropDown.value.showing) {
 		dropDown.value.hide()
 		if (target !== dropDown.value.target)
 			return setTimeout(() => {
 				showDropdown(target, list, card)
-			}, 200)
+			}, 100)
 		return
 	}
 	dropDownList.value = [
@@ -142,27 +122,30 @@ function showDropdown(target, list, card) {
 			}
 		}
 	]
-	setTimeout(() => {
+	nextTick(() => {
 		dropDown.value.toggleShowing(target, 'right')
-	}, 0)
+	})
 }
 
 function listCreated(list) {
 	lists.value.push(list)
+	nextTick(() => {
+		section.value.scrollTo({ left: section.value.scrollWidth, behavior: 'smooth' })
+	})
 }
 
 function listRenamed(list) {
 	lists.value.splice(lists.value.findIndex(l => l._id === list._id), 1, list)
-	setTimeout(() => {
+	nextTick(() => {
 		message.show({ success: 'Lista renomeada com sucesso!' })
-	}, 0)
+	})
 }
 
 function listRemoved(list) {
 	lists.value.splice(lists.value.findIndex(l => l._id === list._id), 1)
-	setTimeout(() => {
+	nextTick(() => {
 		message.show({ success: 'Lista excluida com sucesso!' })
-	}, 0)
+	})
 }
 
 function changeListsPositions(targetId) {
@@ -194,21 +177,43 @@ function updateListsPositions() {
 function cardCreated(card) {
 	let list = lists.value.find(l => l._id === card.list)
 	list.cards.push(card)
-	setTimeout(() => {
+	nextTick(() => {
 		document.querySelector(`#list-${list._id} section`).scrollTo({ top: document.querySelector(`#list-${list._id} section`).scrollHeight, behavior: 'smooth' })
-	}, 0)
+	})
 }
 
 function duplicateCard(card) {
+
+	function generateBody(card) {
+		let body = new FormData()
+		body.append('board', boardId.value)
+		body.append('list', card.list)
+		body.append('title', card.title)
+		body.append('description', card.description)
+		body.append('todos', JSON.stringify(card.todos.map((todo) => {
+			return {
+				todo: todo.todo,
+				done: todo.done
+			}
+		})))
+		card.images.map((img) => {
+			body.append('copyImages', JSON.stringify(img))
+		})
+		body.append('comments', JSON.stringify(card.comments))
+		body.append('assignedTo', JSON.stringify(card.assignedTo))
+		body.append('duplicateIndex', lists.value.find(l => l._id === card.list).cards.findIndex(c => c._id === card._id) + 1)
+		return body
+	}
+
 	let body = generateBody(card)
 	taskboardApi.createCard(body)
 		.then((res) => {
 			let list = lists.value.find(l => l._id === card.list)
 			list.cards.splice(list.cards.findIndex(c => c._id === card._id) + 1, 0, res.data)
 			dropDown.value.toggleShowing()
-			setTimeout(() => {
+			nextTick(() => {
 				document.querySelector(`#list-${list._id} section #card-${card._id}`).scrollIntoView({ behavior: 'smooth', block: 'center' })
-			}, 0)
+			})
 		})
 }
 
@@ -252,6 +257,42 @@ function stopDragScrolling() {
 	store.dispatch('board/setDragScrolling', null)
 }
 
+const mousePosition = ref({ x: undefined, y: undefined })
+
+function updateMousePosition(e) {
+	mousePosition.value = { x: e.clientX, y: e.clientY }
+}
+
+const autoScrolling = ref(false)
+
+watch(() => store.state.board.draggingList, (dragging) => {
+	if (dragging && !autoScrolling.value) {
+		autoScroll()
+	}
+})
+
+watch(() => store.state.board.draggingCard, (dragging) => {
+	if (dragging && !autoScrolling.value) {
+		autoScroll()
+	}
+})
+
+function autoScroll() {
+	autoScrolling.value = true
+	let halfWidth = window.innerWidth / 2
+	let neutralZone = .5
+	let diff = mousePosition.value.x - halfWidth
+	let scrollSpeed = diff / 70
+	if (diff > halfWidth * neutralZone || diff < halfWidth * -neutralZone) {
+		section.value.scrollLeft += scrollSpeed
+	}
+	if (store.state.board.draggingList || store.state.board.draggingCard) {
+		requestAnimationFrame(autoScroll)
+	}
+	else
+		autoScrolling.value = false
+}
+
 function showCardModal(list, card) {
 	cardModal.value.show(list, card)
 }
@@ -261,14 +302,11 @@ function moveCardToList({ from, to }) {
 	let draggingCard = lists.value.find(l => l._id == from).cards.find(c => c._id == store.state.board.draggingCard._id)
 	fromList = lists.value.find(l => l._id == from)
 	fromList.cards.splice(fromList.cards.findIndex(c => c._id == draggingCard._id), 1)
+	fromList.cardsOrder.splice(fromList.cardsOrder.findIndex(c => c == draggingCard._id), 1)
 	toList = lists.value.find(l => l._id == to)
 	if (!toList.cards)
 		toList.cards = []
 	toList.cards.unshift(draggingCard)
-	store.dispatch('board/setDraggingCard', {
-		...store.state.board.draggingCard,
-		list: to
-	})
 }
 
 function changeCardsPositions(e) {
@@ -293,11 +331,11 @@ function changeCardsPositions(e) {
 		list.cards.splice(targetIndex, 0, draggingCard)
 	}
 
-	setTimeout(() => {
+	nextTick(() => {
 		lists.value.filter(l => l._id != list._id && l.cards.find(c => c._id == draggingCard._id)).map(l => {
 			l.cards.splice(l.cards.findIndex(c => c._id == draggingCard._id), 1)
 		})
-	}, 0)
+	})
 }
 
 function moveCard() {
@@ -311,13 +349,16 @@ function moveCard() {
 		card: draggingCard._id,
 		index: toList.cards.findIndex(c => c._id === draggingCard._id)
 	})
-	store.dispatch('board/setDraggingCard', null)
+		.then(() => {
+			store.dispatch('board/setDraggingCard', null)
+		})
 }
 
 onBeforeUnmount(() => {
 	store.dispatch('setTitle', 'TaskBoard')
 	document.removeEventListener('moveCard', moveCard)
 	document.removeEventListener('changeCardsPositions', changeCardsPositions)
+	document.removeEventListener('mousemove', updateMousePosition)
 })
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-	<div :id="card._id" :class="`card ${dragging ? 'dragging' : ''}`" ref="cardEl" @mousemove="card.mouseIn = true" @mousedown.stop.prevent="startDragging" @touchstart.stop.prevent="(e) => { card.mouseIn = true; startDragging(e) }" @mouseleave="card.mouseIn = false" @mouseenter.stop.prevent="mouseEnter" @touchmove.stop.prevent="mouseEnter" @mouseup="mouseDown = false" @touchend="mouseDown = false">
+	<div :id="card._id" :class="`card ${dragging ? 'dragging' : ''}`" ref="cardEl" @mousemove="card.mouseIn = true" @mousedown.stop.prevent="startDragging" @touchstart.stop.prevent="(e) => { card.mouseIn = true; startDragging(e); }" @mouseleave="card.mouseIn = false; mouseDown = false" @mouseenter.stop.prevent="mouseEnter" @mouseup="mouseDown = false" @touchend="mouseDown = false">
 
 		<header>
 			<b>{{ card.title }}</b>
@@ -116,8 +116,6 @@ const showingFooter = computed(() => (!dragging.value && props.card.mouseIn) || 
 
 watch(dragging, () => {
 	if (dragging.value) {
-		window.addEventListener('mouseup', stopDragging)
-
 		let e = draggingCard.value.e
 
 		xOffset = (e.clientX || e.touches[0].clientX) - cardEl.value.getBoundingClientRect().left
@@ -139,7 +137,6 @@ watch(dragging, () => {
 	}
 	else {
 		if (draggingShadow.value) {
-			window.removeEventListener('mouseup', stopDragging)
 			draggingShadow.value.remove()
 			store.dispatch('board/setDraggingShadow', null)
 		}
@@ -178,6 +175,8 @@ watch(fullScreenCarousel, () => {
 
 onMounted(() => {
 	window.addEventListener('resize', updateStyles)
+	window.addEventListener('mouseup', stopDragging)
+	window.addEventListener('touchend', stopDragging)
 	if (!sessionStorage.getItem('mountingBoard')) {
 		let newCard = document.getElementById(`card-${props.card._id}`)
 		newCard.addEventListener('animationend', () => {
@@ -277,6 +276,9 @@ function startDragging(e) {
 				...props.card,
 				e: e
 			})
+			setTimeout(() => {
+				drag(e)
+			}, 0)
 		}
 	}, 150)
 }
@@ -299,16 +301,16 @@ function drag(e) {
 
 function stopDragging() {
 	let currentList = props.lists.find(l => l.cards.find(c => c._id == props.card._id))
-	if (listBeforeDragging.value._id != currentList._id || indexBeforeDragging.value != currentList.cards.findIndex(c => c._id == props.card._id)) {
+	if (draggingCard.value?._id == props.card._id) {
 		props.card.list = currentList._id
 		dispatchEvent('moveCard')
 	}
-	else
-		store.dispatch('board/setDraggingCard', null)
 }
 
 onBeforeUnmount(() => {
 	window.removeEventListener('resize', updateStyles)
+	window.removeEventListener('mouseup', stopDragging)
+	window.removeEventListener('touchend', stopDragging)
 })
 
 </script>

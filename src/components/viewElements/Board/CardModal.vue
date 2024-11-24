@@ -8,7 +8,7 @@
 
 		<Textarea v-model="description" label="Descrição" class="input" style="resize: vertical;" @keydown.enter.stop="handleEnterKey" />
 
-		<fieldset>
+		<div class="todos">
 			<legend v-if="todos.length">Todos</legend>
 			<ul class="todosList">
 				<Todo v-for="todo in todos" :key="todo" :todo="todo" @removeTodo="removeTodo" @newTodo="addTodo" />
@@ -17,7 +17,7 @@
 				<Icon class="check-square" />
 				<span>Adicionar Todo</span>
 			</Button>
-		</fieldset>
+		</div>
 
 		<fieldset>
 			<legend v-if="images.length">Imagens</legend>
@@ -43,7 +43,7 @@
 		<Input id="searchInput" type="search" class="input" label="Atribuído a" placeholder="Nome ou email" v-model="search" autocomplete="off" />
 		<DropDown :list="foundUsers" ref="dropDown" class="searchResultList" />
 		<div id="assignedList">
-			<UserBadge v-for=" user  in  assignedTo " :key="user._id" :user="user" class="userBadge" @click="profileModal.show(user)" />
+			<UserBadge v-for=" user in assignedTo " :key="user._id" :user="user" class="userBadge" @click="profileModal.show(user)" />
 		</div>
 
 		<template v-slot:footer>
@@ -155,7 +155,7 @@ const wrapperPadding = computed(() => {
 
 const wrapperDisplay = ref(window.innerWidth < window.innerHeight ? 'grid' : 'auto')
 const slideHeight = ref(carousel.value?.fullScreen && window.innerWidth > window.innerHeight ? '100%' : 'unset')
-const slideMargin = ref(`calc(50% - ${ slideHeight.value } / 2)`)
+const slideMargin = ref(`calc(50% - ${slideHeight.value} / 2)`)
 
 watch(fullScreenCarousel, () => {
 	updateStyles()
@@ -202,17 +202,16 @@ function show(cardList, card) {
 }
 
 function addTodo() {
-	let lastTodo = modal.value.$el.querySelector('.todosList .todo:last-child .todoInput input')
-	if (!todos.value.length || (lastTodo && lastTodo.value.trim())) {
-		todos.value.push({
-			todo: '',
-			done: false,
-			editing: true,
-			canEdit: true
-		})
-	}
+
+	todos.value.push({
+		todo: '',
+		done: false,
+		editing: true,
+		canEdit: true
+	})
+
 	setTimeout(() => {
-		lastTodo = modal.value.$el.querySelector('.todosList .todo:last-child .todoInput input')
+		let lastTodo = modal.value.$el.querySelector('.todosList .todo:last-child .todoInput input')
 		if (lastTodo) {
 			lastTodo.editing = true
 			setTimeout(() => {
@@ -246,7 +245,7 @@ function updateStyles() {
 	if (carousel.value) {
 		wrapperDisplay.value = window.innerWidth < window.innerHeight ? 'grid' : 'auto'
 		slideHeight.value = carousel.value.fullScreen && window.innerWidth > window.innerHeight ? 'calc(100% - 33px)' : 'unset'
-		slideMargin.value = `calc(50% - ${ slideHeight.value } / 2)`
+		slideMargin.value = `calc(50% - ${slideHeight.value} / 2)`
 	}
 }
 
@@ -349,17 +348,6 @@ b {
 	width: 100%;
 }
 
-fieldset:has(legend) {
-	margin: 17px 0 0;
-}
-
-legend {
-	font-size: .9rem;
-	padding-left: 7px;
-	white-space: nowrap;
-	font-weight: bold;
-}
-
 ul.todosList {
 	list-style: none;
 	padding: 0 7px;
@@ -377,6 +365,17 @@ li {
 
 li>* {
 	margin: 0;
+}
+
+fieldset:has(legend) {
+	margin: 17px 0 0;
+}
+
+legend {
+	font-size: .9rem;
+	padding-left: 7px;
+	white-space: nowrap;
+	font-weight: bold;
 }
 
 button.addItemButton {
