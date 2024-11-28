@@ -134,7 +134,6 @@ watch(search, () => {
 			}, [])
 		setTimeout(() => {
 			if (foundUsers.value.length) {
-				updateStyles()
 				dropDown.value?.show(modal.value.$el.querySelector('#searchInput'), 'left')
 			}
 		}, 0)
@@ -142,24 +141,6 @@ watch(search, () => {
 })
 
 const inputWidth = ref(0)
-
-const fullScreenCarousel = computed(() => {
-	return carousel.value?.fullScreen
-})
-const imgFit = computed(() => {
-	return carousel.value?.fullScreen ? 'contain' : 'cover'
-})
-const wrapperPadding = computed(() => {
-	return carousel.value?.fullScreen ? '7px 77px' : '0'
-})
-
-const wrapperDisplay = ref(window.innerWidth < window.innerHeight ? 'grid' : 'auto')
-const slideHeight = ref(carousel.value?.fullScreen && window.innerWidth > window.innerHeight ? '100%' : 'unset')
-const slideMargin = ref(`calc(50% - ${slideHeight.value} / 2)`)
-
-watch(fullScreenCarousel, () => {
-	updateStyles()
-})
 
 function show(cardList, card) {
 	list.value = cardList
@@ -188,14 +169,12 @@ function show(cardList, card) {
 	else
 		editing.value = false
 	modal.value.show()
-	window.addEventListener('resize', updateStyles)
 	setTimeout(() => {
 		if (images.value.length) {
 			let aux = images.value
 			images.value = []
 			setTimeout(() => {
 				images.value = aux
-				updateStyles()
 			}, 0)
 		}
 	}, 300)
@@ -234,19 +213,6 @@ function addImages(e) {
 			}]
 	}, [])]
 	e.target.value = ''
-}
-
-function updateStyles() {
-	const input = modal.value.$el.querySelector('#searchInput')
-	if (input) {
-		inputWidth.value = input.getBoundingClientRect().width + 'px'
-	}
-
-	if (carousel.value) {
-		wrapperDisplay.value = window.innerWidth < window.innerHeight ? 'grid' : 'auto'
-		slideHeight.value = carousel.value.fullScreen && window.innerWidth > window.innerHeight ? 'calc(100% - 33px)' : 'unset'
-		slideMargin.value = `calc(50% - ${slideHeight.value} / 2)`
-	}
 }
 
 function removeAssigning() {
@@ -330,7 +296,6 @@ function close(clear) {
 		comments.value = []
 	}
 	modal.value.close()
-	window.removeEventListener('resize', updateStyles)
 }
 
 defineExpose({ show })
@@ -394,17 +359,12 @@ button.addItemButton {
 }
 
 .slideWrapper {
-	padding: v-bind(wrapperPadding);
-	display: v-bind(wrapperDisplay);
 	place-items: center;
 	position: relative;
 }
 
 .slide {
-	min-width: 140px;
 	width: 100%;
-	height: v-bind(slideHeight);
-	margin-top: v-bind(slideMargin);
 	position: relative;
 }
 
@@ -413,7 +373,7 @@ button.addItemButton {
 	max-height: calc(100% - 45px);
 	border-radius: .3rem;
 	aspect-ratio: 16 / 9;
-	object-fit: v-bind(imgFit);
+	object-fit: contain;
 }
 
 .rmImgButton {

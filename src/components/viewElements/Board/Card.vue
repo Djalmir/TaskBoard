@@ -29,7 +29,7 @@
 						<div v-for="image in card.imageUrls" :key="image" class="slideWrapper">
 							<div class="slide" @mouseenter="image.mouseIn = true" @mouseleave="image.mouseIn = false">
 								<img :src="image.src" alt="task image" class="image" />
-								<span class="legend">
+								<span class="legend" v-if="image.legend">
 									{{ image.legend }}
 								</span>
 							</div>
@@ -155,26 +155,7 @@ watch(() => props.card.mouseIn, () => {
 	}, 3000)
 })
 
-const fullScreenCarousel = computed(() => {
-	return carousel.value?.fullScreen
-})
-const imgFit = computed(() => {
-	return carousel.value?.fullScreen ? 'contain' : 'cover'
-})
-const wrapperPadding = computed(() => {
-	return carousel.value?.fullScreen ? '7px 77px' : '0'
-})
-
-const wrapperDisplay = ref(window.innerWidth < window.innerHeight ? 'grid' : 'auto')
-const slideHeight = ref(carousel.value?.fullScreen && window.innerWidth > window.innerHeight ? 'calc(100% - 33px)' : 'unset')
-const slideMargin = ref(`calc(50% - ${slideHeight.value} / 2)`)
-
-watch(fullScreenCarousel, () => {
-	updateStyles()
-})
-
 onMounted(() => {
-	window.addEventListener('resize', updateStyles)
 	window.addEventListener('mouseup', stopDragging)
 	window.addEventListener('touchend', stopDragging)
 	if (!sessionStorage.getItem('mountingBoard')) {
@@ -188,14 +169,6 @@ onMounted(() => {
 
 function showCardDropdown(target, card) {
 	emit('showCardDropdown', target, card.list, card)
-}
-
-function updateStyles() {
-	if (carousel.value) {
-		wrapperDisplay.value = window.innerWidth < window.innerHeight ? 'grid' : 'auto'
-		slideHeight.value = carousel.value.fullScreen && window.innerWidth > window.innerHeight ? 'calc(100% - 33px)' : 'unset'
-		slideMargin.value = `calc(50% - ${slideHeight.value} / 2)`
-	}
 }
 
 function editTodo() {
@@ -306,7 +279,6 @@ function stopDragging() {
 }
 
 onBeforeUnmount(() => {
-	window.removeEventListener('resize', updateStyles)
 	window.removeEventListener('mouseup', stopDragging)
 	window.removeEventListener('touchend', stopDragging)
 })
@@ -320,7 +292,6 @@ onBeforeUnmount(() => {
 	background: linear-gradient(145deg, var(--dark-bg2), var(--dark-bg1));
 	color: var(--dark-font1);
 	box-shadow: var(--dark-box-shadow);
-	/* min-height: 71px; */
 }
 
 .light-theme .card {
@@ -398,16 +369,13 @@ ul.todosList {
 }
 
 .slideWrapper {
-	padding: v-bind(wrapperPadding);
-	display: v-bind(wrapperDisplay);
 	place-items: center;
 	position: relative;
+	height: fit-content;
 }
 
 .slide {
 	width: 100%;
-	height: v-bind(slideHeight);
-	margin-top: v-bind(slideMargin);
 	position: relative;
 }
 
@@ -416,7 +384,7 @@ ul.todosList {
 	max-height: calc(100% - 45px);
 	border-radius: .3rem;
 	aspect-ratio: 16 / 9;
-	object-fit: v-bind(imgFit);
+	object-fit: contain;
 }
 
 .legend {
@@ -424,6 +392,8 @@ ul.todosList {
 	width: 100%;
 	margin: 7px 0 0;
 	text-align: center;
+	max-height: 77px;
+	overflow: auto;
 }
 
 .commentsTab {

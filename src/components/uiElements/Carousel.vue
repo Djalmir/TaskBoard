@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch, computed } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import Icon from '@/components/uiElements/Icon.vue'
 
 const props = defineProps({
@@ -47,8 +47,8 @@ const currentSlide = ref(0)
 const observer = ref()
 const inViewObserver = ref()
 const fullScreen = ref(false)
-const parentWidth = ref(`${ carousel.value?.parentElement.offsetWidth || 0 }px`)
-const slideWidth = ref(`${ carousel.value?.parentElement.offsetWidth * .75 || 0 }px`)
+const parentWidth = ref(`${carousel.value?.parentElement.offsetWidth || 0}px`)
+const slideWidth = ref(`${carousel.value?.parentElement.offsetWidth * .75 || 0}px`)
 
 watch(fullScreen, () => {
 	setTimeout(() => {
@@ -97,25 +97,25 @@ function handleChildrenChanged() {
 	}
 	slides.value.map((slide) => {
 		slide.style = `
-			width: ${ slideWidth.value };
-			height: calc(100% - 33px);
+			width: ${slideWidth.value};
 			aspect-ratio: 16/9;
 		`
 	})
-	setTimeout(() => {
-		scrollTo(currentSlide.value, 'auto')
-	}, 0)
+
 	fullScreenSlides.value = fullScreenCarouselSlidesWrapper.value ? Array.from(fullScreenCarouselSlidesWrapper.value.children) : []
 	fullScreenSlides.value.map((slide) => {
 		slide.style = `
-			width: ${ window.innerWidth }px;
-			height: calc(100dvh - 33px);
-			overflow: auto;
+			width: 75vw;
+			overflow: visible;
 		`
+	})
+
+	nextTick(() => {
+		scrollTo(currentSlide.value, 'auto', true)
 	})
 }
 
-function scrollTo(index, behavior = 'smooth') {
+function scrollTo(index, behavior = 'smooth', mounting) {
 
 	if (!slides.value.length)
 		return
@@ -127,7 +127,7 @@ function scrollTo(index, behavior = 'smooth') {
 		index = slides.value.length - 1
 	}
 
-	setTimeout(() => {
+	nextTick(() => {
 		if (carousel.value) {
 			currentSlide.value = index
 			let carouselBoundings = carousel.value.getBoundingClientRect()
@@ -140,7 +140,10 @@ function scrollTo(index, behavior = 'smooth') {
 				behavior
 			})
 
-			setTimeout(() => {
+			if (!mounting)
+				scroller.value.style.height = `${slideBoundings.height + 33}px`
+
+			nextTick(() => {
 				if (fullScreenCarouselSlidesWrapper.value) {
 					let fsWrapperBoundings = fullScreenCarouselSlidesWrapper.value.getBoundingClientRect()
 					let fsSlideBoundings = Array.from(fullScreenCarouselSlidesWrapper.value.children)[index].getBoundingClientRect()
@@ -151,9 +154,9 @@ function scrollTo(index, behavior = 'smooth') {
 						behavior
 					})
 				}
-			}, 0)
+			})
 		}
-	}, 0)
+	})
 
 }
 
@@ -169,8 +172,8 @@ function handleKeyDown(e) {
 }
 
 function resizeSlides() {
-	parentWidth.value = `${ carousel.value?.parentElement.offsetWidth || 0 }px`
-	slideWidth.value = `${ carousel.value?.parentElement.offsetWidth * .75 || 0 }px`
+	parentWidth.value = `${carousel.value?.parentElement.offsetWidth || 0}px`
+	slideWidth.value = `${carousel.value?.parentElement.offsetWidth * .75 || 0}px`
 	handleChildrenChanged()
 }
 
@@ -281,4 +284,4 @@ defineExpose({
 .grow-leave-to {
 	opacity: 0;
 }
-</style>./Icon.vue./Icon.vue./Icon.vue./Icon.vue
+</style>

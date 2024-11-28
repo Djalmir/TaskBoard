@@ -67,8 +67,6 @@
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	-webkit-text-size-adjust: 100%;
-
 	--template-columns: minmax(220px, 1fr) minmax(120px, .5fr) minmax(180px, 1fr) 1fr;
 }
 
