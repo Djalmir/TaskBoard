@@ -300,9 +300,7 @@ function drag(e) {
 }
 
 function stopDragging() {
-	let currentList = props.lists.find(l => l.cards.find(c => c._id == props.card._id))
 	if (draggingCard.value?._id == props.card._id) {
-		props.card.list = currentList._id
 		dispatchEvent('moveCard')
 	}
 }

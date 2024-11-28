@@ -349,9 +349,10 @@ function moveCard() {
 		card: draggingCard._id,
 		index: toList.cards.findIndex(c => c._id === draggingCard._id)
 	})
-		.then(() => {
-			store.dispatch('board/setDraggingCard', null)
-		})
+	nextTick(() => {
+		draggingCard.list = toList._id
+		store.dispatch('board/setDraggingCard', null)
+	})
 }
 
 onBeforeUnmount(() => {
