@@ -4,7 +4,7 @@
 			<div v-if="image" class="pictureInnerWrapper">
 				<Image :src="image" alt="item picture" :size="2.5" />
 			</div>
-			<Icon v-if="icon" :class="icon" :size="1.5" />
+			<Icon v-else-if="icon" :class="icon" :size="1.5" />
 			<b>{{ label }}</b>
 			<Icon v-if="submenu" class="chevron-down" :size="1.5" />
 			<Switch v-else-if="rightComponent == 'Switch'" v-model="vModel" :leftIcon="leftIcon" :rightIcon="rightIcon" />
