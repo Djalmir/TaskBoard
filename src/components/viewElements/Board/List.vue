@@ -1,6 +1,6 @@
 <template>
-	<div :id="list._id" :class="`list ${dragging ? 'dragging' : ''}`" ref="listEl" @mousedown.stop.prevent="startDragging" @touchstart.stop.prevent="startDragging" @mouseup="mouseDown = false" @touchend="mouseDown = false">
-		<header>
+	<div :id="list._id" :class="`list ${dragging ? 'dragging' : ''}`" ref="listEl">
+		<header @mousedown.stop.prevent="startDragging" @touchstart.stop.prevent="startDragging" @mouseup="mouseDown = false" @touchend="mouseDown = false">
 			<SpinnerText><b>{{ list.name }}</b></SpinnerText>
 			<Button class="optionsBt" @mousedown.stop @touchstart.stop @click.stop="(e) => showListDropdown(e.target, list)">
 				<Icon class="more-vertical" :size="1.5" />
