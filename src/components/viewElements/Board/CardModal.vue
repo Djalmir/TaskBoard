@@ -226,7 +226,7 @@ function generateBody() {
 	body.append('list', list.value._id || list.value)
 	body.append('title', title.value)
 	body.append('description', description.value)
-	body.append('todos', JSON.stringify(todos.value.map((todo) => {
+	body.append('todos', JSON.stringify(todos.value.filter((td) => td.todo).map((todo) => {
 		return {
 			todo: todo.todo,
 			done: todo.done

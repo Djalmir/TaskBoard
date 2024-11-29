@@ -1,7 +1,7 @@
 <template>
 	<li class="todo" @click="() => { if (!todo.editing) todo.done = !todo.done }" @mouseenter="todo.mouseIn = true" @mouseleave="todo.mouseIn = false">
 		<Checkbox v-model="todo.done" />
-		<Input ref="input" v-if="todo.editing" @blur="blurTodo" @keypress.enter="enterKey" class="todoInput" v-model="todo.todo" placeholder="Descreva a tarefa" :style="`${todo.editing ? '' : 'box-shadow: none; background: transparent; cursor: pointer; pointer-events: none;'} width: 100%;`" />
+		<Input ref="input" v-if="todo.editing" @blur="blurTodo" @keypress.stop.enter="enterKey" class="todoInput" v-model="todo.todo" placeholder="Descreva a tarefa" :style="`${todo.editing ? '' : 'box-shadow: none; background: transparent; cursor: pointer; pointer-events: none;'} width: 100%;`" />
 		<SpinnerText v-else style="font-size: 1rem; padding: 7px 0;" class="spinnerText">
 			{{ todo.todo }}
 		</SpinnerText>
