@@ -39,13 +39,11 @@ div {
 	min-width: v-bind(size);
 	min-height: v-bind(size);
 	overflow: hidden;
-	/* background-image: v-bind(src);
-	background-position: center;
-	background-size: cover; */
 }
 
 div.rounded {
 	border-radius: 50%;
+	aspect-ratio: 1 / 1;
 }
 
 img {

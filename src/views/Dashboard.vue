@@ -17,7 +17,7 @@
 							<div class="sharingListWrapper">
 								<div v-for="user in board.sharedWith" :key="`${board._id}-${user._id}`">
 									<Image v-if="user.profilePictureUrl" class="user" :src="user.profilePictureUrl" alt="user avatar" rounded :size="2.25" @click.prevent="profileModal.show(user)" />
-									<Icon v-else class="user" :size="2.5" rounded @click.prevent="profileModal.show(user)" />
+									<Icon v-else class="user" :size="2.25" rounded @click.prevent="profileModal.show(user)" />
 								</div>
 							</div>
 						</div>
@@ -47,7 +47,7 @@
 							<div class="sharingListWrapper">
 								<div v-for=" user in board.sharedWith.filter(user => user.id !== store.state.userProfile?._id) " :key="`${board._id}-${user._id}`">
 									<Image v-if="user.profilePictureUrl" class="user" :src="user.profilePictureUrl" alt="user avatar" rounded :size="2.25" @click.prevent="profileModal.show(user)" />
-									<Icon v-else class="user" :size="2" @click.prevent="profileModal.show(user)" />
+									<Icon v-else class="user" :size="2.25" rounded @click.prevent="profileModal.show(user)" />
 								</div>
 							</div>
 						</div>
@@ -124,7 +124,7 @@ function showDropdown(target, board) {
 			size: 1.15,
 			label: 'Excluir',
 			action: async () => {
-				if (await Dialog.confirm(`Deseja mesmo excluir o TaskBoard <b style='font-size: 1.2em;'>${ board.name }</b>?`)) {
+				if (await Dialog.confirm(`Deseja mesmo excluir o TaskBoard <b style='font-size: 1.2em;'>${board.name}</b>?`)) {
 					taskboardApi.deleteBoard(board._id)
 						.then(() => {
 							boardRemoved(board)
@@ -315,6 +315,9 @@ h2 {
 	border-radius: 50%;
 	border: 1px solid var(--light-bg1-transparent);
 	box-shadow: var(--dark-box-shadow);
+	aspect-ratio: 1 / 1;
+	display: grid;
+	place-items: center;
 }
 
 .light-theme .sharingListWrapper>* {
