@@ -45,7 +45,7 @@ const emit = defineEmits(['nextPage'])
 
 onMounted(() => {
 	if (props.templateColumns) {
-		document.documentElement.style.setProperty('--template-columns', props.templateColumns)
+		tableWrapper.value.style.setProperty('--template-columns', props.templateColumns)
 	}
 
 	initObserver()

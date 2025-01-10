@@ -101,9 +101,9 @@ nav {
 	align-items: center;
 }
 
-.selector,
-.selector:hover,
-.selector:active {
+nav .selector,
+nav .selector:hover,
+nav .selector:active {
 	flex: 1;
 	max-width: 240px;
 	display: flex;
@@ -117,23 +117,23 @@ nav {
 	/* stroke: var(--dark-font1); */
 }
 
-.light-theme .selector {
+.light-theme nav .selector {
 	color: var(--light-font1);
 	/* stroke: var(--light-font1); */
 }
 
-.selector.active {
+nav .selector.active {
 	background: var(--dark-bg3-transparent);
 	color: var(--primary-light);
 	position: relative;
 }
 
-.light-theme .selector.active {
+.light-theme nav .selector.active {
 	background: var(--light-bg3-transparent);
 	color: var(--primary-light);
 }
 
-.selector.active:before {
+nav .selector.active:before {
 	content: '';
 	position: absolute;
 	left: 0;
@@ -146,11 +146,11 @@ nav {
 	pointer-events: none;
 }
 
-.light-theme .selector.active:before {
+.light-theme nav .selector.active:before {
 	box-shadow: 0 5px 0 0 var(--light-bg3-transparent);
 }
 
-.selector.active:after {
+nav .selector.active:after {
 	content: '';
 	position: absolute;
 	right: 0;
@@ -163,14 +163,14 @@ nav {
 	pointer-events: none;
 }
 
-.light-theme .selector.active:after {
+.light-theme nav .selector.active:after {
 	box-shadow: 0 5px 0 0 var(--light-bg3-transparent);
 }
 
-.selector:hover,
-.selector.active:hover,
-.selector:active,
-.selector.active:active {
+nav .selector:hover,
+nav .selector.active:hover,
+nav .selector:active,
+nav .selector.active:active {
 	color: var(--primary);
 }
 

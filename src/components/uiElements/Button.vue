@@ -51,12 +51,12 @@ button {
 	font-weight: bold;
 }
 
-button:hover {
+button:hover:not(:disabled) {
 	filter: brightness(1.2);
 	box-shadow: var(--hover-dark-box-shadow);
 }
 
-button:active {
+button:active:not(:disabled) {
 	filter: brightness(.8);
 	box-shadow: var(--inset-dark-box-shadow);
 }
@@ -64,7 +64,6 @@ button:active {
 button:disabled {
 	opacity: .5;
 	cursor: not-allowed;
-	pointer-events: none;
 	background: linear-gradient(145deg, var(--dark-bg2), var(--dark-bg1));
 }
 

@@ -342,6 +342,8 @@ function moveCard() {
 	let draggingCard = store.state.board.draggingCard
 	if (!draggingCard)
 		return
+	if (!toList)
+		toList = lists.value.find(l => l._id == draggingCard.list)
 	taskboardApi.moveCard({
 		board: boardId.value,
 		fromList: draggingCard.list,
@@ -350,7 +352,7 @@ function moveCard() {
 		index: toList.cards.findIndex(c => c._id === draggingCard._id)
 	})
 	nextTick(() => {
-		draggingCard.list = toList._id
+		toList.cards.find(c => c._id == draggingCard._id).list = toList._id
 		store.dispatch('board/setDraggingCard', null)
 	})
 }
