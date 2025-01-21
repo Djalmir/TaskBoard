@@ -1,7 +1,6 @@
 <template>
-	<div :id="card._id" :class="`card ${dragging ? 'dragging' : ''}`" ref="cardEl" @mousemove="card.mouseIn = true" @mousedown.stop.prevent="startDragging" @touchstart.stop.prevent="(e) => { card.mouseIn = true; startDragging(e); }" @mouseleave="card.mouseIn = false; mouseDown = false" @mouseenter.stop.prevent="mouseEnter" @mouseup="mouseDown = false" @touchend="mouseDown = false">
-
-		<header>
+	<div :id="card._id" :class="`card ${dragging ? 'dragging' : ''}`" ref="cardEl" @mousemove="card.mouseIn = true" @touchstart="card.mouseIn = true" @mouseleave="card.mouseIn = false; mouseDown = false" @mouseenter.stop.prevent="mouseEnter" @mouseup="mouseDown = false" @touchend="mouseDown = false">
+		<header @mousedown.stop.prevent="startDragging" @touchstart.stop.prevent="startDragging">
 			<b>{{ card.title }}</b>
 			<Button v-if="!draggingCard && card.mouseIn" class="optionsBt" @mousedown.stop @touchstart.stop @click.stop="(e) => showCardDropdown(e.target, card)">
 				<Icon class="more-vertical" :size="1.2" />
@@ -9,7 +8,7 @@
 		</header>
 		<hr v-if="card.description" />
 		<section v-if="card.description || card.assignedTo">
-			<p style="padding-bottom: 24px;">{{ card.description }}</p>
+			<p class="description">{{ card.description }}</p>
 			<div class="assignedToListWrapper" :style="`${showingFooter ? 'bottom: 2px' : 'bottom: -22px'};`">
 				<div v-for="user in card.assignedTo" :key="`${card._id}-${user._id}`">
 					<Image v-if="user.profilePictureUrl" class="user" :src="user.profilePictureUrl" alt="user avatar" rounded :size="1.5" @click.stop.prevent="profileModal.show(user)" @mousedown.stop @touchstart.stop />
@@ -316,6 +315,7 @@ header {
 	font-weight: bold;
 	position: relative;
 	width: 100%;
+	cursor: move;
 }
 
 header b {
@@ -360,6 +360,14 @@ section {
 	position: relative;
 }
 
+.description {
+	padding-bottom: 24px;
+	overflow-wrap: break-word;
+	max-height: 25vh;
+	overflow: auto;
+	pointer-events: all;
+}
+
 footer {
 	padding: 4px;
 }
@@ -367,6 +375,8 @@ footer {
 ul.todosList {
 	list-style: none;
 	padding: 3px;
+	max-height: 25vh;
+	overflow: auto;
 }
 
 .carouselTab {
@@ -409,6 +419,8 @@ ul.todosList {
 
 .commentsTab {
 	padding: 7px;
+	max-height: 25vh;
+	overflow: auto;
 }
 
 .commentsList {
