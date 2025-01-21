@@ -44,6 +44,41 @@
 		<DropDown :list="foundUsers" ref="dropDown" class="searchResultList" />
 		<div id="assignedList">
 			<UserBadge v-for=" user in assignedTo " :key="user._id" :user="user" class="userBadge" @click="profileModal.show(user)" />
+		</div><br />
+
+		<legend v-if="comments.length">Comentários</legend>
+		<ul class="commentsList" v-if="comments.length && !generatingBody">
+			<li v-for="comment in comments" :key="comment" @mouseenter="comment.mouseIn = true" @mouseleave="comment.mouseIn = false">
+				<UserBadge :user="comment.user" style="font-weight: bold;" />
+				<div v-if="comment.editing" class="commentEditor">
+					<Textarea placeholder="Editar comentario" v-model="comment.text" class="commentInput" @keypress.enter.stop="(e) => editComment(e, comment)" />
+					<div>
+						<Button type="submit" class="commentButton" @click="editComment(null, comment)">
+							<Icon class="edit" :size="1" />
+						</Button>
+						<Button class="secondary commentButton" @click="cancelCommentEditing(comment)">
+							<Icon class="x" :size="1" />
+						</Button>
+					</div>
+				</div>
+				<p v-else>
+					{{ comment.text }}
+				</p>
+				<div class="commentActions" v-if="comment.mouseIn && comment.user._id === store.state.userProfile._id && !comment.editing">
+					<Button class="flat actionBt" @click="removeComment(comment)">
+						<Icon class="trash-2" :size="1.15" />
+					</Button>
+					<Button class="flat actionBt" @click="startCommentEditing(comment)">
+						<Icon class="edit" :size="1.15" />
+					</Button>
+				</div>
+			</li>
+		</ul>
+		<div class="newComment">
+			<Textarea placeholder="Comentar" v-model="newComment" class="commentInput" @keypress.enter.stop="addComment" />
+			<Button type="submit" class="flat commentButton" @click="addComment">
+				<Icon class="send" :size="1" />
+			</Button>
 		</div>
 
 		<template v-slot:footer>
@@ -59,6 +94,7 @@
 
 <script setup>
 import { ref, inject, watch, computed } from 'vue'
+import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import Modal from '@/components/uiElements/Modal.vue'
 import Input from '@/components/formElements/Input.vue'
@@ -72,8 +108,10 @@ import UserBadge from '@/components/uiElements/UserBadge.vue'
 import Todo from '@/components/viewElements/Board/Todo.vue'
 import taskboardApi from '@/services/taskboardApi'
 
+const store = useStore()
 const modal = ref()
 const route = useRoute()
+const Dialog = inject('Dialog').value
 const message = inject('Message').value
 const filePicker = ref(null)
 const carousel = ref()
@@ -95,8 +133,11 @@ const todos = ref([])
 const images = ref([])
 const legends = ref({})
 const foundUsers = ref([])
-const comments = ref([])
 const assignedTo = ref([])
+const comments = ref([])
+const newComment = ref('')
+const commentBeforeEdition = ref('')
+const generatingBody = ref(false)
 
 const editing = ref(false)
 
@@ -220,7 +261,51 @@ function removeAssigning() {
 	profileModal.value.close()
 }
 
+function addComment(e) {
+	if (e.shiftKey)
+		return
+	if (newComment.value) {
+		comments.value.push({
+			user: {
+				_id: store.state.userProfile._id,
+				name: store.state.userProfile.name,
+				profilePicture: store.state.userProfile.profilePicture,
+				profilePictureUrl: store.state.userProfile.profilePicture
+			},
+			text: newComment.value
+		})
+		newComment.value = ''
+	}
+}
+
+function startCommentEditing(comment) {
+	comment.editing = true
+	commentBeforeEdition.value = comment.text
+}
+
+function cancelCommentEditing(comment) {
+	comment.text = commentBeforeEdition.value
+	comment.editing = false
+}
+
+function editComment(e, comment) {
+	if (e?.shiftKey)
+		return
+	if (!comment.text)
+		return Message.show({ error: 'O comentário não pode estar vazio' })
+
+	comment.editing = false
+}
+
+
+async function removeComment(comment) {
+	if (await Dialog.confirm(`Deseja mesmo excluir este comentário?`)) {
+		comments.value.splice(comments.value.indexOf(comment), 1)
+	}
+}
+
 function generateBody() {
+	generatingBody.value = true
 	let body = new FormData()
 	body.append('board', boardId.value)
 	body.append('list', list.value._id || list.value)
@@ -241,6 +326,12 @@ function generateBody() {
 			body.append('legends', legends.value[img.file.name])
 		}
 	})
+
+	comments.value.map((comment) => {
+		if (typeof comment.user === 'object')
+			comment.user = comment.user._id
+	})
+
 	body.append('comments', JSON.stringify(comments.value))
 	body.append('assignedTo', JSON.stringify(assignedTo.value))
 	return body
@@ -266,6 +357,7 @@ function createCard() {
 
 	taskboardApi.createCard(body)
 		.then((res) => {
+			generatingBody.value = false
 			emit('cardCreated', res.data)
 			close(true)
 		})
@@ -280,6 +372,7 @@ function editCard() {
 
 	taskboardApi.updateCard(body)
 		.then((res) => {
+			generatingBody.value = false
 			emit('cardEdited', res.data)
 			close(true)
 		})
@@ -292,6 +385,7 @@ function close(clear) {
 		todos.value = []
 		images.value = []
 		legends.value = {}
+		search.value = ''
 		assignedTo.value = []
 		comments.value = []
 	}
@@ -315,20 +409,19 @@ b {
 
 ul.todosList {
 	list-style: none;
-	padding: 0 7px;
 	margin-top: 7px;
 }
 
-li {
+ul.todosList li {
 	display: flex;
 	align-items: center;
 	gap: 7px;
 	border-radius: .3rem;
-	padding: 0;
+	padding: 3px 7px;
 	cursor: pointer;
 }
 
-li>* {
+ul.todosList li>* {
 	margin: 0;
 }
 
@@ -440,6 +533,85 @@ button.addItemButton {
 
 .light-theme .userBadge:active {
 	box-shadow: var(--inset-light-box-shadow);
+}
+
+.commentsList {
+	margin: 3px 0;
+	list-style: none;
+}
+
+.commentsList li {
+	font-size: .9rem;
+	background: var(--dark-bg1-transparent);
+	padding: 7px;
+	border-radius: .3rem;
+	margin: 0 0 7px;
+	position: relative;
+}
+
+.light-theme .commentsList li {
+	background: var(--light-bg1-transparent);
+}
+
+.commentsList li p {
+	margin: 3px 23px;
+}
+
+.commentsList li .commentActions {
+	position: absolute;
+	top: 7px;
+	right: 7px;
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+}
+
+.commentEditor {
+	margin: 7px 0;
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+}
+
+.commentEditor div {
+	display: flex;
+	gap: 7px;
+}
+
+.commentEditor div>* {
+	flex: 1;
+}
+
+.newComment {
+	display: flex;
+	gap: 3px;
+}
+
+.commentInput {
+	margin: 0;
+	min-width: 0;
+	width: 100%;
+	resize: vertical;
+}
+
+.commentButton {
+	display: grid;
+	place-items: center;
+	padding: 3px;
+	min-width: 37px;
+}
+
+.actionBt {
+	cursor: pointer;
+	padding: 1px;
+	display: grid;
+	place-items: center;
+	border-radius: 0;
+}
+
+.actionBt:first-of-type,
+.light-theme .actionBt:first-of-type {
+	color: var(--danger-light);
 }
 
 footer {

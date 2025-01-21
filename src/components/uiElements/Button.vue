@@ -89,4 +89,9 @@ button.flat {
 .light-theme button.flat {
 	color: var(--light-font2);
 }
+
+button.flat:hover:not(:disabled),
+button.flat:active:not(:disabled) {
+	box-shadow: none;
+} 
 </style>

@@ -46,7 +46,7 @@
 									<Button type="submit" class="commentButton" @click="editComment(null, comment)">
 										<Icon class="edit" :size="1" />
 									</Button>
-									<Button class="secondary commentButton" @click="comment.editing = false">
+									<Button class="secondary commentButton" @click="cancelCommentEditing(comment)">
 										<Icon class="x" :size="1" />
 									</Button>
 								</div>
@@ -58,7 +58,7 @@
 								<Button class="flat actionBt" @click="removeComment(comment)">
 									<Icon class="trash-2" :size="1.15" />
 								</Button>
-								<Button class="flat actionBt" @click="comment.editing = true">
+								<Button class="flat actionBt" @click="startCommentEditing(comment)">
 									<Icon class="edit" :size="1.15" />
 								</Button>
 							</div>
@@ -113,6 +113,7 @@ const draggingTimer = ref(null)
 let xOffset, yOffset
 let mouseDown = false
 const showingFooter = computed(() => (!dragging.value && props.card.mouseIn) || cardTabs.value?.showingContent)
+const commentBeforeEdition = ref('')
 
 watch(dragging, () => {
 	if (dragging.value) {
@@ -207,6 +208,16 @@ function addComment(e) {
 				props.card.comments = res.data.comments
 			})
 	}
+}
+
+function startCommentEditing(comment) {
+	comment.editing = true
+	commentBeforeEdition.value = comment.text
+}
+
+function cancelCommentEditing(comment) {
+	comment.text = commentBeforeEdition.value
+	comment.editing = false
 }
 
 function editComment(e, comment) {
