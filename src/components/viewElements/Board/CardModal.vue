@@ -40,10 +40,10 @@
 			</Button>
 		</fieldset>
 
-		<Input id="searchInput" type="search" class="input" label="Atribuído a" placeholder="Nome ou email" v-model="search" autocomplete="off" />
+		<Input id="searchInput" ref="searchInput" type="search" class="input" label="Atribuído a" placeholder="Nome ou email" v-model="search" autocomplete="off" />
 		<DropDown :list="foundUsers" ref="dropDown" class="searchResultList" />
 		<div id="assignedList">
-			<UserBadge v-for=" user in assignedTo " :key="user._id" :user="user" class="userBadge" @click="profileModal.show(user)" />
+			<UserBadge v-for="user in assignedTo" :key="user._id" :user="user" class="userBadge" @click="profileModal.show(user)" />
 		</div><br />
 
 		<legend v-if="comments.length">Comentários</legend>
@@ -115,6 +115,7 @@ const Dialog = inject('Dialog').value
 const message = inject('Message').value
 const filePicker = ref(null)
 const carousel = ref()
+const searchInput = ref()
 const dropDown = ref()
 const profileModal = ref()
 
@@ -181,7 +182,10 @@ watch(search, () => {
 	}, 500)
 })
 
-const inputWidth = ref(0)
+const inputWidth = computed(() => {
+	console.log(searchInput.value?.$el.offsetWidth)
+	return searchInput.value?.$el.offsetWidth + 'px'||0
+})
 
 function show(cardList, card) {
 	list.value = cardList

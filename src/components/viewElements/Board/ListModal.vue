@@ -17,7 +17,7 @@
 
 <script setup>
 
-import { ref, inject } from 'vue'
+import { ref, inject, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import Modal from '@/components/uiElements/Modal.vue'
 import Input from '@/components/formElements/Input.vue'
@@ -28,7 +28,7 @@ const modal = ref()
 const route = useRoute()
 const message = inject('Message').value
 
-const boardId = route.params.boardId
+const boardId = computed(() => route.params.boardId)
 const listId = ref('')
 const name = ref('')
 const editing = ref(false)
@@ -49,7 +49,7 @@ function show(list) {
 
 function createList() {
 	taskboardApi.createList({
-		boardId,
+		boardId: boardId.value,
 		name: name.value
 	})
 		.then((res) => {
