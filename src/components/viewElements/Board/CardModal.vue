@@ -183,7 +183,6 @@ watch(search, () => {
 })
 
 const inputWidth = computed(() => {
-	console.log(searchInput.value?.$el.offsetWidth)
 	return searchInput.value?.$el.offsetWidth + 'px'||0
 })
 
